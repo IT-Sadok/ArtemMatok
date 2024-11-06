@@ -1,8 +1,13 @@
 ﻿using BookingWebApi.Application.Models;
-using BookingWebApi.Response;
+using BookingWebApi.Application.Response;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
-namespace BookingWebApi.Extensions
+namespace BookingWebApi.Application.Extensions
 {
     public static class ResultExtensions
     {
@@ -10,7 +15,7 @@ namespace BookingWebApi.Extensions
         {
             var response = new ApiResponse<T>(result);
 
-            if(result.IsSuccess)
+            if (result.IsSuccess)
             {
                 return new OkObjectResult(response.Data);
             }
