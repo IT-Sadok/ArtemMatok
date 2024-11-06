@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookingWebApi.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.Decorators
 {
-    public class UserManagerDecorator<T> : IUserManagerDecorator<T> where T : class
+    public class UserManagerDecorator<T> : IUserManagerDecorator<T> where T : AppUser
     {
         private readonly UserManager<T> _userManager;
 

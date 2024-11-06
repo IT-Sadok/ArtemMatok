@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using BookingWebApi.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.Decorators
 {
-    public interface IUserManagerDecorator<T> where T : class
+    public interface IUserManagerDecorator<T> where T : AppUser
     {
         Task<T> FindByEmailAsync(string email);
         Task<IdentityResult> CreateAsync(T user, string password);

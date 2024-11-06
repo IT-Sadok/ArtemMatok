@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.DTOs.AppUserDTOs
 {
-    public class LoginDto
+    public record LoginDto
     {
-        public string? Email { get; set; }
-        public string? Password { get; set; }
+        public string? Email { get; init; }
+        public string? Password { get; init; }
     }
 }

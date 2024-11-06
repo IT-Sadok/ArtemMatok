@@ -1,14 +1,17 @@
+using BookingWebApi.Application.Configuration;
 using BookingWebApi.Application.Decorators;
 using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Application.Services;
 using BookingWebApi.Application.Validation.AppUserValid;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Data;
+using BookingWebApi.Infrastructure.Decorators;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +62,8 @@ builder.Services.AddAuthentication(options =>
 });
 
 builder.Services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
-
+//configurations
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
 //Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    

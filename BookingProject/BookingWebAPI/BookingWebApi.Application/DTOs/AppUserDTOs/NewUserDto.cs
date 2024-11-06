@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.DTOs.AppUserDTOs
 {
-    public class NewUserDto
+    public record NewUserDto
     {
-        public string? Email { get; set; }
-        public string? Username { get; set; }
-        public string? Token { get; set; }
+        public string? Email { get; init; }
+        public string? Username { get; init; }
+        public string? Token { get; init; }
     }
 }

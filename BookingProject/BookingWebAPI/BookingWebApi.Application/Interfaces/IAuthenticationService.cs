@@ -11,7 +11,7 @@ namespace BookingWebApi.Application.Interfaces
 {
     public interface IAuthenticationService
     {
-        Task<ApiResponse<NewUserDto>> Register(RegisterDto registerDto);    
-        Task<ApiResponse<NewUserDto>> Login(LoginDto loginDto); 
+        Task<Result<NewUserDto>> Register(RegisterDto registerDto);    
+        Task<Result<NewUserDto>> Login(LoginDto loginDto); 
     }
 }

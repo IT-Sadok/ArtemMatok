@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Domain.Entities
 {
-    public class AppUser:IdentityUser
+    public class AppUser : IdentityUser
     {
 
     }

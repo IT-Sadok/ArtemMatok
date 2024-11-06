@@ -1,6 +1,8 @@
-﻿using BookingWebApi.Application.Interfaces;
+﻿using BookingWebApi.Application.Configuration;
+using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Domain.Entities;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -14,13 +16,13 @@ namespace BookingWebApi.Application.Services
 {
     public class TokenService : ITokenService
     {
-        private readonly IConfiguration _config;
+        private readonly JwtSettings _jwtSettings;
         private readonly SymmetricSecurityKey _key;
 
-        public TokenService(IConfiguration config)
+        public TokenService(IOptions<JwtSettings> jwtSettings)
         {
-            _config = config;
-            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JWT:SigningKey"]));
+            _jwtSettings = jwtSettings.Value;
+            _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
         }
         public string CreateToken(AppUser user)
         {
@@ -35,10 +37,10 @@ namespace BookingWebApi.Application.Services
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.Now.AddDays(7),
+                Expires = DateTime.Now.AddDays(_jwtSettings.TokenExpirationDays),
                 SigningCredentials = creds,
-                Issuer = _config["JWT:Issuer"],
-                Audience = _config["JWT:Audience"]
+                Issuer = _jwtSettings.Issuer,
+                Audience = _jwtSettings.Audience,
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();

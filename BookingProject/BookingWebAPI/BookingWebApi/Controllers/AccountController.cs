@@ -1,5 +1,7 @@
 ﻿using BookingWebApi.Application.DTOs.AppUserDTOs;
 using BookingWebApi.Application.Interfaces;
+using BookingWebApi.Extensions;
+using BookingWebApi.Response;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,16 +21,9 @@ namespace BookingWebApi.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterDto registerDto)
         {
-            var result = await _authService.Register(registerDto);  
+            var result = await _authService.Register(registerDto);
 
-            if(result.Success)
-            {
-                return Ok(result.Value);
-            }
-            else
-            {
-                return BadRequest(result);
-            }
+            return result.ToResponse();
         }
 
         [HttpPost("Login")]
@@ -36,14 +31,8 @@ namespace BookingWebApi.Controllers
         {
             var result = await _authService.Login(loginDto);
 
-            if(result.Success)
-            {
-                return Ok(result.Value);
-            }
-            else
-            {
-                return Unauthorized(result);
-            }
+            return result.ToResponse();
         }
     }
 }
+    

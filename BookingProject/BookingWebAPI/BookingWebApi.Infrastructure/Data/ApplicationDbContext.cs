@@ -1,4 +1,5 @@
 ﻿using BookingWebApi.Domain.Entities;
+using BookingWebApi.Infrastructure.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -21,20 +22,7 @@ namespace BookingWebApi.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
-            List<IdentityRole> roles = new List<IdentityRole>()
-            {
-                new IdentityRole
-                {
-                    Name = "Admin",
-                    NormalizedName = "ADMIN"
-                },
-                new IdentityRole
-                {
-                    Name = "User",
-                    NormalizedName = "USER"
-                },
-            };
-            builder.Entity<IdentityRole>().HasData(roles);
+            builder.ApplyConfiguration(new RoleConfiguration());
         }
     }
 }

@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Tests.Services
 {
-    public class AuthenticationServiceTest
+    public class AuthenticationServiceTests
     {
         private readonly Mock<IUserManagerDecorator<AppUser>> _userManager;
         private readonly Mock<ITokenService> _tokenService;
@@ -25,7 +25,7 @@ namespace BookingWebApi.Tests.Services
         private readonly Mock<IValidator<LoginDto>> _validatorLoginDto;
         private readonly AuthenticationService _authenticationService;
 
-        public AuthenticationServiceTest()
+        public AuthenticationServiceTests()
         {
             _userManager = new Mock<IUserManagerDecorator<AppUser>>();
             _tokenService = new Mock<ITokenService>();
@@ -44,7 +44,6 @@ namespace BookingWebApi.Tests.Services
         [Fact]
         public async Task AuthenticationService_Register_ReturnSuccess()
         {
-            //Arange
             var registerDto = new RegisterDto { Email = "test@gmail.com", Password = "Testtest1@", UserName = "Test" };
 
 
@@ -56,18 +55,16 @@ namespace BookingWebApi.Tests.Services
                 .ReturnsAsync(IdentityResult.Success);
 
 
-            //Act
-            var result = await _authenticationService.Register(registerDto);
+           var result = await _authenticationService.Register(registerDto);
 
-            //Assert
-            result.Should().NotBeNull();    
-           result.Success.Should().BeTrue();
+
+           result.Should().NotBeNull();    
+           result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
         public async Task AuthenticationService_Login_ReturnSuccess()
         {
-            //Arrange
             var loginDto = new LoginDto { Email="test@gmail.com", Password="Testtest1@" };
             var appUser = new AppUser { Email = loginDto.Email };
 
@@ -78,37 +75,31 @@ namespace BookingWebApi.Tests.Services
             _signInManager.Setup(x => x.CheckPasswordSignInAsync(appUser, loginDto.Password, false))
                 .ReturnsAsync(SignInResult.Success);
 
-            //Act
             var result = await _authenticationService.Login(loginDto);
 
-            //Assert
             result.Should().NotBeNull();
-            result.Success.Should().BeTrue();
+            result.IsSuccess.Should().BeTrue();
         }
 
         [Fact]
         public async Task AuthenticationService_Register_WithInvalidData_ReturnsFailure()
         {
-            // Arrange
             var registerDto = new RegisterDto { Email = "invalidEmail", Password = "short", UserName = "" };
             var validationFailure = new ValidationFailure("Email", "Invalid email format");
 
             _validatorRegisterDto.Setup(x => x.ValidateAsync(registerDto, default))
                 .ReturnsAsync(new ValidationResult(new List<ValidationFailure> { validationFailure }));
 
-            // Act
             var result = await _authenticationService.Register(registerDto);
 
-            // Assert
             result.Should().NotBeNull();
-            result.Success.Should().BeFalse();
+            result.IsSuccess.Should().BeFalse();
             result.Errors.Should().Contain("Invalid email format");
         }
 
         [Fact]
         public async Task AuthenticationService_Register_WhenUserCreationFails_ReturnsFailure()
         {
-            // Arrange
             var registerDto = new RegisterDto { Email = "test@gmail.com", Password = "Testtest1@", UserName = "Test" };
 
             _validatorRegisterDto.Setup(x => x.ValidateAsync(registerDto, default))
@@ -116,19 +107,16 @@ namespace BookingWebApi.Tests.Services
             _userManager.Setup(x => x.CreateAsync(It.IsAny<AppUser>(), registerDto.Password))
                 .ReturnsAsync(IdentityResult.Failed(new IdentityError { Description = "User creation failed" }));
 
-            // Act
             var result = await _authenticationService.Register(registerDto);
 
-            // Assert
             result.Should().NotBeNull();
-            result.Success.Should().BeFalse();
+            result.IsSuccess.Should().BeFalse();
             result.Errors.Should().Contain("User creation failed");
         }
 
         [Fact]
         public async Task AuthenticationService_Login_WithInvalidCredentials_ReturnsFailure()
         {
-            // Arrange
             var loginDto = new LoginDto { Email = "nonexistent@gmail.com", Password = "WrongPassword" };
 
             _validatorLoginDto.Setup(x => x.ValidateAsync(loginDto, default))
@@ -136,19 +124,15 @@ namespace BookingWebApi.Tests.Services
             _userManager.Setup(x => x.FindByEmailAsync(loginDto.Email))
                 .ReturnsAsync((AppUser)null);  
 
-            // Act
             var result = await _authenticationService.Login(loginDto);
 
-            // Assert
             result.Should().NotBeNull();
-            result.Success.Should().BeFalse();
-            result.ErrorMessage.Should().Contain("Login wasn`t successful");
+            result.IsSuccess.Should().BeFalse();
         }
 
         [Fact]
         public async Task AuthenticationService_Login_WithIncorrectPassword_ReturnsFailure()
         {
-            // Arrange
             var loginDto = new LoginDto { Email = "test@gmail.com", Password = "WrongPassword" };
             var appUser = new AppUser { Email = loginDto.Email };
 
@@ -159,12 +143,10 @@ namespace BookingWebApi.Tests.Services
             _signInManager.Setup(x => x.CheckPasswordSignInAsync(appUser, loginDto.Password, false))
                 .ReturnsAsync(SignInResult.Failed); 
 
-            // Act
             var result = await _authenticationService.Login(loginDto);
 
-            // Assert
             result.Should().NotBeNull();
-            result.Success.Should().BeFalse();
+            result.IsSuccess.Should().BeFalse();
         }
 
     }
