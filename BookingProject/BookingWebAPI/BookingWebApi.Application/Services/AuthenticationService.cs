@@ -10,20 +10,11 @@ namespace BookingWebApi.Application.Services
     public class AuthenticationService(
         IUserManagerDecorator<AppUser> _userManager,
         ITokenService _tokenService,
-        ISignInManagerDecorator<AppUser> _signInManager,
-        IValidator<RegisterDto> _validatorRegisterDto,
-        IValidator<LoginDto> _validatoLoginDto
+        ISignInManagerDecorator<AppUser> _signInManager
     ) : IAuthenticationService
     {
         public async Task<Result<NewUserDto>> Login(LoginDto loginDto)
         {
-            var resultValidator = await _validatoLoginDto.ValidateAsync(loginDto);
-
-            if (!resultValidator.IsValid)
-            {
-                var errorsValidation = resultValidator.Errors.Select(x => x.ErrorMessage).ToList();
-                return Result<NewUserDto>.Failure(errorsValidation);
-            }
 
             var user = await _userManager.FindByEmailAsync(loginDto.Email);
 
@@ -51,13 +42,6 @@ namespace BookingWebApi.Application.Services
 
         public async Task<Result<NewUserDto>> Register(RegisterDto registerDto)
         {
-            var resultValidator = await _validatorRegisterDto.ValidateAsync(registerDto);
-
-            if (!resultValidator.IsValid)
-            {
-                var errorsValidation = resultValidator.Errors.Select(x => x.ErrorMessage).ToList();
-                return Result<NewUserDto>.Failure(errorsValidation);
-            }
 
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)

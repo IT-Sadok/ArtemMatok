@@ -6,6 +6,7 @@ using BookingWebApi.Application.Validation.AppUserValid;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
+using BookingWebApi.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -61,7 +62,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddValidatorsFromAssemblyContaining<LoginDtoValidator>();
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 //configurations
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
 //Services
@@ -91,8 +92,11 @@ app.UseCors(x => x
     .SetIsOriginAllowed(origin => true)
 );
 
+
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
 
