@@ -1,11 +1,6 @@
 ﻿using BookingWebApi.Application.Models;
 using BookingWebApi.Application.Response;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.Extensions
 {
@@ -24,5 +19,6 @@ namespace BookingWebApi.Application.Extensions
                 return new BadRequestObjectResult(response);
             }
         }
+
     }
 }

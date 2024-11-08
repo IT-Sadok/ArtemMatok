@@ -30,19 +30,26 @@ namespace BookingWebApi.Application.Services
                 return Result<NewUserDto>.Failure("Email not found and/or password incorrect");
             }
 
-            var newUserDto = new NewUserDto
+            var roles = await _userManager.GetUserRoles(user);
+            var userRole = roles.FirstOrDefault();
+
+            if (string.IsNullOrEmpty(userRole))
             {
-                Username = user.UserName,
-                Email = user.Email,
-                Token = _tokenService.CreateToken(user)
-            };
+                return Result<NewUserDto>.Failure("Role assignment failed. No role found for the user.");
+            }
+
+            var newUserDto = new NewUserDto(
+                user.UserName,
+                user.Email,
+                await _tokenService.CreateToken(user),
+                userRole
+            );
 
             return Result<NewUserDto>.Success(newUserDto);
         }
 
         public async Task<Result<NewUserDto>> Register(RegisterDto registerDto)
         {
-
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
@@ -58,26 +65,33 @@ namespace BookingWebApi.Application.Services
 
             var createdUser = await _userManager.CreateAsync(appUser, registerDto.Password);
 
-
             if(!createdUser.Succeeded)
             {
                 var errorsUser = createdUser.Errors.Select(x => x.Description).ToList();
                 return Result<NewUserDto>.Failure(errorsUser);
             }
 
-            var roleResult = await _userManager.AddToRoleAsync(appUser, "User");
+            var roleResult = await _userManager.AddToRoleAsync(appUser, registerDto.Role);
             if (!roleResult.Succeeded)
             {
                 var errorsRole = roleResult.Errors.Select(x => x.Description).ToList();
                 return Result<NewUserDto>.Failure(errorsRole);
             }
 
-            var newUser = new NewUserDto()
+            var roles = await _userManager.GetUserRoles(appUser);
+            var userRole = roles.FirstOrDefault();
+
+            if (string.IsNullOrEmpty(userRole))
             {
-                Username = appUser.UserName,
-                Email = appUser.Email,
-                Token = _tokenService.CreateToken(appUser)
-            };
+                return Result<NewUserDto>.Failure("Role assignment failed. No role found for the user.");
+            }
+
+            var newUser = new NewUserDto(
+                appUser.UserName,
+                appUser.Email,
+                await _tokenService.CreateToken(appUser),
+                userRole
+            );
 
             return Result<NewUserDto>.Success(newUser);
         }

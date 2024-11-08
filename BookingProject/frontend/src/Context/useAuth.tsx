@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { UserProfile } from "../Models/User";
 import { useNavigate } from "react-router-dom";
-import { login, register } from "../Services/AuthService";
+import { login, registerForUser } from "../Services/AuthService";
 import { toast } from "react-toastify";
 import React from "react";
 import axios from "axios";
@@ -9,7 +9,7 @@ import axios from "axios";
 type UserContextType = {
   user: UserProfile | null;
   token: string | null;
-  registerUser: (email: string, username: string, password: string) => void;
+  registerUser: (email: string, username: string, password: string, role:string) => void;
   loginUser: (email: string, password: string) => void;
   logout: () => void;
   isLoggedIn: () => boolean;
@@ -39,15 +39,17 @@ export const UserProvider = ({ children }: Props) => {
   const registerUser = async (
     email: string,
     username: string,
-    password: string
+    password: string,
+    role:string,
   ) => {
-    await register(email, username, password)
+    await registerForUser(email, username, password, role)
       .then((res) => {
         if (res && res.data) {
           localStorage.setItem("token", res.data.token);
           const userObj = {
             userName: res.data.userName,
             email: res.data.email,
+            role:res.data.role
           };
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res.data.token);
@@ -85,6 +87,7 @@ export const UserProvider = ({ children }: Props) => {
           const userObj = {
             userName: res?.userName,
             email: res?.email,
+            role:res?.role,
           };
           localStorage.setItem("user", JSON.stringify(userObj));
           setToken(res?.token!);
@@ -113,7 +116,7 @@ export const UserProvider = ({ children }: Props) => {
   };
 
   const isLoggedIn = () => {
-    return !!user; // if user be it will return true
+    return !!user;
   };
 
   const logout = () => {

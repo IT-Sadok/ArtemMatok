@@ -18,6 +18,8 @@ namespace BookingWebApi.Infrastructure.Data
             
         }
 
+        public DbSet<Apartament> Apartaments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

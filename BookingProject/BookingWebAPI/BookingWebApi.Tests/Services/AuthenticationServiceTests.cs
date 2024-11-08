@@ -35,16 +35,20 @@ namespace BookingWebApi.Tests.Services
             _authenticationService = new AuthenticationService(
                 _userManager.Object, 
                 _tokenService.Object, 
-                _signInManager.Object, 
-                _validatorRegisterDto.Object,
-                _validatorLoginDto.Object
+                _signInManager.Object
             );
         }
 
         [Fact]
         public async Task AuthenticationService_Register_ReturnSuccess()
         {
-            var registerDto = new RegisterDto { Email = "test@gmail.com", Password = "Testtest1@", UserName = "Test" };
+            var registerDto = new RegisterDto
+            (
+                Email : "test@gmail.com",
+                Password: "Testtest1@",
+                UserName: "Test", 
+                Role: "User"
+            );
 
 
             _validatorRegisterDto.Setup(x => x.ValidateAsync(registerDto,default))
@@ -53,6 +57,8 @@ namespace BookingWebApi.Tests.Services
                 .ReturnsAsync(IdentityResult.Success);
             _userManager.Setup(x => x.AddToRoleAsync(It.IsAny<AppUser>(), "User"))
                 .ReturnsAsync(IdentityResult.Success);
+            _userManager.Setup(x=>x.GetUserRoles(It.IsAny<AppUser>()))
+                .ReturnsAsync(new List<string>() { "User"});  
 
 
            var result = await _authenticationService.Register(registerDto);
@@ -65,7 +71,7 @@ namespace BookingWebApi.Tests.Services
         [Fact]
         public async Task AuthenticationService_Login_ReturnSuccess()
         {
-            var loginDto = new LoginDto { Email="test@gmail.com", Password="Testtest1@" };
+            var loginDto = new LoginDto ( Email:"test@gmail.com", Password:"Testtest1@" );
             var appUser = new AppUser { Email = loginDto.Email };
 
             _validatorLoginDto.Setup(x=>x.ValidateAsync(loginDto,default)) 
@@ -74,6 +80,8 @@ namespace BookingWebApi.Tests.Services
                 .ReturnsAsync(appUser);
             _signInManager.Setup(x => x.CheckPasswordSignInAsync(appUser, loginDto.Password, false))
                 .ReturnsAsync(SignInResult.Success);
+            _userManager.Setup(x => x.GetUserRoles(It.IsAny<AppUser>()))
+                .ReturnsAsync(new List<string> { "User" });
 
             var result = await _authenticationService.Login(loginDto);
 
@@ -81,26 +89,16 @@ namespace BookingWebApi.Tests.Services
             result.IsSuccess.Should().BeTrue();
         }
 
-        [Fact]
-        public async Task AuthenticationService_Register_WithInvalidData_ReturnsFailure()
-        {
-            var registerDto = new RegisterDto { Email = "invalidEmail", Password = "short", UserName = "" };
-            var validationFailure = new ValidationFailure("Email", "Invalid email format");
-
-            _validatorRegisterDto.Setup(x => x.ValidateAsync(registerDto, default))
-                .ReturnsAsync(new ValidationResult(new List<ValidationFailure> { validationFailure }));
-
-            var result = await _authenticationService.Register(registerDto);
-
-            result.Should().NotBeNull();
-            result.IsSuccess.Should().BeFalse();
-            result.Errors.Should().Contain("Invalid email format");
-        }
 
         [Fact]
         public async Task AuthenticationService_Register_WhenUserCreationFails_ReturnsFailure()
         {
-            var registerDto = new RegisterDto { Email = "test@gmail.com", Password = "Testtest1@", UserName = "Test" };
+            var registerDto = new RegisterDto ( 
+                Email : "test@gmail.com", 
+                Password:"Testtest1@", 
+                UserName: "Test", 
+                Role:"User" 
+            );
 
             _validatorRegisterDto.Setup(x => x.ValidateAsync(registerDto, default))
                 .ReturnsAsync(new ValidationResult());
@@ -117,7 +115,7 @@ namespace BookingWebApi.Tests.Services
         [Fact]
         public async Task AuthenticationService_Login_WithInvalidCredentials_ReturnsFailure()
         {
-            var loginDto = new LoginDto { Email = "nonexistent@gmail.com", Password = "WrongPassword" };
+            var loginDto = new LoginDto(Email : "nonexistent@gmail.com", Password: "WrongPassword");
 
             _validatorLoginDto.Setup(x => x.ValidateAsync(loginDto, default))
                 .ReturnsAsync(new ValidationResult());
@@ -133,7 +131,7 @@ namespace BookingWebApi.Tests.Services
         [Fact]
         public async Task AuthenticationService_Login_WithIncorrectPassword_ReturnsFailure()
         {
-            var loginDto = new LoginDto { Email = "test@gmail.com", Password = "WrongPassword" };
+            var loginDto = new LoginDto(Email: "test@gmail.com", Password: "WrongPassword");
             var appUser = new AppUser { Email = loginDto.Email };
 
             _validatorLoginDto.Setup(x => x.ValidateAsync(loginDto, default))

@@ -22,7 +22,7 @@ const RegisterPage = () => {
   });
 
   const handleLogin = (form: RegisterFormsInputs) => {
-    registerUser(form.email, form.userName, form.password);
+    registerUser(form.email, form.userName, form.password, "User");
   };
 
   return (
