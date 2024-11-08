@@ -3,6 +3,7 @@ using System;
 using BookingWebApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingWebApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241107175111_Update_Roles")]
+    partial class Update_Roles
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,41 +24,6 @@ namespace BookingWebApi.Infrastructure.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("BookingWebApi.Domain.Entities.Apartament", b =>
-                {
-                    b.Property<int>("ApartamentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ApartamentId"));
-
-                    b.Property<string>("Address")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Area")
-                        .HasColumnType("double precision");
-
-                    b.Property<int>("Bedrooms")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("HostId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<double>("Latitude")
-                        .HasColumnType("double precision");
-
-                    b.Property<double>("Longitude")
-                        .HasColumnType("double precision");
-
-                    b.HasKey("ApartamentId");
-
-                    b.HasIndex("HostId");
-
-                    b.ToTable("Apartaments");
-                });
 
             modelBuilder.Entity("BookingWebApi.Domain.Entities.AppUser", b =>
                 {
@@ -149,19 +117,19 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "2b805db9-3237-4c44-a140-56fd546eae31",
+                            Id = "1401d4e0-b488-4a28-b123-53d7bfe39895",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "8a8867fb-69ce-4b1f-9e19-4c5930173d53",
+                            Id = "0f7edfa1-1117-412d-90e2-ab32ba8a1843",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "467b389d-0e2c-4d07-8ce9-680ac98a9464",
+                            Id = "ddb01eba-900b-40ff-b729-16477b58029e",
                             Name = "Host",
                             NormalizedName = "HOST"
                         });
@@ -273,17 +241,6 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("BookingWebApi.Domain.Entities.Apartament", b =>
-                {
-                    b.HasOne("BookingWebApi.Domain.Entities.AppUser", "Host")
-                        .WithMany("Apartaments")
-                        .HasForeignKey("HostId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Host");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -333,11 +290,6 @@ namespace BookingWebApi.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("BookingWebApi.Domain.Entities.AppUser", b =>
-                {
-                    b.Navigation("Apartaments");
                 });
 #pragma warning restore 612, 618
         }

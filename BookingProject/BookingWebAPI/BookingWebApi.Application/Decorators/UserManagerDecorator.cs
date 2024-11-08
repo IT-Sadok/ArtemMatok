@@ -39,7 +39,12 @@ namespace BookingWebApi.Application.Decorators
 
         public async Task<IList<string>> GetRolesAsync(T user)
         {
-            return await _userManager.GetRolesAsync(user);  
+            return await _userManager.GetRolesAsync(user);
+        }
+
+        public async Task<IList<string>?> GetUserRoles(T user)
+        {
+            return await _userManager.GetRolesAsync(user);
         }
     }
 }

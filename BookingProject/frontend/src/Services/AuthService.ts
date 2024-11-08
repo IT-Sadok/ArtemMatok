@@ -19,23 +19,25 @@ export const login = async (email: string, password: string) => {
   }
 };
 
-export const register = async (
+export const registerForUser = async (
   email: string,
   username: string,
-  password: string
+  password: string,
+  role:string
 ) => {
   try {
     const data = await axios.post<UserProfileToken>(api + "Register", {
       email,
       username,
       password,
+      role
     });
     if (data) {
       return data
     }
   } catch (error: any) {
     console.log(error);
-    console.log("Register error:", error.response.data.errors);
+    console.log("Register error:", error);
     throw error;
   }
 };

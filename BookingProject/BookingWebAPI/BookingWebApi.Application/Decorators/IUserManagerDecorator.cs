@@ -13,5 +13,6 @@ namespace BookingWebApi.Application.Decorators
         Task<T> FindByEmailAsync(string email);
         Task<IdentityResult> CreateAsync(T user, string password);
         Task<IdentityResult> AddToRoleAsync(T user, string userRole);
+        Task<IList<string>?> GetUserRoles(T user);
     }
 }
