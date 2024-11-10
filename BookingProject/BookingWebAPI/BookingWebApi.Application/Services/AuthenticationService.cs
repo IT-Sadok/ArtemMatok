@@ -53,7 +53,6 @@ namespace BookingWebApi.Application.Services
             var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
             if (existingUser != null)
             {
-
                 return Result<NewUserDto>.Failure("Email is already in use");
             }
 
