@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Infrastructure.Constants
+namespace BookingWebApi.Domain.Constants
 {
     public static class UserRoles
     {
