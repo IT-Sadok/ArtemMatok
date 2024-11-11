@@ -14,5 +14,6 @@ namespace BookingWebApi.Application.Decorators
         Task<IdentityResult> CreateAsync(T user, string password);
         Task<IdentityResult> AddToRoleAsync(T user, string userRole);
         Task<IList<string>?> GetUserRoles(T user);
+        Task<bool> IsInRoleAsync(string iserId, string role);
     }
 }

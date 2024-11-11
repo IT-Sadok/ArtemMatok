@@ -51,10 +51,7 @@ namespace BookingWebApi.Infrastructure.Data
                 .Take(filter.PageSize);
 
             var apartamentsList = await apartaments
-                .Include(x=>x.Host)
                 .ToListAsync();
-
-           
 
             return new PageResultResponse<Apartament>(apartamentsList, totalCount, filter.PageNumber, filter.PageSize);
         }

@@ -6,6 +6,7 @@ using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Application.Models;
 using BookingWebApi.Application.Response;
 using BookingWebApi.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,8 @@ namespace BookingWebApi.Application.Services
     public class ApartamentService (
         IApartamentRepository _apartamentRepository,
         IAppUserRepository _appUserRepository,
-        IMapper _mapper
+        IMapper _mapper,
+        IUserManagerDecorator<AppUser> _userManager
     ) : IApartamentService
     {
         public async Task<Result<ApartamentPostDto>> CreateApartament(ApartamentPostDto apartamentDto, string userId)
@@ -27,9 +29,14 @@ namespace BookingWebApi.Application.Services
                 return Result<ApartamentPostDto>.Failure("User id is required");
             }
 
-            if(!await _appUserRepository.IsUserExist(userId))
+            if(!await _appUserRepository.UserExists(userId))
             {
                 return Result<ApartamentPostDto>.Failure("User wasn`t found");
+            }
+
+            if(!await _userManager.IsInRoleAsync(userId, "Host"))
+            {
+                return Result<ApartamentPostDto>.Failure("User does not have permission to create an apartment");
             }
 
             var apartament = _mapper.Map<Apartament>(apartamentDto);

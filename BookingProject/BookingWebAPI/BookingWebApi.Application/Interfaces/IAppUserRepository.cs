@@ -8,6 +8,6 @@ namespace BookingWebApi.Application.Interfaces
 {
     public interface IAppUserRepository
     {
-        Task<bool> IsUserExist(string userId);
+        Task<bool> UserExists(string userId);
     }
 }

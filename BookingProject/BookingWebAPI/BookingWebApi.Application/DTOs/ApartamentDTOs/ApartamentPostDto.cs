@@ -9,8 +9,8 @@ namespace BookingWebApi.Application.DTOs.ApartamentDTOs
     public record ApartamentPostDto(
         string Address,
         double Area,
-        double Latitude, 
-        double Longtitude,
+        decimal Latitude, 
+        decimal Longtitude,
         int Bedrooms
     );
 }

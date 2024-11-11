@@ -1,14 +1,16 @@
 ﻿using AutoMapper;
+using BookingWebApi.Application.Decorators;
 using BookingWebApi.Application.DTOs.ApartamentDTOs;
 using BookingWebApi.Application.Filters;
 using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Application.Models;
 using BookingWebApi.Application.Response;
 using BookingWebApi.Application.Services;
+using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
 using FluentAssertions;
 using Moq;
-using NPOI.Util;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,17 +24,21 @@ namespace BookingWebApi.Tests.Services
         private readonly Mock<IApartamentRepository> _apartamentRepository;
         private readonly Mock<IAppUserRepository> _appUserRepository;
         private readonly Mock<IMapper> _mapper;
+        private readonly Mock<IUserManagerDecorator<AppUser>> _userManager;
         private readonly ApartamentService _apartamentService;
 
         public ApartamentServiceTests()
         {
             _apartamentRepository = new Mock<IApartamentRepository>();  
-            _appUserRepository = new Mock<IAppUserRepository>();    
+            _appUserRepository = new Mock<IAppUserRepository>();
+            _userManager = new Mock<IUserManagerDecorator<AppUser>>();
+
             _mapper = new Mock<IMapper>();
             _apartamentService = new ApartamentService(
                 _apartamentRepository.Object,
                 _appUserRepository.Object,
-                _mapper.Object
+                _mapper.Object,
+                _userManager.Object
             );
         }
 
@@ -42,8 +48,8 @@ namespace BookingWebApi.Tests.Services
             var apartamentDto = new ApartamentPostDto(
                 "TestAddress",
                 10,
-                12.1561,
-                12.15165,
+                12,
+                12,
                 3
             );
             string userId = "testId";
@@ -59,12 +65,15 @@ namespace BookingWebApi.Tests.Services
 
             var resultApartament = Result<Apartament>.Success(new Apartament { ApartamentId = 1, HostId = userId });
 
-            _appUserRepository.Setup(x => x.IsUserExist(userId))
+            _appUserRepository.Setup(x => x.UserExists(userId))
+                .ReturnsAsync(true);
+            _userManager.Setup(x => x.IsInRoleAsync(userId, UserRoles.Host))
                 .ReturnsAsync(true);
             _mapper.Setup(x => x.Map<Apartament>(It.IsAny<ApartamentPostDto>()))
                 .Returns(apartament);
             _apartamentRepository.Setup(x => x.CreateApartament(It.IsAny<Apartament>()))
                 .ReturnsAsync(resultApartament);
+
 
             var result = await _apartamentService.CreateApartament(apartamentDto, userId);
 
@@ -79,8 +88,8 @@ namespace BookingWebApi.Tests.Services
             var apartamentDto = new ApartamentPostDto(
                 "TestAddress",
                 10,
-                12.1561,
-                12.15165,
+                24,
+                12,
                 3
             );
             var userId = "";
@@ -98,8 +107,8 @@ namespace BookingWebApi.Tests.Services
             var apartamentDto = new ApartamentPostDto(
                 "TestAddress",
                 10,
-                12.1561,
-                12.15165,
+                23,
+                12,
                 3
             );
             string userId = "testId";
@@ -113,7 +122,7 @@ namespace BookingWebApi.Tests.Services
                 HostId = userId
             };
 
-            _appUserRepository.Setup(x => x.IsUserExist(userId))
+            _appUserRepository.Setup(x => x.UserExists(userId))
                 .ReturnsAsync(false);
 
             var result = await _apartamentService.CreateApartament(apartamentDto,userId);
@@ -139,8 +148,8 @@ namespace BookingWebApi.Tests.Services
             var pageResult = new PageResultResponse<Apartament>(apartamentList, 2, 1, 10);
             var apartamentGetDtoList = new List<ApartamentGetDto>
             {
-                new ApartamentGetDto { ApartamentId = 1, Address = "Test Address 1", Area=100, Bedrooms=2 },
-                new ApartamentGetDto { ApartamentId = 2, Address = "Test Address 2", Area=140, Bedrooms=3 }
+                new ApartamentGetDto { ApartamentId = 1, Area=100, Bedrooms=2 },
+                new ApartamentGetDto { ApartamentId = 2, Bedrooms=3 }
             };
 
             _apartamentRepository.Setup(x => x.GetApartamets(filter))

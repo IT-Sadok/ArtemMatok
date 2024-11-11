@@ -11,8 +11,8 @@ namespace BookingWebApi.Domain.Entities
         public int ApartamentId { get; set; }  
         public string Address { get; set; }
         public double Area { get; set; }
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }       
+        public decimal Latitude { get; set; }
+        public decimal Longitude { get; set; }       
         public int Bedrooms { get; set; }
         public string HostId { get; set; }  
         public AppUser Host { get; set; }
