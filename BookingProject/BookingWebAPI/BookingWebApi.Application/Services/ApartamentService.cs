@@ -5,6 +5,7 @@ using BookingWebApi.Application.Filters;
 using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Application.Models;
 using BookingWebApi.Application.Response;
+using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -34,7 +35,7 @@ namespace BookingWebApi.Application.Services
                 return Result<ApartamentPostDto>.Failure("User wasn`t found");
             }
 
-            if(!await _userManager.IsInRoleAsync(userId, "Host"))
+            if(!await _userManager.IsInRoleAsync(userId, UserRoles.Host))
             {
                 return Result<ApartamentPostDto>.Failure("User does not have permission to create an apartment");
             }
