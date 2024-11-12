@@ -1,4 +1,4 @@
-﻿using BookingWebApi.Infrastructure.Constants;
+﻿using BookingWebApi.Domain.Constants;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;

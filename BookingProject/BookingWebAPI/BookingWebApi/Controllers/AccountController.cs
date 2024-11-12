@@ -18,7 +18,7 @@ namespace BookingWebApi.Controllers
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> Register(RegisterDto registerDto)
+        public async Task<IActionResult> Register([FromBody]RegisterDto registerDto)
         {
             var result = await _authService.Register(registerDto);
 

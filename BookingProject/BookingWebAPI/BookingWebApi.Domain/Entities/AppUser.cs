@@ -9,6 +9,6 @@ namespace BookingWebApi.Domain.Entities
 {
     public class AppUser : IdentityUser
     {
-
+        public List<Apartament> Apartaments { get; set; } = new List<Apartament>(); 
     }
 }

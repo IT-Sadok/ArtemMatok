@@ -1,6 +1,8 @@
 ﻿using BookingWebApi.Application.Configuration;
+using BookingWebApi.Application.Decorators;
 using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -18,19 +20,29 @@ namespace BookingWebApi.Application.Services
     {
         private readonly JwtSettings _jwtSettings;
         private readonly SymmetricSecurityKey _key;
+        private readonly IUserManagerDecorator<AppUser> _userManager;
 
-        public TokenService(IOptions<JwtSettings> jwtSettings)
+        public TokenService(IOptions<JwtSettings> jwtSettings, IUserManagerDecorator<AppUser> userManager)
         {
             _jwtSettings = jwtSettings.Value;
             _key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.SigningKey));
+            _userManager = userManager;
         }
-        public string CreateToken(AppUser user)
+
+        public async Task<string> CreateToken(AppUser user)
         {
             var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Email, user.Email),
-                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName)
+                new Claim(JwtRegisteredClaimNames.GivenName, user.UserName),
+                new Claim(ClaimTypes.NameIdentifier, user.Id) // Додаємо userId як NameIdentifier
             };
+
+            var roles = await _userManager.GetUserRoles(user);
+            foreach (var role in roles)
+            {
+                claims.Add(new Claim(ClaimTypes.Role, role));
+            }
 
             var creds = new SigningCredentials(_key, SecurityAlgorithms.HmacSha512Signature);
 
@@ -44,7 +56,6 @@ namespace BookingWebApi.Application.Services
             };
 
             var tokenHandler = new JwtSecurityTokenHandler();
-
             var token = tokenHandler.CreateToken(tokenDescriptor);
 
             return tokenHandler.WriteToken(token);

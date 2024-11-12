@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using System.Text.Json;
 
 namespace BookingWebApi.Middleware
 {
@@ -17,30 +18,45 @@ namespace BookingWebApi.Middleware
             var endpoint = context.GetEndpoint();
             var actionDescriptor = endpoint?.Metadata.GetMetadata<ControllerActionDescriptor>();
 
-            if(actionDescriptor != null)
+            if (actionDescriptor != null)
             {
+                context.Request.EnableBuffering();
+
                 foreach (var parameter in actionDescriptor.Parameters)
                 {
-                    var argument = context.RequestServices.GetService(parameter.ParameterType);
-
-                    //Dynamic creating type of validation
-                    var validatorType = typeof(IValidator<>).MakeGenericType(parameter.ParameterType);
-                    var validator = context.RequestServices.GetService(validatorType) as IValidator;
-
-                    if(validator != null && argument != null)
+                    if (context.Request.ContentLength > 0)
                     {
-                        var result = await validator.ValidateAsync(new ValidationContext<object>(argument));
+                        using var reader = new StreamReader(context.Request.Body, leaveOpen: true);
+                        var body = await reader.ReadToEndAsync();
 
-                        if(!result.IsValid)
+                        context.Request.Body.Position = 0;
+
+                        var options = new JsonSerializerOptions
                         {
-                            context.Response.StatusCode = StatusCodes.Status400BadRequest;
-                            await context.Response.WriteAsJsonAsync(result.Errors);
-                            return;
+                            PropertyNameCaseInsensitive = true
+                        };
+                        var argument = JsonSerializer.Deserialize(body, parameter.ParameterType, options);
+
+                        var validatorType = typeof(IValidator<>).MakeGenericType(parameter.ParameterType);
+                        var validator = context.RequestServices.GetService(validatorType) as IValidator;
+
+                        if (validator != null && argument != null)
+                        {
+                            var result = await validator.ValidateAsync(new ValidationContext<object>(argument));
+
+                            if (!result.IsValid)
+                            {
+                                context.Response.StatusCode = StatusCodes.Status400BadRequest;
+                                await context.Response.WriteAsJsonAsync(result.Errors);
+                                return;
+                            }
                         }
                     }
                 }
-                await _requestDelegate(context);
             }
+
+            await _requestDelegate(context);
         }
     }
 }
+
