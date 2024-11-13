@@ -74,7 +74,6 @@ namespace Migrator.Services
 
         private async Task<Result<bool>> MigrateFile(string companyFilePath)
         {
-            //var hosts = await ReadDataFromFile<List<AppUserMigrationDto>>(companyFilePath);
             var hosts = DeserializeLargeJson<AppUserMigrationDto>(companyFilePath);
 
             if (hosts == null)
@@ -112,12 +111,6 @@ namespace Migrator.Services
                 }
             }
             return Result<bool>.Success(true);
-        }
-
-        private async Task<T?> ReadDataFromFile<T>(string filePath)
-        {
-            var data = await File.ReadAllTextAsync(filePath);
-            return System.Text.Json.JsonSerializer.Deserialize<T>(data);
         }
 
         public List<T> DeserializeLargeJson<T>(string filePath)
