@@ -93,6 +93,7 @@ namespace Migrator.Services
 
                 var newHost = _mapper.Map<AppUser>(item);
                 newHost.Id = Guid.NewGuid().ToString();
+                newHost.ExternalId = item.Id;
 
                 var createdUser = await _userManager.CreateAsync(newHost, GenerateDefaultPassword());
                 if (!createdUser.Succeeded)
@@ -134,7 +135,6 @@ namespace Migrator.Services
 
         private string GenerateDefaultPassword()
         {
-            // TODO: Implement a more complex password generation logic
             return "DefaultPassword1@";
         }
     }

@@ -16,12 +16,8 @@ namespace BookingWebApi.Application.Mapper
         {
             CreateMap<Apartament, ApartamentPostDto>().ReverseMap();
             CreateMap<Apartament, ApartamentGetDto>().ReverseMap();
-            CreateMap<AppUser, AppUserMigrationDto>()
-                .ForMember(x => x.Id, y => y.MapFrom(x => x.ExternalId))
-                .ReverseMap();
-            CreateMap<Apartament, ApartamentMigrationDto>()
-                .ForMember(x => x.Id, y => y.MapFrom(x => x.ExternalId))
-                .ReverseMap();
+            CreateMap<AppUserMigrationDto, AppUser>();
+            CreateMap<Apartament, ApartamentMigrationDto>().ReverseMap();
         }
     }
 }
