@@ -1,0 +1,45 @@
+[
+  {
+    "Id": "user1",
+    "SourceCompanyId": "company1",
+    "UserName": "johndoe",
+    "Email": "johndoe@example.com",
+    "Apartaments": [
+      {
+        "Id": "apt1",
+        "SourceCompanyId": "company1",
+        "Address": "123 Main St, Cityville",
+        "Area": 75.5,
+        "Latitude": 40.7128,
+        "Longtitude": -74.0060,
+        "Bedrooms": 2
+      },
+      {
+        "Id": "apt2",
+        "SourceCompanyId": "company1",
+        "Address": "456 Elm St, Townsville",
+        "Area": 55.0,
+        "Latitude": 40.7306,
+        "Longtitude": -73.9352,
+        "Bedrooms": 1
+      }
+    ]
+  },
+  {
+    "Id": "user2",
+    "SourceCompanyId": "company1",
+    "UserName": "janedoe",
+    "Email": "janedoe@example.com",
+    "Apartaments": [
+      {
+        "Id": "apt3",
+        "SourceCompanyId": "company1",
+        "Address": "789 Oak St, Villageville",
+        "Area": 85.0,
+        "Latitude": 34.0522,
+        "Longtitude": -118.2437,
+        "Bedrooms": 3
+      }
+    ]
+  }
+]

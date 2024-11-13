@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BookingWebApi.Domain": {
+      "commandName": "Project",
+      "commandLineArgs": "--file=Company.json"
+    }
+  }
+}
