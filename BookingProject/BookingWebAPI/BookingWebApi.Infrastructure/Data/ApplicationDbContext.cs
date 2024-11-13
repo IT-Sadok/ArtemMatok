@@ -24,6 +24,13 @@ namespace BookingWebApi.Infrastructure.Data
         {
             base.OnModelCreating(builder);
 
+            builder.Entity<Apartament>()
+                .HasIndex(x => new { x.ExternalId, x.SourceCompanyId })
+                .IsUnique();
+            builder.Entity<AppUser>()
+                .HasIndex(x => new { x.ExternalId, x.SourceCompanyId })
+                .IsUnique();    
+            
             builder.ApplyConfiguration(new RoleConfiguration());
         }
     }

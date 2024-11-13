@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BookingWebApi.Application\BookingWebApi.Application.csproj" />
     <ProjectReference Include="..\BookingWebApi\BookingWebApi.csproj" />
+    <ProjectReference Include="..\Migrator\Migrator.csproj" />
   </ItemGroup>
 
   <ItemGroup>

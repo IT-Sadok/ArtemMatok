@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BookingWebApi.Application.DTOs.AppUserDTOs;
 
 namespace BookingWebApi.Application.Mapper
 {
@@ -15,6 +16,12 @@ namespace BookingWebApi.Application.Mapper
         {
             CreateMap<Apartament, ApartamentPostDto>().ReverseMap();
             CreateMap<Apartament, ApartamentGetDto>().ReverseMap();
+            CreateMap<AppUser, AppUserMigrationDto>()
+                .ForMember(x => x.Id, y => y.MapFrom(src => src.ExternalId))
+                .ReverseMap();
+            CreateMap<Apartament, ApartamentMigrationDto>()
+                .ForMember(x => x.Id, y => y.MapFrom(src => src.ExternalId))
+                .ReverseMap();
         }
     }
 }
