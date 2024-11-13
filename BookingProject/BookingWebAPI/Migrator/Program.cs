@@ -13,6 +13,7 @@ using BookingWebApi.Domain.Entities;
 using BookingWebApi.Application.Decorators;
 using AutoMapper;
 using BookingWebApi.Application.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Migrator
 {
@@ -22,17 +23,31 @@ namespace Migrator
         {
             var host = CreateHostBuilder(args).Build();
 
+            var logger = host.Services.GetRequiredService<ILogger<Program>>();
             var migrationService = host.Services.GetRequiredService<IDataMigrationService>();
 
-            var result = await migrationService.MigrateData("Company.json");
+            var fileArg = args.FirstOrDefault(arg => arg.StartsWith("--file="));
+            string fileName;
 
-            if (result.IsSuccess)
+            if (fileArg != null)
             {
-                Console.WriteLine("Data migration completed successfully.");
+                fileName = fileArg.Split("=")[1];
             }
             else
             {
-                Console.WriteLine($"Data migration failed: {result.ErrorMessage}");
+                logger.LogError("Error: The '--file=' argument is required. Please specify the file path.");
+                return; 
+            }
+
+            var result = await migrationService.MigrateData(fileName);
+
+            if (result.IsSuccess)
+            {
+                logger.LogInformation("Data migration completed successfully.");
+            }
+            else
+            {
+                logger.LogError($"Data migration failed: {result.ErrorMessage}");
             }
         }
 
@@ -40,9 +55,7 @@ namespace Migrator
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    var basePath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.Parent.FullName;
-                    var path = Path.Combine(basePath, "BookingWebApi", "appsettings.json");
-
+                    var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
                     config.AddJsonFile(path, optional: false, reloadOnChange: true);
                 })
                 .ConfigureServices((context, services) =>
@@ -50,15 +63,16 @@ namespace Migrator
                     services.AddDbContext<ApplicationDbContext>(options =>
                         options.UseNpgsql(context.Configuration.GetConnectionString("DefaultConnection")));
 
-
                     services.AddIdentity<AppUser, IdentityRole>()
                         .AddEntityFrameworkStores<ApplicationDbContext>()
                         .AddDefaultTokenProviders();
 
+                    services.AddLogging();
                     services.AddScoped<IDataMigrationService, DataMigrationService>();
                     services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();
                     services.AddScoped<IAppUserRepository, AppUserRepository>();
                     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
                 });
+
     }
 }
