@@ -1,0 +1,5 @@
+SELECT 
+    PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY "Area") AS "FirstQuartile",
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "Area") AS "Median",
+    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY "Area") AS "ThirdQuartile"
+FROM "Apartaments";

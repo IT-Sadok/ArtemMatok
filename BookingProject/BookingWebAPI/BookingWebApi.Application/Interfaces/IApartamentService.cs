@@ -15,5 +15,10 @@ namespace BookingWebApi.Application.Interfaces
     {
         Task<Result<ApartamentPostDto>> CreateApartament(ApartamentPostDto apartamentDto, string UserId);
         Task<PageResultResponse<ApartamentGetDto>> GetApartaments(ApartamentFilter filter);
+        Task<Result<decimal>> GetMedianArea();
+        Task<Result<List<BedroomStatisticsDto>>> GetAverageAreaByBedrooms();
+        Task<Result<List<HostLargeApartmentDto>>> GetHostLargeAvarageApartament();
+        Task<Result<List<TotalAreaCountBySourceDto>>> GetTotalAreaCountBySourceCompany();
+        Task<Result<AreaQuantilesDto>> GetAreaQuantiles();
     }
 }

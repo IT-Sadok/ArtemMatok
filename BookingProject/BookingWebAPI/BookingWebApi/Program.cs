@@ -6,13 +6,18 @@ using BookingWebApi.Application.Mapper;
 using BookingWebApi.Application.Services;
 using BookingWebApi.Application.Validation.AppUserValid;
 using BookingWebApi.Domain.Entities;
+using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
@@ -100,6 +105,7 @@ builder.Services.AddAutoMapper(typeof(MapperProfile));
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 //configurations
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
+builder.Services.Configure<SqlSettings>(builder.Configuration.GetSection("SqlScripts"));
 //Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
@@ -107,7 +113,15 @@ builder.Services.AddScoped<IApartamentService, ApartamentService>();
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
-builder.Services.AddScoped<IApartamentRepository, ApartamentRepository>();
+builder.Services.AddScoped<IApartamentRepository>(provider =>
+{
+    var context = provider.GetRequiredService<ApplicationDbContext>();
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var options = provider.GetRequiredService<IOptions<SqlSettings>>();
+    var connectionString = configuration.GetConnectionString("DefaultConnection");
+    return new ApartamentRepository(context, connectionString, options);
+});
+
 
 //Decorators
 builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();

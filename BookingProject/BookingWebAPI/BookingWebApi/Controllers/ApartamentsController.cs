@@ -34,5 +34,43 @@ namespace BookingWebApi.Controllers
 
             return Ok(result);
         }
+
+        [HttpGet("median-area")]
+        public async Task<IActionResult> GetMedianArea()
+        {
+            var result = await _apartamentService.GetMedianArea();
+
+            return result.ToResponse();
+        }
+
+        [HttpGet("avarage-area-by-bedrooms")]
+        public async Task<IActionResult> GetAvarangeAreaByBedrooms()
+        {
+            var result = await _apartamentService.GetAverageAreaByBedrooms();
+            return result.ToResponse();
+        }
+
+        [HttpGet("host-large-avarage-apartaments")]
+        public async Task<IActionResult> GetHostWithLargeAvarangeApartaments()
+        {
+            var result = await _apartamentService.GetHostLargeAvarageApartament();
+
+            return result.ToResponse();
+        }
+
+        [HttpGet("total-area-count-by-source-company")]
+        public async Task<IActionResult> GetTotalAreaCountBySourceCompany()
+        {
+            var result = await _apartamentService.GetTotalAreaCountBySourceCompany();
+
+            return result.ToResponse(); 
+        }
+
+        [HttpGet("area-quantiels")]
+        public async Task<IActionResult> GetAreaQuantiels()
+        {
+            var result = await _apartamentService.GetAreaQuantiles();
+            return result.ToResponse(); 
+        }
     }
 }
