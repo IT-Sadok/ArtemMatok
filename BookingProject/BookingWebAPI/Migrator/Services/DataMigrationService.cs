@@ -1,16 +1,16 @@
 ﻿using System.Security.Cryptography;
 using System.Text.Json;
-using BookingWebApi.Application.Models;
 using BookingWebApi.Infrastructure.Data;
 using Migrator.Interfaces;
 using AutoMapper;
-using BookingWebApi.Application.Decorators;
 using BookingWebApi.Application.DTOs.AppUserDTOs;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using BookingWebApi.Application.Interfaces;
 using Newtonsoft.Json;
+using BookingWebApi.Application.Common.Decorators;
+using BookingWebApi.Application.Common.Models;
 
 namespace Migrator.Services
 {

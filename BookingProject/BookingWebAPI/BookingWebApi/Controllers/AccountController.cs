@@ -1,8 +1,9 @@
 ﻿using BookingWebApi.Application.DTOs.AppUserDTOs;
-using BookingWebApi.Application.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BookingWebApi.Application.Extensions;
+using BookingWebApi.Application.UserFeature.DTOs;
+using BookingWebApi.Application.UserFeature.Interfaces;
+using BookingWebApi.Application.Common.Extensions;
 
 namespace BookingWebApi.Controllers
 {

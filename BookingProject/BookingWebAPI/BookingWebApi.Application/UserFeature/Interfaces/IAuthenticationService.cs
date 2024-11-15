@@ -1,0 +1,18 @@
+﻿using BookingWebApi.Application.Common.Models;
+using BookingWebApi.Application.DTOs.AppUserDTOs;
+using BookingWebApi.Application.UserFeature.DTOs;
+using Microsoft.AspNetCore.Identity;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace BookingWebApi.Application.UserFeature.Interfaces
+{
+    public interface IAuthenticationService
+    {
+        Task<Result<NewUserDto>> Register(RegisterDto registerDto);
+        Task<Result<NewUserDto>> Login(LoginDto loginDto);
+    }
+}

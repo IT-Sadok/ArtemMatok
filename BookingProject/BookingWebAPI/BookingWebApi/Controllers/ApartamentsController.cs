@@ -1,20 +1,21 @@
-﻿using BookingWebApi.Application.DTOs.ApartamentDTOs;
-using BookingWebApi.Application.Extensions;
-using BookingWebApi.Application.Filters;
+﻿using BookingWebApi.Application.ApartamentFeature;
+using BookingWebApi.Application.ApartamentFeature.DTOs;
+using BookingWebApi.Application.ApartamentFeature.Interfaces;
 using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Security.Cryptography.X509Certificates;
+using BookingWebApi.Application.Common.Extensions;
 
 namespace BookingWebApi.Controllers
 {
     [Route("api/apartments")]
     [ApiController]
     public class ApartamentsController(
-        IApartamentService _apartamentService    
+        IApartamentService _apartamentService,
+        IApartamentStatisticService _apartamentStatisticService
     ) : ControllerBase
     {
         [Authorize(Roles = UserRoles.Host)]
@@ -38,7 +39,7 @@ namespace BookingWebApi.Controllers
         [HttpGet("median-area")]
         public async Task<IActionResult> GetMedianArea()
         {
-            var result = await _apartamentService.GetMedianArea();
+            var result = await _apartamentStatisticService.GetMedianArea();
 
             return result.ToResponse();
         }
@@ -46,14 +47,14 @@ namespace BookingWebApi.Controllers
         [HttpGet("avarage-area-by-bedrooms")]
         public async Task<IActionResult> GetAvarangeAreaByBedrooms()
         {
-            var result = await _apartamentService.GetAverageAreaByBedrooms();
+            var result = await _apartamentStatisticService.GetAverageAreaByBedrooms();
             return result.ToResponse();
         }
 
         [HttpGet("host-large-avarage-apartaments")]
         public async Task<IActionResult> GetHostWithLargeAvarangeApartaments()
         {
-            var result = await _apartamentService.GetHostLargeAvarageApartament();
+            var result = await _apartamentStatisticService.GetHostLargeAvarageApartament();
 
             return result.ToResponse();
         }
@@ -61,16 +62,15 @@ namespace BookingWebApi.Controllers
         [HttpGet("total-area-count-by-source-company")]
         public async Task<IActionResult> GetTotalAreaCountBySourceCompany()
         {
-            var result = await _apartamentService.GetTotalAreaCountBySourceCompany();
-
+            var result = await _apartamentStatisticService.GetTotalAreaCountBySourceCompany();
             return result.ToResponse(); 
         }
 
         [HttpGet("area-quantiels")]
         public async Task<IActionResult> GetAreaQuantiels()
         {
-            var result = await _apartamentService.GetAreaQuantiles();
-            return result.ToResponse(); 
+            var result = await _apartamentStatisticService.GetAreaQuantiles();
+            return result.ToResponse();
         }
     }
 }

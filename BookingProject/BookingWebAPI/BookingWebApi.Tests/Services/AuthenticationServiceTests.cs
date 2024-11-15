@@ -1,7 +1,8 @@
-﻿using BookingWebApi.Application.Decorators;
+﻿using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.DTOs.AppUserDTOs;
-using BookingWebApi.Application.Interfaces;
-using BookingWebApi.Application.Services;
+using BookingWebApi.Application.UserFeature.DTOs;
+using BookingWebApi.Application.UserFeature.Interfaces;
+using BookingWebApi.Application.UserFeature.Services;
 using BookingWebApi.Domain.Entities;
 using FluentAssertions;
 using FluentValidation;

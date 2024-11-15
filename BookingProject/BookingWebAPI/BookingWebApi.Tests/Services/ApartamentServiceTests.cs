@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
-using BookingWebApi.Application.Decorators;
-using BookingWebApi.Application.DTOs.ApartamentDTOs;
+using BookingWebApi.Application.ApartamentFeature.DTOs;
+using BookingWebApi.Application.ApartamentFeature.StatisticFeature.StatisticDTOs;
+using BookingWebApi.Application.Common.Decorators;
+using BookingWebApi.Application.Common.Models;
 using BookingWebApi.Application.Filters;
 using BookingWebApi.Application.Interfaces;
-using BookingWebApi.Application.Models;
 using BookingWebApi.Application.Response;
 using BookingWebApi.Application.Services;
 using BookingWebApi.Domain.Constants;

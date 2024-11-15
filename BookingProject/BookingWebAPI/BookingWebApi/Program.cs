@@ -1,10 +1,13 @@
-using BookingWebApi.Application.Configuration;
-using BookingWebApi.Application.Decorators;
+using BookingWebApi.Application.ApartamentFeature.Interfaces;
+using BookingWebApi.Application.ApartamentFeature.Services;
+using BookingWebApi.Application.ApartamentFeature.StatisticFeature;
+using BookingWebApi.Application.Common.Configuration;
+using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.DTOs.AppUserDTOs;
 using BookingWebApi.Application.Interfaces;
-using BookingWebApi.Application.Mapper;
-using BookingWebApi.Application.Services;
-using BookingWebApi.Application.Validation.AppUserValid;
+using BookingWebApi.Application.UserFeature;
+using BookingWebApi.Application.UserFeature.Interfaces;
+using BookingWebApi.Application.UserFeature.Services;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
@@ -12,11 +15,8 @@ using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Middleware;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -100,7 +100,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAutoMapper(typeof(MapperProfile));
+builder.Services.AddAutoMapper(typeof(UserMapper));
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 //configurations
@@ -110,6 +110,7 @@ builder.Services.Configure<SqlSettings>(builder.Configuration.GetSection("SqlScr
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
 builder.Services.AddScoped<IApartamentService, ApartamentService>();
+builder.Services.AddScoped<IApartamentStatisticService, ApartamentStatisticService>();
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
