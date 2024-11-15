@@ -1,6 +1,5 @@
 ﻿using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.DTOs.AppUserDTOs;
-using BookingWebApi.Application.UserFeature.DTOs;
+using BookingWebApi.Application.User.DTOs;
 using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;

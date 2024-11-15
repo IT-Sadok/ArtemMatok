@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using BookingWebApi.Application.ApartamentFeature.DTOs;
+using BookingWebApi.Application.Apartament.DTOs;
 using BookingWebApi.Domain.Entities;
 using System;
 using System.Collections.Generic;

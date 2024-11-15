@@ -1,4 +1,4 @@
-﻿using BookingWebApi.Application.ApartamentFeature.DTOs;
+﻿using BookingWebApi.Application.Apartament.DTOs;
 
 namespace BookingWebApi.Application.DTOs.AppUserDTOs;
 

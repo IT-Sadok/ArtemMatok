@@ -1,6 +1,6 @@
 ﻿using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.UserFeature.Interfaces;
+using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Entities;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

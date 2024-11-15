@@ -1,8 +1,7 @@
 ﻿using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.DTOs.AppUserDTOs;
-using BookingWebApi.Application.UserFeature.DTOs;
-using BookingWebApi.Application.UserFeature.Interfaces;
+using BookingWebApi.Application.User.DTOs;
+using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Entities;
 
 namespace BookingWebApi.Application.UserFeature.Services

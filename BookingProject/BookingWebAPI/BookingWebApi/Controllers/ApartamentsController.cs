@@ -1,13 +1,14 @@
-﻿using BookingWebApi.Application.ApartamentFeature;
-using BookingWebApi.Application.ApartamentFeature.DTOs;
-using BookingWebApi.Application.ApartamentFeature.Interfaces;
-using BookingWebApi.Application.Interfaces;
+﻿using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using BookingWebApi.Application.Common.Extensions;
+using BookingWebApi.Application.Apartament.DTOs;
+using BookingWebApi.Application.Apartament.Interfaces;
+using BookingWebApi.Application.Apartament;
+using BookingWebApi.Application.Apartament.Statistics;
 
 namespace BookingWebApi.Controllers
 {

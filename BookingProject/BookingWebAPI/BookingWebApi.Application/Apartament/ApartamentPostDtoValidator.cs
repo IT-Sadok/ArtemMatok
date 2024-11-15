@@ -1,4 +1,4 @@
-﻿using BookingWebApi.Application.ApartamentFeature.DTOs;
+﻿using BookingWebApi.Application.Apartament.DTOs;
 using FluentValidation;
 using System;
 using System.Collections.Generic;
