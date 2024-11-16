@@ -3,7 +3,6 @@ using BookingWebApi.Application.Apartament.Services;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.DTOs.AppUserDTOs;
 using BookingWebApi.Application.User;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;

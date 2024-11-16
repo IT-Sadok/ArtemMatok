@@ -1,4 +1,4 @@
-﻿namespace BookingWebApi.Application.ApartamentFeature.DTOs;
+﻿namespace BookingWebApi.Application.Apartament.DTOs;
 
 public record ApartamentMigrationDto(
     string Id,

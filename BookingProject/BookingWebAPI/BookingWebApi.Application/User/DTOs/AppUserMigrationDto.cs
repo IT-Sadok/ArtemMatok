@@ -1,6 +1,6 @@
 ﻿using BookingWebApi.Application.Apartament.DTOs;
 
-namespace BookingWebApi.Application.DTOs.AppUserDTOs;
+namespace BookingWebApi.Application.User.DTOs;
 
 public record AppUserMigrationDto(
     string Id,

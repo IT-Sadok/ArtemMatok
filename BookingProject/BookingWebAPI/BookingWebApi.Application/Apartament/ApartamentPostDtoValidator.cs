@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.ApartamentFeature
+namespace BookingWebApi.Application.Apartament
 {
     public class ApartamentPostDtoValidator : AbstractValidator<ApartamentPostDto>
     {

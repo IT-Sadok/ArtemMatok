@@ -9,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Application.Apartament.Statistics
 {
+    public interface IApartamentStatisticService
+    {
+        Task<Result<decimal>> GetMedianArea();
+        Task<Result<List<BedroomStatisticsDto>>> GetAverageAreaByBedrooms();
+        Task<Result<List<HostLargeApartmentDto>>> GetHostLargeAvarageApartament();
+        Task<Result<List<TotalAreaCountBySourceDto>>> GetTotalAreaCountBySourceCompany();
+        Task<Result<AreaQuantilesDto>> GetAreaQuantiles();
+    }
     public class ApartamentStatisticService(
         IApartamentRepository _apartamentRepository
     ) : IApartamentStatisticService

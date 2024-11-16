@@ -1,9 +1,8 @@
-﻿using BookingWebApi.Application.Apartament.Interfaces;
-using BookingWebApi.Application.ApartamentFeature;
-using BookingWebApi.Application.ApartamentFeature.StatisticFeature.StatisticDTOs;
+﻿using BookingWebApi.Application.Apartament;
+using BookingWebApi.Application.Apartament.Interfaces;
+using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Application.Common.Models;
 using BookingWebApi.Application.Common.Response;
-using BookingWebApi.Application.Interfaces;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using Dapper;

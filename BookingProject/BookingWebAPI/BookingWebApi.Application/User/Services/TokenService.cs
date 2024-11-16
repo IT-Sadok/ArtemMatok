@@ -11,8 +11,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 
-namespace BookingWebApi.Application.UserFeature.Services
+namespace BookingWebApi.Application.User.Services
 {
+    public interface ITokenService
+    {
+        Task<string> CreateToken(AppUser user);
+    }
     public class TokenService : ITokenService
     {
         private readonly JwtSettings _jwtSettings;

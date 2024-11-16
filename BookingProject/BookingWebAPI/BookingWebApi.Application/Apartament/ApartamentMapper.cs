@@ -6,16 +6,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ApartamentEntity = BookingWebApi.Domain.Entities.Apartament;
 
-namespace BookingWebApi.Application.ApartamentFeature
+namespace BookingWebApi.Application.Apartament
 {
     internal class ApartamentMapper : Profile
     {
         public ApartamentMapper()
         {
-            CreateMap<Apartament, ApartamentPostDto>().ReverseMap();
-            CreateMap<Apartament, ApartamentGetDto>().ReverseMap();
-            CreateMap<Apartament, ApartamentMigrationDto>().ReverseMap();
+            CreateMap<ApartamentEntity, ApartamentPostDto>().ReverseMap();
+            CreateMap<ApartamentEntity, ApartamentGetDto>().ReverseMap();
+            CreateMap<ApartamentEntity, ApartamentMigrationDto>().ReverseMap();
         }
     }
 }

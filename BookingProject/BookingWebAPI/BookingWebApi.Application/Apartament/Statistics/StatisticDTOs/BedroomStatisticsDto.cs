@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.ApartamentFeature.StatisticFeature.StatisticDTOs;
+namespace BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 
 public record BedroomStatisticsDto(
     int Bedrooms,

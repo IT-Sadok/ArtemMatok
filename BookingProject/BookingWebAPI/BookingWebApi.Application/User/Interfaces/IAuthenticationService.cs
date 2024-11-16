@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.UserFeature.Interfaces
+namespace BookingWebApi.Application.User.Interfaces
 {
     public interface IAuthenticationService
     {

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.UserFeature.DTOs
+namespace BookingWebApi.Application.User.DTOs
 {
     public record NewUserDto(string? Email,
         string? Username,

@@ -5,10 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.DTOs.AppUserDTOs
+namespace BookingWebApi.Application.User.DTOs
 {
     public record LoginDto(
-        string Email, 
+        string Email,
         string Password
     );
 }

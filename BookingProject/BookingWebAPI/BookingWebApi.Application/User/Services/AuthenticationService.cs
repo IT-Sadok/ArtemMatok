@@ -4,7 +4,7 @@ using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Entities;
 
-namespace BookingWebApi.Application.UserFeature.Services
+namespace BookingWebApi.Application.User.Services
 {
     public class AuthenticationService(
         IUserManagerDecorator<AppUser> _userManager,
