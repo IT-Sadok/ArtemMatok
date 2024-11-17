@@ -1,8 +1,6 @@
 ﻿using AutoMapper;
 using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.DTOs;
-using BookingWebApi.Application.Apartament.Interfaces;
-using BookingWebApi.Application.Apartament.Services;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Application.Common.Decorators;
@@ -161,5 +159,115 @@ namespace BookingWebApi.Tests.Services
             result.Items.Should().HaveCount(2);
         }
 
+        [Fact]
+        public async Task ApartamentService_UpsertCustomData_Success()
+        {
+            int apartamentId = 1;
+            string userId = "testId";
+            List<ApartamentCustomDataDto> newCustomData = new List<ApartamentCustomDataDto>()
+            {
+                new ApartamentCustomDataDto("TestKey","TestValue")
+            };
+
+
+            _appUserRepository.Setup(x => x.UserExists(userId))
+                .ReturnsAsync(true);
+            _userManager.Setup(x => x.IsInRoleAsync(userId, UserRoles.Host))
+                .ReturnsAsync(true);
+            _apartamentRepository.Setup(x => x.ApartamentExist(apartamentId))
+                .ReturnsAsync(true);
+            _apartamentRepository.Setup(x => x.UpsertCustomData(apartamentId, It.IsAny<string>()))
+                .ReturnsAsync(Result<bool>.Success(true));
+
+            var result = await _apartamentService.UpsertCustomData(apartamentId, newCustomData, userId);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task ApartamentService_UpsertCustomData_UserIdNull_Failure()
+        {
+            int apartamentId = 1;
+            List<ApartamentCustomDataDto> newCustomData = new List<ApartamentCustomDataDto>()
+            {
+                new ApartamentCustomDataDto("TestKey","TestValue")
+            };
+
+            var result = await _apartamentService.UpsertCustomData(apartamentId, newCustomData, null);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse(); 
+        }
+
+        [Fact]
+        public async Task ApartamentService_UpsertCustomData_RoleIncorrect_Failure()
+        {
+            int apartamentId = 1;
+            string userId = "testId";
+            List<ApartamentCustomDataDto> newCustomData = new List<ApartamentCustomDataDto>()
+            {
+                new ApartamentCustomDataDto("TestKey","TestValue")
+            };
+
+            _appUserRepository.Setup(x => x.UserExists(userId))
+                .ReturnsAsync(true);
+            _userManager.Setup(x => x.IsInRoleAsync(userId, UserRoles.Host))
+                .ReturnsAsync(false);
+            var result = await _apartamentService.UpsertCustomData(apartamentId, newCustomData, null);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ApartamentService_UpsertCustomData_ApartamentIsNotExist_Failure()
+        {
+            int apartamentId = 1;
+            string userId = "testId";
+            List<ApartamentCustomDataDto> newCustomData = new List<ApartamentCustomDataDto>()
+            {
+                new ApartamentCustomDataDto("TestKey","TestValue")
+            };
+
+            _appUserRepository.Setup(x => x.UserExists(userId))
+                .ReturnsAsync(true);
+            _userManager.Setup(x => x.IsInRoleAsync(userId, UserRoles.Host))
+                .ReturnsAsync(true);
+            _apartamentRepository.Setup(x => x.UpsertCustomData(apartamentId, It.IsAny<string>()))
+                .ReturnsAsync(Result<bool>.Success(true));
+
+            var result = await _apartamentService.UpsertCustomData(apartamentId, newCustomData, null);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task ApartamentService_UspertCustomData_UpsertWithFailure_Failure()
+        {
+            int apartamentId = 1;
+            string userId = "testId";
+            List<ApartamentCustomDataDto> newCustomData = new List<ApartamentCustomDataDto>()
+            {
+                new ApartamentCustomDataDto("TestKey","TestValue")
+            };
+
+
+            _appUserRepository.Setup(x => x.UserExists(userId))
+                .ReturnsAsync(true);
+            _userManager.Setup(x => x.IsInRoleAsync(userId, UserRoles.Host))
+                .ReturnsAsync(true);
+            _apartamentRepository.Setup(x => x.ApartamentExist(apartamentId))
+                .ReturnsAsync(true);
+            _apartamentRepository.Setup(x => x.UpsertCustomData(apartamentId, It.IsAny<string>()))
+                .ReturnsAsync(Result<bool>.Failure("Problems with sql code"));
+
+            var result = await _apartamentService.UpsertCustomData(apartamentId, newCustomData, userId);
+
+            result.Should().NotBeNull();
+            result.IsSuccess.Should().BeFalse();
+            result.ErrorMessage.Should().Be("Problems with sql code");
+        }
     }
 }

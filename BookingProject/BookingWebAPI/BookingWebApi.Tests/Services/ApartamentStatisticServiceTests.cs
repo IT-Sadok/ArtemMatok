@@ -1,4 +1,4 @@
-﻿using BookingWebApi.Application.Apartament.Interfaces;
+﻿using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Application.Common.Models;

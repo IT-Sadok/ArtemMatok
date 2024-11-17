@@ -1,5 +1,4 @@
-using BookingWebApi.Application.Apartament.Interfaces;
-using BookingWebApi.Application.Apartament.Services;
+using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
@@ -116,9 +115,8 @@ builder.Services.AddScoped<IApartamentRepository>(provider =>
 {
     var context = provider.GetRequiredService<ApplicationDbContext>();
     var configuration = provider.GetRequiredService<IConfiguration>();
-    var options = provider.GetRequiredService<IOptions<SqlSettings>>();
     var connectionString = configuration.GetConnectionString("DefaultConnection");
-    return new ApartamentRepository(context, connectionString, options);
+    return new ApartamentRepository(context, connectionString);
 });
 
 

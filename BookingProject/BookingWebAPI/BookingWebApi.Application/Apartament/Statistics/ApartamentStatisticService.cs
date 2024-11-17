@@ -1,5 +1,4 @@
-﻿using BookingWebApi.Application.Apartament.Interfaces;
-using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
+﻿using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Application.Common.Models;
 using System;
 using System.Collections.Generic;
