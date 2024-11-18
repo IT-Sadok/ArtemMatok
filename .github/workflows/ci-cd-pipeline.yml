@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Test Results
-          path: BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/TestResults.trx
+          path: /home/runner/work/ArtemMatok/ArtemMatok/BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/BookingWebApi.Tests/TestResults/TestResults.trx
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
