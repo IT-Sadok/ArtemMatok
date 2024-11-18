@@ -6,9 +6,11 @@ using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.SqlScripts;
 using Dapper;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Resources;
+using System.Text.Json;
 
 
 
@@ -18,13 +20,10 @@ namespace BookingWebApi.Infrastructure.Data
     public class ApartamentRepository : IApartamentRepository
     {
         private readonly ApplicationDbContext _context;
-        private readonly string _connectionString;
-        private static readonly Dictionary<string, string> _sqlCashe = new();
 
-        public ApartamentRepository(ApplicationDbContext context, string connectionString)
+        public ApartamentRepository(ApplicationDbContext context)
         {
             _context = context;
-            _connectionString = connectionString;
         }
 
         public async Task<Result<Apartament>> CreateApartament(Apartament apartament)
@@ -69,14 +68,11 @@ namespace BookingWebApi.Infrastructure.Data
 
         public async Task<Result<AreaQuantilesDto>> GetAreaQuantiles()
         {
-
             await using var connection = _context.Database.GetDbConnection();
 
             try
             {
-                var sql = GetSqlQuery("AreaQuantiles", SqlFilePath.StatisticApartmentScripts);
-
-                var result = await connection.QuerySingleAsync<AreaQuantilesDto>(sql);
+                var result = await connection.QuerySingleAsync<AreaQuantilesDto>(Resources.AreaQuantiles);
                 return Result<AreaQuantilesDto>.Success(result);
             }
             catch (Exception ex)
@@ -91,9 +87,7 @@ namespace BookingWebApi.Infrastructure.Data
 
             try
             {
-                var sql = GetSqlQuery("AverageAreaByBedrooms", SqlFilePath.StatisticApartmentScripts);
-
-                var result = await connection.QueryAsync<BedroomStatisticsDto>(sql);
+                var result = await connection.QueryAsync<BedroomStatisticsDto>(Resources.AverageAreaByBedrooms);
                 return Result<List<BedroomStatisticsDto>>.Success(result.ToList());
             }
             catch (Exception ex)
@@ -108,9 +102,7 @@ namespace BookingWebApi.Infrastructure.Data
 
             try
             {
-                var sql = GetSqlQuery("HostsWithLargeAverageApartments", SqlFilePath.StatisticApartmentScripts);
-
-                var result = await connection.QueryAsync<HostLargeApartmentDto>(sql);
+                var result = await connection.QueryAsync<HostLargeApartmentDto>(Resources.HostsWithLargeAverageApartments);
                 return Result<List<HostLargeApartmentDto>>.Success(result.ToList());
             }
             catch (Exception ex)
@@ -125,9 +117,7 @@ namespace BookingWebApi.Infrastructure.Data
 
             try
             {
-                var sql = GetSqlQuery("MedianArea", SqlFilePath.StatisticApartmentScripts);
-
-                var result = await connection.QuerySingleAsync<decimal>(sql);
+                var result = await connection.QuerySingleAsync<decimal>(Resources.MedianArea);
                 return Result<decimal>.Success(result);
             }
             catch (Exception ex)
@@ -142,9 +132,7 @@ namespace BookingWebApi.Infrastructure.Data
 
             try
             {
-                var sql = GetSqlQuery("TotalAreaAndCountBySourceCompany", SqlFilePath.StatisticApartmentScripts);
-
-                var result = await connection.QueryAsync<TotalAreaCountBySourceDto>(sql);
+                var result = await connection.QueryAsync<TotalAreaCountBySourceDto>(Resources.TotalAreaAndCountBySourceCompany);
                 return Result<List<TotalAreaCountBySourceDto>>.Success(result.ToList());
             }
             catch (Exception ex)
@@ -153,15 +141,13 @@ namespace BookingWebApi.Infrastructure.Data
             }
         }
 
-        public async Task<Result<bool>> UpsertCustomData(int apartamentId, string customData)
+        public async Task<Result<bool>> UpsertCustomData<T>(int apartamentId, T customData)
         {
             await using var connection = _context.Database.GetDbConnection();
 
             try
             {
-                var sql = GetSqlQuery("Upsert", SqlFilePath.UpsertApartamentCustomDataScript);
-
-                var result = await connection.ExecuteAsync(sql,new {ApartamentId = apartamentId, CustomData = customData});
+                var result = await connection.ExecuteAsync(Resources.Upsert,new {ApartamentId = apartamentId, CustomData = customData});
                 if(result == 0)
                 {
                     return Result<bool>.Failure("Problems with sql code");
@@ -180,23 +166,6 @@ namespace BookingWebApi.Infrastructure.Data
 
             if (apartament == null) return false;
             return true;
-        }
-        private string GetSqlQuery(string resourceName,string sqlPath)
-        {
-            if(_sqlCashe.TryGetValue(resourceName, out var cashedSql))
-            {
-                return cashedSql;
-            }
-
-            var resourceManager = new ResourceManager(sqlPath, typeof(ApartamentRepository).Assembly);
-            var sql = resourceManager.GetString(resourceName);
-            if(string.IsNullOrEmpty(sql))
-            {
-                throw new Exception($"SQL query {resourceName} not found");
-            }
-
-            _sqlCashe[resourceName] = sql;
-            return sql;
         }
     }
 }

@@ -3,6 +3,7 @@ using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User;
+using BookingWebApi.Application.User.Decorators;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
 using BookingWebApi.Domain.Entities;
@@ -102,7 +103,6 @@ builder.Services.AddAutoMapper(typeof(UserMapper));
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 //configurations
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"));
-builder.Services.Configure<SqlSettings>(builder.Configuration.GetSection("SqlScripts"));
 //Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
@@ -111,13 +111,7 @@ builder.Services.AddScoped<IApartamentStatisticService, ApartamentStatisticServi
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
-builder.Services.AddScoped<IApartamentRepository>(provider =>
-{
-    var context = provider.GetRequiredService<ApplicationDbContext>();
-    var configuration = provider.GetRequiredService<IConfiguration>();
-    var connectionString = configuration.GetConnectionString("DefaultConnection");
-    return new ApartamentRepository(context, connectionString);
-});
+builder.Services.AddScoped<IApartamentRepository,ApartamentRepository>();
 
 
 //Decorators

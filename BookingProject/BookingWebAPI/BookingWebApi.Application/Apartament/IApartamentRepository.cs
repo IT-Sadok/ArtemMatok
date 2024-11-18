@@ -22,6 +22,6 @@ namespace BookingWebApi.Application.Apartament
         Task<Result<List<HostLargeApartmentDto>>> GetHostLargeAvarageApartament();
         Task<Result<List<TotalAreaCountBySourceDto>>> GetTotalAreaCountBySourceCompany();
         Task<Result<AreaQuantilesDto>> GetAreaQuantiles();
-        Task<Result<bool>> UpsertCustomData(int apartamentId, string customData);
+        Task<Result<bool>> UpsertCustomData<T>(int apartamentId, T customData);
     }
 }

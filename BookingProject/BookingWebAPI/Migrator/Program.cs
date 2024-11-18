@@ -14,6 +14,7 @@ using AutoMapper;
 using Microsoft.Extensions.Logging;
 using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User.Interfaces;
+using BookingWebApi.Application.User.Decorators;
 
 namespace Migrator
 {

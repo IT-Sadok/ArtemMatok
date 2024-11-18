@@ -117,6 +117,37 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AreaQuantiles" xml:space="preserve">
+    <value>SELECT 
+    PERCENTILE_CONT(0.25) WITHIN GROUP (ORDER BY "Area") AS "FirstQuartile",
+    PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY "Area") AS "Median",
+    PERCENTILE_CONT(0.75) WITHIN GROUP (ORDER BY "Area") AS "ThirdQuartile"
+FROM "Apartaments";</value>
+  </data>
+  <data name="AverageAreaByBedrooms" xml:space="preserve">
+    <value>SELECT "Bedrooms", AVG("Area") AS "AverageArea"
+FROM "Apartaments"
+GROUP BY "Bedrooms"</value>
+  </data>
+  <data name="HostsWithLargeAverageApartments" xml:space="preserve">
+    <value>SELECT "HostId", COUNT(*) AS "ApartamentCount",
+AVG("Area") AS "AverageArea"
+FROM "Apartaments"
+GROUP BY "HostId"
+HAVING AVG("Area") &gt; 50;</value>
+  </data>
+  <data name="MedianArea" xml:space="preserve">
+    <value>SELECT PERCENTILE_CONT(0.5) 
+WITHIN GROUP (ORDER BY "Area") AS MediaArea
+FROM "Apartaments";</value>
+  </data>
+  <data name="TotalAreaAndCountBySourceCompany" xml:space="preserve">
+    <value>SELECT "SourceCompanyId",
+SUM("Area") AS "TotalArea",
+COUNT(*) AS "ApartamentCount"
+FROM "Apartaments"
+GROUP BY "SourceCompanyId"</value>
+  </data>
   <data name="Upsert" xml:space="preserve">
     <value>UPDATE "Apartaments"
 SET "CustomData" = 

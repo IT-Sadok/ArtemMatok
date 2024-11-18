@@ -26,26 +26,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="SqlScripts\ApartamentSql\ApartmentSqlResources.Designer.cs">
+    <Compile Update="SqlScripts\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
-      <DependentUpon>ApartmentSqlResources.resx</DependentUpon>
-    </Compile>
-    <Compile Update="SqlScripts\ApartamentSql\UpsertCustomData.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>UpsertCustomData.resx</DependentUpon>
+      <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="SqlScripts\ApartamentSql\ApartmentSqlResources.resx">
+    <EmbeddedResource Update="SqlScripts\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>ApartmentSqlResources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-    <EmbeddedResource Update="SqlScripts\ApartamentSql\UpsertCustomData.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>UpsertCustomData.Designer.cs</LastGenOutput>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
 
