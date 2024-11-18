@@ -1,0 +1,61 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - feature/cicd
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0
+
+      - name: Restore dependencies
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
+
+      - name: Build project
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
+
+      - name: Create Test Results Directory
+        run: mkdir -p BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+
+      - name: Run Tests
+        run: |
+          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
+            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+
+      - name: Debug Folder Structure
+        run: ls -R BookingProject/BookingWebAPI/
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results
+          path: BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/TestResults.trx
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest -f BookingProject/BookingWebAPI/Dockerfile .
+
+      - name: Push Docker image to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
