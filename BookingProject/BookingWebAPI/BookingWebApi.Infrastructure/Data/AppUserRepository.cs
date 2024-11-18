@@ -1,4 +1,4 @@
-﻿using BookingWebApi.Application.Interfaces;
+﻿using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;

@@ -18,5 +18,6 @@ namespace BookingWebApi.Domain.Entities
         public string? SourceCompanyId { get; set; }
         public string HostId { get; set; }  
         public AppUser Host { get; set; }
+        public string? CustomData { get; set; }
     }
 }

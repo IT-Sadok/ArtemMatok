@@ -1,11 +1,13 @@
-using BookingWebApi.Application.Configuration;
-using BookingWebApi.Application.Decorators;
-using BookingWebApi.Application.DTOs.AppUserDTOs;
-using BookingWebApi.Application.Interfaces;
-using BookingWebApi.Application.Mapper;
-using BookingWebApi.Application.Services;
-using BookingWebApi.Application.Validation.AppUserValid;
+using BookingWebApi.Application.Apartament;
+using BookingWebApi.Application.Apartament.Statistics;
+using BookingWebApi.Application.Common.Configuration;
+using BookingWebApi.Application.Common.Decorators;
+using BookingWebApi.Application.User;
+using BookingWebApi.Application.User.Decorators;
+using BookingWebApi.Application.User.Interfaces;
+using BookingWebApi.Application.User.Services;
 using BookingWebApi.Domain.Entities;
+using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Middleware;
@@ -13,6 +15,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
@@ -95,7 +98,7 @@ builder.Services.AddAuthentication(options =>
     };
 });
 
-builder.Services.AddAutoMapper(typeof(MapperProfile));
+builder.Services.AddAutoMapper(typeof(UserMapper));
 
 builder.Services.AddValidatorsFromAssemblyContaining<RegisterDtoValidator>();
 //configurations
@@ -104,10 +107,12 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JWT"))
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
 builder.Services.AddScoped<IApartamentService, ApartamentService>();
+builder.Services.AddScoped<IApartamentStatisticService, ApartamentStatisticService>();
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
-builder.Services.AddScoped<IApartamentRepository, ApartamentRepository>();
+builder.Services.AddScoped<IApartamentRepository,ApartamentRepository>();
+
 
 //Decorators
 builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();

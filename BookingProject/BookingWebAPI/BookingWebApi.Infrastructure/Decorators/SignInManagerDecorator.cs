@@ -1,11 +1,7 @@
-﻿using BookingWebApi.Application.Decorators;
+﻿using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Domain.Entities;
 using Microsoft.AspNetCore.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace BookingWebApi.Infrastructure.Decorators
 {

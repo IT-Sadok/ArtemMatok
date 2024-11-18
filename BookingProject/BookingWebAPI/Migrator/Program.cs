@@ -10,10 +10,11 @@ using Migrator.Interfaces;
 using Migrator.Services;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Domain.Entities;
-using BookingWebApi.Application.Decorators;
 using AutoMapper;
-using BookingWebApi.Application.Interfaces;
 using Microsoft.Extensions.Logging;
+using BookingWebApi.Application.Common.Decorators;
+using BookingWebApi.Application.User.Interfaces;
+using BookingWebApi.Application.User.Decorators;
 
 namespace Migrator
 {
