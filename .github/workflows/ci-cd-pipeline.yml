@@ -31,7 +31,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          dotnet test BookingWebApi.sln \
+          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
