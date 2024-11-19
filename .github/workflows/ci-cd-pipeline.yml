@@ -52,18 +52,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Get Git Commit Hash
-        id: get_commit_hash
-        run: echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+      - name: Get Git Commit Hash and Timestamp
+        id: set_vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
 
       - name: Build Docker image with commit hash and timestamp
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${TIMESTAMP} -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest -f BookingProject/BookingWebAPI/Dockerfile .
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
+                       -f BookingProject/BookingWebAPI/Dockerfile .
 
       - name: Push Docker images to DockerHub
         run: |
-          TIMESTAMP=$(date +%Y%m%d%H%M%S)
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }}
-          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${TIMESTAMP}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
