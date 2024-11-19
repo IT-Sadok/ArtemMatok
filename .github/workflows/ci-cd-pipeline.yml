@@ -24,7 +24,7 @@ jobs:
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build project
-        run: dotnet build BookingWebApi.sln --no-restore --configuration Release
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Create Test Results Directory
         run: mkdir -p BookingWebApi.Tests/TestResults
