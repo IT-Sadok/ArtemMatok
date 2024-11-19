@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 8.0
 
       - name: Restore dependencies
-        run: dotnet restore BookingWebApi.sln
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build project
         run: dotnet build BookingWebApi.sln --no-restore --configuration Release
@@ -35,7 +35,7 @@ jobs:
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
-            --results-directory BookingWebApi.Tests/TestResults
+            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
 
       - name: Debug Folder Structure
         run: ls -R .
@@ -44,7 +44,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: Test Results
-          path: BookingWebApi.Tests/TestResults/TestResults.trx
+          path: /home/runner/work/ArtemMatok/ArtemMatok/BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/BookingWebApi.Tests/TestResults/TestResults.trx
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
