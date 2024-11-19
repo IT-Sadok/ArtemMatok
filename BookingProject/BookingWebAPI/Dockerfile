@@ -1,4 +1,3 @@
-
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 80
@@ -8,18 +7,21 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-# Копіюємо лише файли рішення та проєкту для швидшого кешування
+# Копіюємо тільки файл рішення та необхідні проєкти для швидкого кешування
 COPY BookingProject/BookingWebAPI.sln ./
-COPY BookingProject/BookingWebAPI/ ./BookingWebAPI/
+COPY BookingProject/BookingWebApi/ ./BookingWebApi/
+COPY BookingProject/BookingWebApi.Application/ ./BookingWebApi.Application/
+COPY BookingProject/BookingWebApi.Domain/ ./BookingWebApi.Domain/
+COPY BookingProject/BookingWebApi.Infrastructure/ ./BookingWebApi.Infrastructure/
 
 # Відновлюємо залежності
 RUN dotnet restore
 
 # Збираємо проєкт
-RUN dotnet publish -c Release -o /app/publish
+RUN dotnet publish ./BookingWebApi/BookingWebApi.csproj -c Release -o /app/publish
 
 # Стадія виконання
 FROM base AS final
 WORKDIR /app
 COPY --from=build /app/publish .
-ENTRYPOINT ["dotnet", "BookingWebAPI.dll"]
+ENTRYPOINT ["dotnet", "BookingWebApi.dll"]
