@@ -6,16 +6,17 @@ EXPOSE 443
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY BookingProject/BookingWebAPI/ ./
+# Копіюємо всі файли проєкту до контейнера
+COPY . . 
 
+# Відновлюємо залежності
 RUN dotnet restore BookingWebAPI.sln
 
-RUN dotnet build -c Release -o /app/build
+# Збираємо додаток
+RUN dotnet publish BookingWebAPI.sln -c Release -o /app/publish
 
-FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish
-
+# Копіюємо зібрані файли до фінального образу
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=build /app/publish .
 ENTRYPOINT ["dotnet", "BookingWebAPI.dll"]
