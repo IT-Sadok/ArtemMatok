@@ -56,7 +56,7 @@ namespace Migrator
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((context, config) =>
                 {
-                    var path = Path.Combine(AppContext.BaseDirectory, "appsettings.json");
+                    var path = Path.Combine(AppContext.BaseDirectory, "appsettings.migrator.json");
                     config.AddJsonFile(path, optional: false, reloadOnChange: true);
                 })
                 .ConfigureServices((context, services) =>
