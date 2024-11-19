@@ -21,30 +21,30 @@ jobs:
           dotnet-version: 8.0
 
       - name: Restore dependencies
-        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
+        run: dotnet restore BookingWebAPI.sln
 
       - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
+        run: dotnet build BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Create Test Results Directory
-        run: mkdir -p BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+        run: mkdir -p BookingWebApi.Tests/TestResults
 
       - name: Run Tests
         run: |
-          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
+          dotnet test BookingWebAPI.sln \
             --no-build \
             --configuration Release \
             --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
-            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+            --results-directory BookingWebApi.Tests/TestResults
 
       - name: Debug Folder Structure
-        run: ls -R BookingProject/BookingWebAPI/
+        run: ls -R .
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
         with:
           name: Test Results
-          path: /home/runner/work/ArtemMatok/ArtemMatok/BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/BookingWebApi.Tests/TestResults/TestResults.trx
+          path: BookingWebApi.Tests/TestResults/TestResults.trx
 
       - name: Log in to DockerHub
         uses: docker/login-action@v2
@@ -63,7 +63,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
-                       -f BookingProject/BookingWebAPI/Dockerfile .
+                       -f BookingWebApi/Dockerfile .
 
       - name: Push Docker images to DockerHub
         run: |
