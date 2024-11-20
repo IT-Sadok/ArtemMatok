@@ -71,6 +71,15 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
 
+      - name: Publish application
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
+
+      - name: Debug Folder Structure
+        run: ls -R .
+
+      - name: Create a deployment package
+        run: zip -r deploy-package.zip ./publish
+      
       # Compress the published app into a zip file
       - name: Create a deployment package
         run: zip -r deploy-package.zip ./publish
