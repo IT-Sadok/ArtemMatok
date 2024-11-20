@@ -1,21 +1,19 @@
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-WORKDIR /app
-EXPOSE 80
-EXPOSE 443
-
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
-COPY BookingProject/BookingWebAPI/ ./
+# Копіюємо всі файли
+COPY . .
 
-RUN dotnet restore BookingProject/BookingWebAPI.sln
+# Відновлюємо залежності
+RUN dotnet restore BookingWebAPI.sln
 
-RUN dotnet build -c Release -o /app/build
+# Створюємо білд
+RUN dotnet build BookingWebAPI.sln --configuration Release --no-restore
 
-FROM build AS publish
-RUN dotnet publish -c Release -o /app/publish
+# Публікуємо білд
+RUN dotnet publish BookingWebAPI.sln --configuration Release --no-build -o /app/publish
 
-FROM base AS final
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
-COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "BookingWebAPI.dll"]
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "BookingWebApi.dll"]
