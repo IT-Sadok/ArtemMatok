@@ -8,7 +8,7 @@ WORKDIR /src
 
 COPY BookingProject/BookingWebAPI/ ./
 
-RUN dotnet restore BookingWebAPI.sln
+RUN dotnet restore BookingProject/BookingWebAPI.sln
 
 RUN dotnet build -c Release -o /app/build
 
