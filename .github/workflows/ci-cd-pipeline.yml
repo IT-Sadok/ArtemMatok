@@ -109,6 +109,6 @@ jobs:
       - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
-            --application-name "BookingWebAPI" \
-            --environment-name "BookingWebAPI-env" \
+            --application-name "booking-webapi" \
+            --environment-name "Development" \
             --version-label "${{ github.run_number }}"
