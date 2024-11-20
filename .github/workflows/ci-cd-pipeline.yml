@@ -54,8 +54,9 @@ jobs:
           aws elasticbeanstalk create-application-version \
             --application-name bookingwebapi \
             --version-label ${{ github.run_id }} \
-            --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=booking-webapi/BookingWebAPI_${{ github.run_id }}.zip
-
+            --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=booking-webapi/BookingWebAPI_${{ github.run_id }}.zip \
+            --region us-east-2
+            
       - name: Update Elastic Beanstalk environment
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
