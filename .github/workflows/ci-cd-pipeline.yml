@@ -79,5 +79,5 @@ jobs:
         run: |
           aws elasticbeanstalk update-environment \
             --application-name "BookingWebAPI" \
-            --environment-name "BookingWebAPI-env" \
+            --environment-name "Development" \
             --version-label "${{ env.TIMESTAMP }}"
