@@ -1,4 +1,4 @@
-name: CI/CD Pipeline for AWS Elastic Beanstalk
+name: CI/CD Pipeline
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
   pull_request:
 
 jobs:
-  deploy-to-aws:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,51 +24,91 @@ jobs:
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --no-restore
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
+
+      - name: Create Test Results Directory
+        run: mkdir -p BookingWebApi.Tests/TestResults
+
+      - name: Run Tests
+        run: |
+          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
+            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+
+      - name: Debug Folder Structure
+        run: ls -R .
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results
+          path: /home/runner/work/ArtemMatok/ArtemMatok/BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/BookingWebApi.Tests/TestResults/TestResults.trx
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Get Git Commit Hash and Timestamp
+        id: set_vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Build Docker image with commit hash and timestamp
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
+                       -f BookingProject/BookingWebAPI/Dockerfile BookingProject/BookingWebAPI/
+
+      - name: Push Docker images to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
 
       - name: Publish application
         run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
 
-      - name: Compress published application
-        run: zip -r BookingWebAPI.zip ./publish
+      - name: Debug Folder Structure
+        run: ls -R .
 
+      - name: Create a deployment package
+        run: zip -r deploy-package.zip ./publish
+      
+      # Compress the published app into a zip file
+      - name: Create a deployment package
+        run: zip -r deploy-package.zip ./publish
+
+      # Log in to AWS
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2 
+
+      # Upload the deployment package to S3
       - name: Upload to S3
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
-          aws s3 cp BookingWebAPI.zip s3://elasticbeanstalk-us-east-2-127214158843/booking-webapi/BookingWebAPI_${{ github.run_id }}.zip
+          aws s3 cp deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
 
-      - name: Verify S3 Upload
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/booking-webapi/BookingWebAPI_${{ github.run_id }}.zip || exit 1
-
-      - name: Create new Elastic Beanstalk application version
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      # Create a new application version in Elastic Beanstalk
+      - name: Create Elastic Beanstalk application version
         run: |
           aws elasticbeanstalk create-application-version \
-            --application-name bookingwebapi \
-            --version-label ${{ github.run_id }} \
-            --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=booking-webapi/BookingWebAPI_${{ github.run_id }}.zip \
-            --region us-east-2
-            
-      - name: Update Elastic Beanstalk environment
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws elasticbeanstalk update-environment \
-            --environment-name Development \
-            --version-label ${{ github.run_id }}
+            --application-name "booking-webapi" \
+            --version-label "${{ github.run_number }}" \
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="deploy-package.zip"
 
-      - name: Confirm deployment status
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        run: |
-          aws elasticbeanstalk describe-environments --application-name bookingwebapi
+      # Update the Elastic Beanstalk environment to the new version
+            - name: Deploy to Elastic Beanstalk
+              run: |
+                aws elasticbeanstalk update-environment \
+                  --application-name "booking-webapi" \
+                  --environment-name "Development" \
+                  --version-label "${{ github.run_number }}"
