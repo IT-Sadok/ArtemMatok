@@ -71,13 +71,35 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
 
-      - name: Deploy to AWS Elastic Beanstalk
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-2"
+      # Compress the published app into a zip file
+      - name: Create a deployment package
+        run: zip -r deploy-package.zip ./publish
+
+      # Log in to AWS
+      - name: Configure AWS CLI
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2 # Змініть на ваш регіон
+
+      # Upload the deployment package to S3
+      - name: Upload to S3
+        run: |
+          aws s3 cp deploy-package.zip s3://your-s3-bucket-name/deploy-package.zip
+
+      # Create a new application version in Elastic Beanstalk
+      - name: Create Elastic Beanstalk application version
+        run: |
+          aws elasticbeanstalk create-application-version \
+            --application-name "BookingWebAPI" \
+            --version-label "${{ github.run_number }}" \
+            --source-bundle S3Bucket="your-s3-bucket-name",S3Key="deploy-package.zip"
+
+      # Update the Elastic Beanstalk environment to the new version
+      - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
             --application-name "BookingWebAPI" \
-            --environment-name "Development" \
-            --version-label "${{ env.TIMESTAMP }}"
+            --environment-name "BookingWebAPI-env" \
+            --version-label "${{ github.run_number }}"
