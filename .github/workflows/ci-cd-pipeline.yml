@@ -47,6 +47,10 @@ jobs:
         run: |
           aws s3 cp deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
 
+      - name: Verify S3 Upload
+        run: |
+          aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
+
       - name: Create Elastic Beanstalk application version
         run: |
           aws elasticbeanstalk create-application-version \
