@@ -4,11 +4,10 @@ on:
   push:
     branches:
       - main
-      - feature/ci-cd
   pull_request:
 
 jobs:
-  build-and-deploy:
+  deploy-to-aws:
     runs-on: ubuntu-latest
 
     steps:
@@ -24,34 +23,50 @@ jobs:
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --no-restore
 
-      - name: Publish project to ZIP
-        run: |
-          dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln \
-            --configuration Release \
-            --output ./publish
-          cd publish
-          zip -r ../BookingWebAPI.zip .
-          cd ..
+      - name: Publish application
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
 
-      - name: Configure AWS CLI
-        uses: aws-actions/configure-aws-credentials@v3
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-2
+      - name: Compress published application
+        run: zip -r BookingWebAPI.zip ./publish
 
-      - name: Upload ZIP to S3
+      - name: Upload to S3
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws s3 cp BookingWebAPI.zip s3://elasticbeanstalk-us-east-2-127214158843/booking-webapi/BookingWebAPI_${{ github.run_id }}.zip
 
-      - name: Deploy to Elastic Beanstalk
+      - name: Verify S3 Upload
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/booking-webapi/BookingWebAPI_${{ github.run_id }}.zip || exit 1
+
+      - name: Create new Elastic Beanstalk application version
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         run: |
           aws elasticbeanstalk create-application-version \
-            --application-name BookingWebAPI \
-            --version-label ${GITHUB_RUN_ID} \
-            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="booking-webapi/BookingWebAPI_${{ github.run_id }}.zip"
+            --application-name bookingwebapi \
+            --version-label ${{ github.run_id }} \
+            --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=booking-webapi/BookingWebAPI_${{ github.run_id }}.zip
+
+      - name: Update Elastic Beanstalk environment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
           aws elasticbeanstalk update-environment \
             --environment-name Development \
-            --version-label ${GITHUB_RUN_ID}
+            --version-label ${{ github.run_id }}
+
+      - name: Confirm deployment status
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          aws elasticbeanstalk describe-environments --application-name bookingwebapi
