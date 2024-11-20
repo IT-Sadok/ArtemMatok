@@ -70,3 +70,14 @@ jobs:
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
           docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
+
+      - name: Deploy to AWS Elastic Beanstalk
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-2"
+        run: |
+          aws elasticbeanstalk update-environment \
+            --application-name "BookingWebAPI" \
+            --environment-name "BookingWebAPI-env" \
+            --version-label "${{ env.TIMESTAMP }}"
