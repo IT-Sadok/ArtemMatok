@@ -95,7 +95,7 @@ jobs:
       # Upload the deployment package to S3
       - name: Upload to S3
         run: |
-          aws s3 cp deploy-package.zip s3://your-s3-bucket-name/deploy-package.zip
+          aws s3 cp deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
 
       # Create a new application version in Elastic Beanstalk
       - name: Create Elastic Beanstalk application version
