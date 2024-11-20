@@ -63,7 +63,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
-                       -f BookingProject/BookingWebAPI/Dockerfile 
+                       -f BookingProject/BookingWebAPI/Dockerfile BookingProject/BookingWebAPI/ 
 
       - name: Push Docker images to DockerHub
         run: |
