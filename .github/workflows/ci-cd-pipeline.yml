@@ -64,3 +64,9 @@ jobs:
             --application-name "booking-webapi" \
             --environment-name "Development" \
             --version-label "${{ github.run_number }}"
+
+      - name: Run Database Migrations
+        env:
+          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
+        run: |
+          dotnet ef database update --project BookingProject/BookingWebAPI/BookingWebAPI.csproj
