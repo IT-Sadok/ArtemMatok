@@ -1,68 +1,29 @@
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches:
-      - main
-      - feature/ci-cd
-  pull_request:
-
-jobs:
-  build-test-deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: 8.0
-
-      - name: Restore dependencies
-        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
-
-      - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
-
-      - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --output ./publish
-
-      - name: List files in the publish directory
-        run: ls -la ./publish
-
-      - name: Create runtimeconfig.json (if missing)
-        run: |
-          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
-            echo '{
-              "runtimeOptions": {
-                "tfm": "net8.0",
-                "framework": {
-                  "name": "Microsoft.NETCore.App",
-                  "version": "8.0.0"
-                }
-              }
-            }' > ./publish/BookingWebAPI.runtimeconfig.json
-          fi
-
-      - name: Validate runtimeconfig.json
-        run: |
-          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
-            echo "Error: .runtimeconfig.json file not found!"
-            exit 1
-          fi
-
-      - name: Zip deployment package
-        run: zip -r deployment.zip ./publish
-
-      - name: Deploy to AWS Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v20
-        with:
-          application_name: "booking-webapi"
-          environment_name: "Development"
-          region: "us-east-2"
-          version_label: ${{ github.run_id }}
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          deployment_package: deployment.zip
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>35d10784-d3a7-449a-a673-3c3384a9496a</UserSecretsId>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <OutputType>Exe</OutputType>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.20.1" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.10" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BookingWebApi.Infrastructure\BookingWebApi.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>
