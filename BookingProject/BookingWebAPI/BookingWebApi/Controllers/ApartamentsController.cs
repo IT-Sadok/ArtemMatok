@@ -81,5 +81,10 @@ public class ApartamentsController(
         return result.ToResponse();
     }
 
+    [HttpGet]
+    public IActionResult Test()
+    {
+        return Ok();
+    }
 }
 
