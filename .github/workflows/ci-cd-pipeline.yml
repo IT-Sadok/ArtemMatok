@@ -21,13 +21,13 @@ jobs:
           dotnet-version: 8.0
 
       - name: Restore dependencies
-        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj
 
       - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false /p:PublishReadyToRun=true --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --runtime linux-x64 --self-contained false /p:PublishReadyToRun=true --output ./publish
 
       - name: Debug publish folder
         run: |
@@ -38,11 +38,11 @@ jobs:
         run: |
           echo "Validating publish output..."
           ls -la ./publish
-          if [ ! -f ./publish/BookingWebAPI.dll ]; then
-            echo "Error: BookingWebAPI.dll is missing."
+          if [ ! -f ./publish/BookingWebApi.dll ]; then
+            echo "Error: BookingWebApi.dll is missing."
             exit 1
           fi
-          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
+          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
             echo "Error: runtimeconfig.json is missing."
             exit 1
           fi
@@ -57,8 +57,8 @@ jobs:
         run: |
           echo "Validating deployment package..."
           unzip -l deployment.zip
-          if ! unzip -l deployment.zip | grep -q 'BookingWebAPI.dll'; then
-            echo "Error: BookingWebAPI.dll is missing in the zip package."
+          if ! unzip -l deployment.zip | grep -q 'BookingWebApi.dll'; then
+            echo "Error: BookingWebApi.dll is missing in the zip package."
             exit 1
           fi
           if ! unzip -l deployment.zip | grep -q 'runtimeconfig.json'; then
