@@ -27,34 +27,20 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false --output ./publish
 
-      - name: List files in the publish directory
+      - name: List publish directory contents
         run: ls -la ./publish
-
-      - name: Create runtimeconfig.json (if missing)
-        run: |
-          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
-            echo '{
-              "runtimeOptions": {
-                "tfm": "net8.0",
-                "framework": {
-                  "name": "Microsoft.NETCore.App",
-                  "version": "8.0.0"
-                }
-              }
-            }' > ./publish/BookingWebAPI.runtimeconfig.json
-          fi
 
       - name: Validate runtimeconfig.json
         run: |
-          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
+          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
             echo "Error: .runtimeconfig.json file not found!"
             exit 1
           fi
 
       - name: Zip deployment package
-        run: zip -r deployment.zip ./publish
+        run: zip -r deployment.zip ./publish/*
 
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
