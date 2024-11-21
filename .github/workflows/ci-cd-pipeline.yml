@@ -63,6 +63,15 @@ jobs:
             exit 1
           fi
 
+      # Verify package size
+      - name: Verify Package Size
+        run: |
+          FILE_SIZE=$(du -m BookingProject/BookingWebAPI/publish/deploy-package.zip | cut -f1)
+          if [ "$FILE_SIZE" -gt 512 ]; then
+            echo "Deployment package exceeds the size limit of 512 MB!"
+            exit 1
+          fi
+
       # Deploy to AWS Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         env:
@@ -89,7 +98,7 @@ jobs:
 
           # Check application version status
           echo "Waiting for Elastic Beanstalk to process the application version..."
-          for i in {1..20}; do
+          for i in {1..30}; do
             STATUS=$(aws elasticbeanstalk describe-application-versions \
               --application-name BookingWebApi \
               --version-label $GITHUB_SHA \
@@ -106,13 +115,13 @@ jobs:
               exit 1
             fi
 
-            if [ $i -eq 20 ]; then
+            if [ $i -eq 30 ]; then
               echo "Application version was not processed in time."
               exit 1
             fi
 
-            echo "Application version not ready yet. Retrying in 15 seconds..."
-            sleep 15
+            echo "Application version not ready yet. Retrying in 20 seconds..."
+            sleep 20
           done
 
           # Update environment
@@ -122,4 +131,39 @@ jobs:
             --environment-name Development \
             --version-label $GITHUB_SHA
 
-          echo "Deployment completed successfully."
+          # Check environment health
+          echo "Waiting for environment to reach a healthy state..."
+          for i in {1..30}; do
+            ENV_HEALTH=$(aws elasticbeanstalk describe-environments \
+              --application-name BookingWebApi \
+              --environment-name Development \
+              --query 'Environments[0].Health' \
+              --output text)
+
+            echo "Current environment health: $ENV_HEALTH"
+
+            if [ "$ENV_HEALTH" == "Green" ]; then
+              echo "Environment is healthy."
+              break
+            elif [ "$ENV_HEALTH" == "Red" ]; then
+              echo "Environment health is Red. Deployment failed."
+              exit 1
+            fi
+
+            if [ $i -eq 30 ]; then
+              echo "Environment did not reach a healthy state in time."
+              exit 1
+            fi
+
+            echo "Environment not healthy yet. Retrying in 20 seconds..."
+            sleep 20
+          done
+
+      # Retrieve logs for debugging
+      - name: Retrieve Logs
+        run: |
+          echo "Fetching environment logs for debugging..."
+          aws elasticbeanstalk retrieve-environment-info \
+            --environment-name Development \
+            --info-type tail
+          echo "Logs fetched successfully. Check AWS Console for details."
