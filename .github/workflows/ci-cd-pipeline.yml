@@ -27,10 +27,17 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
 
       - name: Publish project
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --self-contained false --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --self-contained false --framework net8.0 --output ./publish
+
+      - name: Verify runtimeconfig
+        run: |
+          if [ ! -f "./publish/BookingWebApi.runtimeconfig.json" ]; then
+            echo "Runtimeconfig.json file not found!"
+            exit 1
+          fi
 
       - name: List publish directory
-        run: ls -R ./publish
+        run: find ./publish -type f
 
       - name: Zip published files
         run: zip -r BookingWebApi.zip ./publish
@@ -38,6 +45,26 @@ jobs:
       - name: Create S3 bucket
         run: |
           aws s3api create-bucket --bucket booking-webapi-deployments --region us-east-2 --create-bucket-configuration LocationConstraint=us-east-2 || echo "Bucket already exists"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Upload to S3
+        run: aws s3 cp BookingWebApi.zip s3://booking-webapi-deployments/BookingWebApi.zip
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+      - name: Create Application Version
+        run: |
+          VERSION_LABEL="v-${{ github.run_id }}"
+          S3_KEY="booking-webapi/BookingWebApi_${{ github.sha }}.zip"
+          
+          aws elasticbeanstalk create-application-version \
+            --application-name booking-webapi \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="$S3_KEY" \
+            --region us-east-2
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
