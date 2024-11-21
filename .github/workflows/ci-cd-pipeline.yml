@@ -38,11 +38,15 @@ jobs:
             --configuration Release \
             --logger "trx;LogFileName=TestResults.trx"
 
-      # Package application for Elastic Beanstalk
+      # Publish application
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --self-contained false --output ./publish
 
-      # Zip published files for Elastic Beanstalk
+      # Validate files
+      - name: List publish folder contents
+        run: ls -R ./publish
+
+      # Zip deployment package
       - name: Zip deployment package
         run: zip -r deployment.zip ./publish
 
@@ -50,10 +54,10 @@ jobs:
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
-          application_name: "booking-webapi" # Your Elastic Beanstalk application name
-          environment_name: "Development"   # Your Elastic Beanstalk environment name
+          application_name: "booking-webapi" # Elastic Beanstalk application name
+          environment_name: "Development"   # Elastic Beanstalk environment name
           region: "us-east-2"               # AWS region
-          version_label: ${{ github.run_id }} # Unique version label
+          version_label: ${{ github.run_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           deployment_package: deployment.zip
