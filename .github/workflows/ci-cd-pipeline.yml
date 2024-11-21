@@ -4,11 +4,11 @@ on:
   push:
     branches:
       - main
-      - feature/ci-cd
+      - feature/cicd
   pull_request:
 
 jobs:
-  build-test-deploy:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,45 +21,52 @@ jobs:
           dotnet-version: 8.0
 
       - name: Restore dependencies
-        run: dotnet restore BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build project
-        run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
-      - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --runtime linux-x64 --self-contained true /p:PublishSingleFile=true --output ./publish
+      - name: Create Test Results Directory
+        run: mkdir -p BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
 
-      - name: Validate runtimeconfig.json
+      - name: Run Tests
         run: |
-          echo "Checking for .runtimeconfig.json..."
-          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
-            echo "Error: BookingWebApi.runtimeconfig.json is missing in the publish directory."
-            exit 1
-          fi
+          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
+            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
 
-      - name: Zip deployment package
-        run: zip -r deployment.zip ./publish/*
+      - name: Debug Folder Structure
+        run: ls -R BookingProject/BookingWebAPI/
 
-      - name: Validate deployment package
-        run: |
-          echo "Validating deployment package..."
-          unzip -l deployment.zip
-          if ! unzip -l deployment.zip | grep -q 'BookingWebApi.dll'; then
-            echo "Error: BookingWebApi.dll is missing in the zip package."
-            exit 1
-          fi
-          if ! unzip -l deployment.zip | grep -q 'runtimeconfig.json'; then
-            echo "Error: runtimeconfig.json is missing in the zip package."
-            exit 1
-          fi
-
-      - name: Deploy to AWS Elastic Beanstalk
-        uses: einaregilsson/beanstalk-deploy@v20
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
         with:
-          application_name: "booking-webapi"
-          environment_name: "Development"
-          region: "us-east-2"
-          version_label: ${{ github.run_id }}
-          aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          deployment_package: deployment.zip
+          name: Test Results
+          path: /home/runner/work/ArtemMatok/ArtemMatok/BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/BookingWebApi.Tests/TestResults/TestResults.trx
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Get Git Commit Hash and Timestamp
+        id: set_vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Build Docker image with commit hash and timestamp
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
+                       -f BookingProject/BookingWebAPI/Dockerfile .
+
+      - name: Push Docker images to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
