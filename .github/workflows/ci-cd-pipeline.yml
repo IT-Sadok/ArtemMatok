@@ -29,18 +29,14 @@ jobs:
       - name: Publish application
         run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false --output ./publish
 
-      - name: List publish directory contents
+      - name: Validate publish output
         run: ls -la ./publish
-
-      - name: Validate runtimeconfig.json
-        run: |
-          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
-            echo "Error: .runtimeconfig.json file not found!"
-            exit 1
-          fi
 
       - name: Zip deployment package
         run: zip -r deployment.zip ./publish/*
+
+      - name: Validate deployment package
+        run: unzip -l deployment.zip
 
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
