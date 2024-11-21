@@ -1,169 +1,54 @@
-name: Deploy to AWS Elastic Beanstalk
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
-      - feature/ci-cd
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the code
-      - name: Checkout Code
+      - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Install .NET Core
-      - name: Setup .NET Core
+      - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0
 
-      # Install or Update AWS CLI
-      - name: Install or Update AWS CLI
+      - name: Restore dependencies
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
+
+      - name: Build and Publish Application
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --output ./publish
+
+      - name: Install AWS CLI
         run: |
-          if ! command -v aws &> /dev/null; then
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip -o awscliv2.zip
-            sudo ./aws/install
-          else
-            echo "AWS CLI is already installed. Updating..."
-            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-            unzip -o awscliv2.zip
-            sudo ./aws/install --update
-          fi
+          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          unzip awscliv2.zip
+          sudo ./aws/install
 
-      # Build and publish the application
-      - name: Publish Application
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-2
+
+      - name: Upload Artifact to S3
+        run: aws s3 cp BookingWebApi.zip s3://elasticbeanstalk-us-east-2-elasticbeanstalk-us-east-2-127214158843 /BookingWebApi.zip
+
+      - name: Create Application Version
         run: |
-          cd BookingProject/BookingWebAPI
-          dotnet publish BookingWebAPI.sln -c Release -o ./publish
-
-      # Verify that the publish directory exists
-      - name: Verify Publish Directory
-        run: |
-          if [ ! -d "BookingProject/BookingWebAPI/publish" ]; then
-            echo "Publish directory not found!"
-            exit 1
-          fi
-
-      # Create deployment package
-      - name: Create Deployment Package
-        run: |
-          cd BookingProject/BookingWebAPI/publish
-          zip -r deploy-package.zip ./
-
-      # Verify deployment package exists
-      - name: Verify Deployment Package
-        run: |
-          if [ ! -f "BookingProject/BookingWebAPI/publish/deploy-package.zip" ]; then
-            echo "Deployment package not found!"
-            exit 1
-          fi
-
-      # Verify package size
-      - name: Verify Package Size
-        run: |
-          FILE_SIZE=$(du -m BookingProject/BookingWebAPI/publish/deploy-package.zip | cut -f1)
-          if [ "$FILE_SIZE" -gt 512 ]; then
-            echo "Deployment package exceeds the size limit of 512 MB!"
-            exit 1
-          fi
-
-      # Deploy to AWS Elastic Beanstalk
-      - name: Deploy to Elastic Beanstalk
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-2"
-        run: |
-          # Upload package to S3
-          echo "Uploading deployment package to S3..."
-          aws s3 cp BookingProject/BookingWebAPI/publish/deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
-
-          # Verify package uploaded to S3
-          if ! aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip > /dev/null; then
-            echo "Failed to upload deployment package to S3."
-            exit 1
-          fi
-
-          # Create new application version
-          echo "Creating new application version..."
           aws elasticbeanstalk create-application-version \
-            --application-name BookingWebApi \
-            --version-label $GITHUB_SHA \
-            --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=deploy-package.zip
+            --application-name booking-webapi \
+            --version-label "v-${{ github.run_id }}" \
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-elasticbeanstalk-us-east-2-127214158843 ",S3Key="BookingWebApi.zip"
 
-          # Check application version status
-          echo "Waiting for Elastic Beanstalk to process the application version..."
-          for i in {1..30}; do
-            STATUS=$(aws elasticbeanstalk describe-application-versions \
-              --application-name BookingWebApi \
-              --version-label $GITHUB_SHA \
-              --query 'ApplicationVersions[0].Status' \
-              --output text)
-
-            echo "Current application version status: $STATUS"
-
-            if [ "$STATUS" == "Processed" ]; then
-              echo "Application version processed successfully."
-              break
-            elif [ "$STATUS" == "Failed" ]; then
-              echo "Application version processing failed."
-              exit 1
-            fi
-
-            if [ $i -eq 30 ]; then
-              echo "Application version was not processed in time."
-              exit 1
-            fi
-
-            echo "Application version not ready yet. Retrying in 20 seconds..."
-            sleep 20
-          done
-
-          # Update environment
-          echo "Updating Elastic Beanstalk environment..."
-          aws elasticbeanstalk update-environment \
-            --application-name BookingWebApi \
-            --environment-name Development \
-            --version-label $GITHUB_SHA
-
-          # Check environment health
-          echo "Waiting for environment to reach a healthy state..."
-          for i in {1..30}; do
-            ENV_HEALTH=$(aws elasticbeanstalk describe-environments \
-              --application-name BookingWebApi \
-              --environment-name Development \
-              --query 'Environments[0].Health' \
-              --output text)
-
-            echo "Current environment health: $ENV_HEALTH"
-
-            if [ "$ENV_HEALTH" == "Green" ]; then
-              echo "Environment is healthy."
-              break
-            elif [ "$ENV_HEALTH" == "Red" ]; then
-              echo "Environment health is Red. Deployment failed."
-              exit 1
-            fi
-
-            if [ $i -eq 30 ]; then
-              echo "Environment did not reach a healthy state in time."
-              exit 1
-            fi
-
-            echo "Environment not healthy yet. Retrying in 20 seconds..."
-            sleep 20
-          done
-
-      # Retrieve logs for debugging
-      - name: Retrieve Logs
+      - name: Deploy to Elastic Beanstalk
         run: |
-          echo "Fetching environment logs for debugging..."
-          aws elasticbeanstalk retrieve-environment-info \
+          aws elasticbeanstalk update-environment \
             --environment-name Development \
-            --info-type tail
-          echo "Logs fetched successfully. Check AWS Console for details."
+            --version-label "v-${{ github.run_id }}"
