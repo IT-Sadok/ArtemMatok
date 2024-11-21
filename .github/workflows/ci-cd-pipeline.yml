@@ -3,7 +3,7 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main
+      - main 
       - feature/ci-cd
 
 jobs:
@@ -19,66 +19,37 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 8.0 # Оновлено до 8.0, якщо це потрібно для вашого проекту
+          dotnet-version: 7.0 # Змініть на вашу версію .NET
 
-      # Install AWS CLI
-      - name: Install AWS CLI
+      # Install or Update AWS CLI
+      - name: Install or Update AWS CLI
         run: |
-          curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
-          unzip awscliv2.zip
-          sudo ./aws/install
+          if ! command -v aws &> /dev/null; then
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            sudo ./aws/install
+          else
+            echo "AWS CLI is already installed. Updating..."
+            sudo ./aws/install --update
+          fi
 
       # Build and publish the application
       - name: Publish Application
         run: |
-          dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release -r linux-x64 --self-contained true --output ./publish
-
-      # Verify runtimeconfig.json
-      - name: Verify runtimeconfig.json
-        run: |
-          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
-            echo "Error: runtimeconfig.json file is missing!"
-            exit 1
-          fi
-
-      # Rename runtimeconfig.json
-      - name: Rename runtimeconfig.json
-        run: mv ./publish/BookingWebApi.runtimeconfig.json ./publish/runtimeconfig.json
+          dotnet publish -c Release -o ./publish
 
       # Create deployment package
-      - name: Create deployment package
-        run: zip -r deploy-package.zip ./publish
+      - name: Create Deployment Package
+        run: |
+          zip -r deploy-package.zip ./publish
 
-      # Configure AWS CLI
-      - name: Configure AWS CLI
+      # Deploy to AWS Elastic Beanstalk
+      - name: Deploy to Elastic Beanstalk
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: "us-east-2"
-        run: aws configure set region us-east-2
-
-      # Upload to S3
-      - name: Upload to S3
+          AWS_REGION: "us-east-2" # Замініть на ваш регіон
         run: |
           aws s3 cp deploy-package.zip s3://your-s3-bucket-name/deploy-package.zip
-
-      # Verify S3 Upload
-      - name: Verify S3 Upload
-        run: |
-          aws s3 ls s3://your-s3-bucket-name/deploy-package.zip || { echo "S3 upload verification failed!"; exit 1; }
-
-      # Create Elastic Beanstalk application version
-      - name: Create Elastic Beanstalk application version
-        run: |
-          aws elasticbeanstalk create-application-version \
-            --application-name "BookingWebApi" \
-            --version-label $GITHUB_SHA \
-            --source-bundle S3Bucket="your-s3-bucket-name",S3Key="deploy-package.zip"
-
-      # Deploy to Elastic Beanstalk
-      - name: Deploy to Elastic Beanstalk
-        run: |
-          aws elasticbeanstalk update-environment \
-            --application-name "BookingWebApi" \
-            --environment-name "Development" \
-            --version-label $GITHUB_SHA
+          aws elasticbeanstalk create-application-version --application-name BookingWebApi --version-label $GITHUB_SHA --source-bundle S3Bucket=your-s3-bucket-name,S3Key=deploy-package.zip
+          aws elasticbeanstalk update-environment --application-name BookingWebApi --environment-name Development --version-label $GITHUB_SHA
