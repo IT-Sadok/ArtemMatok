@@ -53,17 +53,16 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
-      # 10. Завантаження артефакту в S3
       - name: Upload Artifact to S3
         run: aws s3 cp BookingWebApi.zip s3://elasticbeanstalk-us-east-2-127214158843/BookingWebApi.zip
 
-      # 11. Створення нової версії додатку
       - name: Create Application Version
         run: |
           aws elasticbeanstalk create-application-version \
             --application-name booking-webapi \
             --version-label "v-${{ github.run_id }}" \
-            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="booking-webapi/AWSDeploymentArchive_booking-webapi_v-638677949072713450.zip"
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="booking-webapi/AWSDeploymentArchive_booking-webapi_v-${{ github.run_id }}.zip"
+
       # 12. Деплой нової версії на Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
         run: |
