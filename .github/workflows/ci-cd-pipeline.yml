@@ -55,6 +55,21 @@ jobs:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
+      - name: Create Application Version
+        run: |
+          VERSION_LABEL="v-${{ github.run_id }}"
+          S3_KEY="booking-webapi/BookingWebApi_${{ github.sha }}.zip"
+          
+          aws elasticbeanstalk create-application-version \
+            --application-name booking-webapi \
+            --version-label "$VERSION_LABEL" \
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="$S3_KEY"
+      
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
