@@ -3,7 +3,7 @@ name: Deploy to AWS Elastic Beanstalk
 on:
   push:
     branches:
-      - main 
+      - main
       - feature/ci-cd
 
 jobs:
@@ -19,17 +19,20 @@ jobs:
       - name: Setup .NET Core
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0 # Змініть на вашу версію .NET
+          dotnet-version: 8.0 # Версія .NET Core
 
       # Install or Update AWS CLI
       - name: Install or Update AWS CLI
         run: |
           if ! command -v aws &> /dev/null; then
+            echo "AWS CLI is not installed. Installing..."
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             sudo ./aws/install
           else
             echo "AWS CLI is already installed. Updating..."
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
             sudo ./aws/install --update
           fi
 
@@ -50,6 +53,12 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-2" # Замініть на ваш регіон
         run: |
-          aws s3 cp deploy-package.zip s3://your-s3-bucket-name/deploy-package.zip
-          aws elasticbeanstalk create-application-version --application-name BookingWebApi --version-label $GITHUB_SHA --source-bundle S3Bucket=your-s3-bucket-name,S3Key=deploy-package.zip
-          aws elasticbeanstalk update-environment --application-name BookingWebApi --environment-name Development --version-label $GITHUB_SHA
+          aws s3 cp deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
+          aws elasticbeanstalk create-application-version \
+            --application-name "BookingWebApi" \
+            --version-label $GITHUB_SHA \
+            --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="deploy-package.zip"
+          aws elasticbeanstalk update-environment \
+            --application-name "BookingWebApi" \
+            --environment-name "Development" \
+            --version-label $GITHUB_SHA
