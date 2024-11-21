@@ -48,4 +48,4 @@ jobs:
           environment_name: "Development" # Назва середовища в AWS
           region: "us-east-2" # Регіон вашого додатку
           version_label: ${{ github.sha }}
-          file: "BookingWebApi.zip"
+          deployment_package: "BookingWebApi.zip"
