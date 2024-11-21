@@ -27,7 +27,12 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false --output ./publish /p:PublishReadyToRun=true
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false /p:PublishReadyToRun=true --output ./publish
+
+      - name: Debug publish folder
+        run: |
+          echo "Debugging ./publish directory"
+          ls -la ./publish
 
       - name: Validate publish output
         run: |
@@ -41,6 +46,9 @@ jobs:
             echo "Error: runtimeconfig.json is missing."
             exit 1
           fi
+
+      - name: Fix permissions
+        run: chmod -R 777 ./publish
 
       - name: Zip deployment package
         run: zip -r deployment.zip ./publish/*
