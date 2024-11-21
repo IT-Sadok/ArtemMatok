@@ -38,4 +38,4 @@ jobs:
           aws-region: us-east-2
 
       - name: Upload Artifact to S3
-        run: aws s3 cp BookingWebApi.zip s3://elasticbeanstalk-us-east-2-<your-bucket-name>/BookingWebApi.zip
+        run: aws s3 cp BookingWebApi.zip s3://elasticbeanstalk-us-east-2-127214158843/BookingWebApi.zip
