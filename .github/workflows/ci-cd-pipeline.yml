@@ -41,11 +41,27 @@ jobs:
           cd BookingProject/BookingWebAPI
           dotnet publish BookingWebAPI.sln -c Release -o ./publish
 
+      # Verify that the publish directory exists
+      - name: Verify Publish Directory
+        run: |
+          if [ ! -d "BookingProject/BookingWebAPI/publish" ]; then
+            echo "Publish directory not found!"
+            exit 1
+          fi
+
       # Create deployment package
       - name: Create Deployment Package
         run: |
           cd BookingProject/BookingWebAPI/publish
           zip -r deploy-package.zip ./
+
+      # Verify deployment package exists
+      - name: Verify Deployment Package
+        run: |
+          if [ ! -f "BookingProject/BookingWebAPI/publish/deploy-package.zip" ]; then
+            echo "Deployment package not found!"
+            exit 1
+          fi
 
       # Deploy to AWS Elastic Beanstalk
       - name: Deploy to Elastic Beanstalk
@@ -54,40 +70,56 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_REGION: "us-east-2"
         run: |
-          # Завантаження пакета до S3
+          # Upload package to S3
+          echo "Uploading deployment package to S3..."
           aws s3 cp BookingProject/BookingWebAPI/publish/deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
 
-          # Створення нової версії додатка
+          # Verify package uploaded to S3
+          if ! aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip > /dev/null; then
+            echo "Failed to upload deployment package to S3."
+            exit 1
+          fi
+
+          # Create new application version
+          echo "Creating new application version..."
           aws elasticbeanstalk create-application-version \
             --application-name BookingWebApi \
             --version-label $GITHUB_SHA \
             --source-bundle S3Bucket=elasticbeanstalk-us-east-2-127214158843,S3Key=deploy-package.zip
 
-          # Цикл перевірки статусу створення версії
+          # Check application version status
           echo "Waiting for Elastic Beanstalk to process the application version..."
-          for i in {1..10}; do
+          for i in {1..20}; do
             STATUS=$(aws elasticbeanstalk describe-application-versions \
               --application-name BookingWebApi \
               --version-label $GITHUB_SHA \
               --query 'ApplicationVersions[0].Status' \
               --output text)
 
+            echo "Current application version status: $STATUS"
+
             if [ "$STATUS" == "Processed" ]; then
-              echo "Application version processed."
+              echo "Application version processed successfully."
               break
+            elif [ "$STATUS" == "Failed" ]; then
+              echo "Application version processing failed."
+              exit 1
             fi
 
-            if [ $i -eq 10 ]; then
+            if [ $i -eq 20 ]; then
               echo "Application version was not processed in time."
               exit 1
             fi
 
-            echo "Application version not ready yet. Retrying in 10 seconds..."
-            sleep 10
+            echo "Application version not ready yet. Retrying in 15 seconds..."
+            sleep 15
           done
 
-          # Оновлення середовища
+          # Update environment
+          echo "Updating Elastic Beanstalk environment..."
           aws elasticbeanstalk update-environment \
             --application-name BookingWebApi \
             --environment-name Development \
             --version-label $GITHUB_SHA
+
+          echo "Deployment completed successfully."
