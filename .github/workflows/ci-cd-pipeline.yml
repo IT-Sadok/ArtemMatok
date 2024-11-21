@@ -12,23 +12,48 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Крок 1: Завантаження репозиторію
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Крок 2: Налаштування .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0
 
+      # Крок 3: Відновлення залежностей
       - name: Restore dependencies
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
+      # Крок 4: Публікація додатку
       - name: Publish application
         run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release -r linux-x64 --self-contained true --output ./publish
 
+      # Крок 5: Перевірка наявності runtimeconfig.json
+      - name: Verify runtimeconfig.json
+        run: |
+          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
+            echo "Error: runtimeconfig.json file is missing!"
+            exit 1
+          fi
+
+      # Крок 6: Перевірка інших важливих файлів
+      - name: Verify published files
+        run: |
+          REQUIRED_FILES=("BookingWebApi.dll" "BookingWebApi.runtimeconfig.json" "BookingWebApi.deps.json")
+          for FILE in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "./publish/$FILE" ]; then
+              echo "Error: $FILE is missing in the publish directory!"
+              exit 1
+            fi
+          done
+
+      # Крок 7: Створення архіву для деплою
       - name: Create deployment package
         run: zip -r deploy-package.zip ./publish
 
+      # Крок 8: Налаштування AWS CLI
       - name: Configure AWS CLI
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -36,14 +61,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-2
 
+      # Крок 9: Завантаження архіву до S3
       - name: Upload to S3
         run: |
           aws s3 cp deploy-package.zip s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
 
+      # Крок 10: Перевірка завантаження архіву до S3
       - name: Verify S3 Upload
         run: |
-          aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip
+          aws s3 ls s3://elasticbeanstalk-us-east-2-127214158843/deploy-package.zip || { echo "S3 upload verification failed!"; exit 1; }
 
+      # Крок 11: Створення нової версії в Elastic Beanstalk
       - name: Create Elastic Beanstalk application version
         run: |
           aws elasticbeanstalk create-application-version \
@@ -51,9 +79,19 @@ jobs:
             --version-label "${{ github.run_number }}" \
             --source-bundle S3Bucket="elasticbeanstalk-us-east-2-127214158843",S3Key="deploy-package.zip"
 
+      # Крок 12: Деплой нової версії на середовище
       - name: Deploy to Elastic Beanstalk
         run: |
           aws elasticbeanstalk update-environment \
             --application-name "booking-webapi" \
             --environment-name "Development" \
             --version-label "${{ github.run_number }}"
+
+      # Крок 13: Перевірка доступності Health Check
+      - name: Verify Health Check
+        run: |
+          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://Development.eba-cqtfibqk.us-east-2.elasticbeanstalk.com/health)
+          if [ "$STATUS" -ne 200 ]; then
+            echo "Health check failed! Received HTTP status: $STATUS"
+            exit 1
+          fi
