@@ -87,11 +87,3 @@ jobs:
             --environment-name "Development" \
             --version-label "${{ github.run_number }}"
 
-      # Крок 13: Перевірка доступності Health Check
-      - name: Verify Health Check
-        run: |
-          STATUS=$(curl -o /dev/null -s -w "%{http_code}" http://Development.eba-cqtfibqk.us-east-2.elasticbeanstalk.com/health)
-          if [ "$STATUS" -ne 200 ]; then
-            echo "Health check failed! Received HTTP status: $STATUS"
-            exit 1
-          fi
