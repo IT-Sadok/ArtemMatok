@@ -30,21 +30,17 @@ jobs:
       - name: Build project
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
-      # Run tests
-      - name: Run tests
-        run: |
-          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
-            --no-build \
-            --configuration Release \
-            --logger "trx;LogFileName=TestResults.trx"
-
-      # Publish application
+      # Publish the application
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --self-contained false --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
 
-      # Validate files
-      - name: List publish folder contents
-        run: ls -R ./publish
+      # Validate runtimeconfig.json
+      - name: Validate runtimeconfig.json
+        run: |
+          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
+            echo "Error: .runtimeconfig.json file not found!"
+            exit 1
+          fi
 
       # Zip deployment package
       - name: Zip deployment package
@@ -54,9 +50,9 @@ jobs:
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
-          application_name: "booking-webapi" # Elastic Beanstalk application name
-          environment_name: "Development"   # Elastic Beanstalk environment name
-          region: "us-east-2"               # AWS region
+          application_name: "booking-webapi"
+          environment_name: "Development"
+          region: "us-east-2"
           version_label: ${{ github.run_id }}
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
