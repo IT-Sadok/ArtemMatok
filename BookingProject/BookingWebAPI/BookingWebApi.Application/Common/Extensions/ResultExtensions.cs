@@ -19,6 +19,5 @@ namespace BookingWebApi.Application.Common.Extensions
                 return new BadRequestObjectResult(response);
             }
         }
-
     }
 }
