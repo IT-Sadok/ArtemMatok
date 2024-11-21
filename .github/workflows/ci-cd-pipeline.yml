@@ -21,10 +21,10 @@ jobs:
           dotnet-version: 8.0
 
       - name: Restore dependencies
-        run: dotnet restore BookingWebApi/BookingWebApi.csproj
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj
 
       - name: Build project
-        run: dotnet build BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
 
       - name: Run Tests
         run: |
@@ -33,7 +33,7 @@ jobs:
             --configuration Release
 
       - name: Publish project
-        run: dotnet publish BookingWebApi/BookingWebApi.csproj --configuration Release --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --output ./publish
 
       - name: Zip application
         run: zip -r BookingWebApi.zip ./publish
