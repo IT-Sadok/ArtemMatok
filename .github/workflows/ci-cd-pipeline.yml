@@ -28,7 +28,7 @@ jobs:
 
       - name: Run Tests
         run: |
-          dotnet test BookingWebApi.Tests/BookingWebApi.Tests.csproj \
+          dotnet test BookingProject/BookingWebAPI/BookingWebApi.Tests/BookingWebApi.Tests.csproj \
             --no-build \
             --configuration Release
 
