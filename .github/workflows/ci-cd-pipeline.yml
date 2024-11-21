@@ -23,9 +23,7 @@ jobs:
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
       - name: Build and Publish Application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj \
-             --configuration Release \
-             --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --output ./publish
 
       - name: Debug published files
         run: grep -R "Test" ./publish
