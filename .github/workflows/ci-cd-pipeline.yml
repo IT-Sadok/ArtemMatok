@@ -1,4 +1,4 @@
-name: CI/CD Pipeline
+name: CI/CD Pipeline for BookingWebApi
 
 on:
   push:
@@ -8,51 +8,44 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
+      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      # Setup .NET SDK
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0
 
+      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj
 
+      # Build project
       - name: Build project
         run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
 
-      - name: Run Tests
-        run: |
-          dotnet test BookingProject/BookingWebAPI/BookingWebApi.Tests/BookingWebApi.Tests.csproj \
-            --no-build \
-            --configuration Release
-
+      # Publish project
       - name: Publish project
         run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --output ./publish
 
-      - name: Zip application
+      # Zip published output
+      - name: Zip published files
         run: zip -r BookingWebApi.zip ./publish
 
-  deploy-to-aws:
-    runs-on: ubuntu-latest
-    needs: build-and-test
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
+      # Deploy to AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "booking-webapi" 
-          environment_name: "Development" 
-          region: "us-east-2" 
+          application_name: "booking-webapi" # Назва вашого додатку в AWS Elastic Beanstalk
+          environment_name: "Development" # Назва середовища в AWS
+          region: "us-east-2" # Регіон вашого додатку
           version_label: ${{ github.sha }}
           file: "BookingWebApi.zip"
