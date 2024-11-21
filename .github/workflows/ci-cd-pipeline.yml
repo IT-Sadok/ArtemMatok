@@ -27,16 +27,36 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --self-contained false --output ./publish /p:PublishReadyToRun=true
 
       - name: Validate publish output
-        run: ls -la ./publish
+        run: |
+          echo "Validating publish output..."
+          ls -la ./publish
+          if [ ! -f ./publish/BookingWebAPI.dll ]; then
+            echo "Error: BookingWebAPI.dll is missing."
+            exit 1
+          fi
+          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
+            echo "Error: runtimeconfig.json is missing."
+            exit 1
+          fi
 
       - name: Zip deployment package
         run: zip -r deployment.zip ./publish/*
 
       - name: Validate deployment package
-        run: unzip -l deployment.zip
+        run: |
+          echo "Validating deployment package..."
+          unzip -l deployment.zip
+          if ! unzip -l deployment.zip | grep -q 'BookingWebAPI.dll'; then
+            echo "Error: BookingWebAPI.dll is missing in the zip package."
+            exit 1
+          fi
+          if ! unzip -l deployment.zip | grep -q 'runtimeconfig.json'; then
+            echo "Error: runtimeconfig.json is missing in the zip package."
+            exit 1
+          fi
 
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
