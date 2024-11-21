@@ -38,14 +38,23 @@ jobs:
       - name: Zip published files
         run: zip -r BookingWebApi.zip ./publish
 
+      # Create S3 bucket (if not exists)
+      - name: Create S3 bucket
+        run: |
+          aws s3api create-bucket --bucket booking-webapi-deployments --region us-east-2 --create-bucket-configuration LocationConstraint=us-east-2 || echo "Bucket already exists"
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       # Deploy to AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: "booking-webapi" # Назва вашого додатку в AWS Elastic Beanstalk
-          environment_name: "Development" # Назва середовища в AWS
-          region: "us-east-2" # Регіон вашого додатку
+          application_name: "booking-webapi"
+          environment_name: "Development"
+          region: "us-east-2"
           version_label: ${{ github.sha }}
           deployment_package: "BookingWebApi.zip"
+          existing_bucket_name: "booking-webapi-deployments"
