@@ -26,13 +26,6 @@ jobs:
       - name: Publish application
         run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release -r linux-x64 --self-contained true --output ./publish
 
-      - name: Verify runtimeconfig.json
-        run: |
-          if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
-            echo "Error: runtimeconfig.json file is missing!"
-            exit 1
-          fi
-
       - name: Create deployment package
         run: zip -r deploy-package.zip ./publish
 
@@ -64,9 +57,3 @@ jobs:
             --application-name "booking-webapi" \
             --environment-name "Development" \
             --version-label "${{ github.run_number }}"
-
-      - name: Run Database Migrations
-        env:
-          DB_CONNECTION_STRING: ${{ secrets.DB_CONNECTION_STRING }}
-        run: |
-          dotnet ef database update --project BookingProject/BookingWebAPI/BookingWebAPI.csproj
