@@ -27,18 +27,13 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --no-restore --configuration Release
 
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --runtime linux-x64 --self-contained true --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj --configuration Release --runtime linux-x64 --self-contained true /p:PublishSingleFile=true --output ./publish
 
-      - name: Validate publish output
+      - name: Validate runtimeconfig.json
         run: |
-          echo "Validating publish output..."
-          ls -la ./publish
-          if [ ! -f ./publish/BookingWebApi.dll ]; then
-            echo "Error: BookingWebApi.dll is missing."
-            exit 1
-          fi
+          echo "Checking for .runtimeconfig.json..."
           if [ ! -f ./publish/BookingWebApi.runtimeconfig.json ]; then
-            echo "Error: runtimeconfig.json is missing."
+            echo "Error: BookingWebApi.runtimeconfig.json is missing in the publish directory."
             exit 1
           fi
 
