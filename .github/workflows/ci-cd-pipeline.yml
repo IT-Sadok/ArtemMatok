@@ -12,29 +12,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Setup .NET
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 8.0
 
-      # Restore dependencies
       - name: Restore dependencies
         run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
-      # Build the project
       - name: Build project
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
-      # Publish the application
       - name: Publish application
-        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --output ./publish
+        run: dotnet publish BookingProject/BookingWebAPI/BookingWebAPI.sln --configuration Release --runtime linux-x64 --output ./publish
 
-      # Validate runtimeconfig.json
+      - name: List files in the publish directory
+        run: ls -la ./publish
+
+      - name: Create runtimeconfig.json (if missing)
+        run: |
+          if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
+            echo '{
+              "runtimeOptions": {
+                "tfm": "net8.0",
+                "framework": {
+                  "name": "Microsoft.NETCore.App",
+                  "version": "8.0.0"
+                }
+              }
+            }' > ./publish/BookingWebAPI.runtimeconfig.json
+          fi
+
       - name: Validate runtimeconfig.json
         run: |
           if [ ! -f ./publish/BookingWebAPI.runtimeconfig.json ]; then
@@ -42,11 +53,9 @@ jobs:
             exit 1
           fi
 
-      # Zip deployment package
       - name: Zip deployment package
         run: zip -r deployment.zip ./publish
 
-      # Deploy to AWS Elastic Beanstalk
       - name: Deploy to AWS Elastic Beanstalk
         uses: einaregilsson/beanstalk-deploy@v20
         with:
