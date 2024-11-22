@@ -8,9 +8,9 @@ on:
   pull_request:
 
 env:
-  PROJECT_LOCATION: dotnet-mvc/dotnet-mvc.csproj
-  ELASTIC_BEANSTALK_NAME: dotnet-linux
-  ELASTIC_BEANSTALK_ENV_NAME: Dotnet-linux-env
+  PROJECT_LOCATION: BookingProject/BookingWebApi/BookinWebApi.csproj
+  ELASTIC_BEANSTALK_NAME: booking-web-api-host
+  ELASTIC_BEANSTALK_ENV_NAME: Booking-web-api-host-env
 
 jobs:
   build:
