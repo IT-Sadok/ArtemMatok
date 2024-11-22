@@ -27,7 +27,7 @@ jobs:
         run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
       - name: Create Test Results Directory
-        run: mkdir -p BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+        run: mkdir -p BookingWebApi.Tests/TestResults
 
       - name: Run Tests
         run: |
@@ -38,7 +38,7 @@ jobs:
             --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
 
       - name: Debug Folder Structure
-        run: ls -R BookingProject/BookingWebAPI/
+        run: ls -R .
 
       - name: Upload Test Results
         uses: actions/upload-artifact@v3
@@ -63,7 +63,7 @@ jobs:
           docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
                        -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
-                       -f BookingProject/BookingWebAPI/Dockerfile .
+                       -f BookingProject/BookingWebAPI/Dockerfile BookingProject/BookingWebAPI/
 
       - name: Push Docker images to DockerHub
         run: |
