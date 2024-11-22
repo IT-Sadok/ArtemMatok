@@ -8,7 +8,7 @@ on:
   pull_request:
 
 env:
-  PROJECT_LOCATION: BookingProject/BookingWebAPI/BookingWebAPI.sln
+  PROJECT_LOCATION: BookingProject/BookingWebAPI/BookingWebApi/BookingWebApi.csproj
   ELASTIC_BEANSTALK_NAME: booking-web-api-host
   ELASTIC_BEANSTALK_ENV_NAME: Booking-web-api-host-env
 
