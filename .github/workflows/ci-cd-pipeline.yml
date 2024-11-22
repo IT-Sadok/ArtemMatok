@@ -60,7 +60,7 @@ jobs:
 
     - name: Deploy
       run: |
-        aws s3 cp "${{ github.workspace }}/deploy-files.zip" s3://elasticbeanstalk-us-east-2-${{ secrets.AWS_ACCOUNT_ID }}/artifact/booking-web-api/
-        aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{ github.run_id }} --description ${{ github.run_id }} --source-bundle S3Bucket="elasticbeanstalk-us-east-2-${{ secrets.AWS_ACCOUNT_ID }}",S3Key="artifact/booking-web-api/deploy-files.zip"
+        aws s3 cp "${{ github.workspace }}/deploy-files.zip" s3://booking-webapi-deployments/artifact/booking-webapi/deploy-files.zip
+        aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{ github.run_id }} --description ${{ github.run_id }} --source-bundle S3Bucket="booking-webapi-deployments",S3Key="artifact/booking-webapi/deploy-files.zip"
         aws elasticbeanstalk update-environment --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME --version-label ${{ github.run_id }}
         aws elasticbeanstalk wait environment-updated --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME
