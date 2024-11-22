@@ -1,4 +1,4 @@
-name: .NET CI/CD
+name: CI/CD Pipeline
 
 on:
   push:
@@ -13,54 +13,88 @@ env:
   ELASTIC_BEANSTALK_ENV_NAME: Booking-web-api-host-env
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Setup .NET
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0
 
-    - name: Restore dependencies
-      run: dotnet restore $PROJECT_LOCATION
+      - name: Restore dependencies
+        run: dotnet restore BookingProject/BookingWebAPI/BookingWebAPI.sln
 
-    - name: Build
-      run: dotnet build --no-restore $PROJECT_LOCATION
+      - name: Build project
+        run: dotnet build BookingProject/BookingWebAPI/BookingWebAPI.sln --no-restore --configuration Release
 
-    - name: Pack
-      run: |
-        dotnet publish $PROJECT_LOCATION -c Release --output "${{ github.workspace }}/output"
-        cd "${{ github.workspace }}/output"
-        zip -r ../deploy-files.zip .
+      - name: Create Test Results Directory
+        run: mkdir -p BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4.3.3
-      with: 
-        name: deploy-files
-        path: deploy-files.zip
+      - name: Run Tests
+        run: |
+          dotnet test BookingProject/BookingWebAPI/BookingWebAPI.sln \
+            --no-build \
+            --configuration Release \
+            --logger "trx;LogFileName=BookingWebApi.Tests/TestResults/TestResults.trx" \
+            --results-directory BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults
+
+      - name: Debug Folder Structure
+        run: ls -R BookingProject/BookingWebAPI/
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v3
+        with:
+          name: Test Results
+          path: BookingProject/BookingWebAPI/BookingWebApi.Tests/TestResults/TestResults.trx
+
+      - name: Log in to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Get Git Commit Hash and Timestamp
+        id: set_vars
+        run: |
+          echo "COMMIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+          echo "TIMESTAMP=$(date +%Y%m%d%H%M%S)" >> $GITHUB_ENV
+
+      - name: Build Docker image with commit hash and timestamp
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }} \
+                       -t ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest \
+                       -f BookingProject/BookingWebAPI/Dockerfile .
+
+      - name: Push Docker images to DockerHub
+        run: |
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.COMMIT_HASH }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:${{ env.TIMESTAMP }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/bookingwebapi:latest
 
   deploy:
     runs-on: ubuntu-latest
-    needs: build
+    needs: build-and-test
 
     steps:
-    - uses: actions/download-artifact@v4.1.7
-      with:
-        name: deploy-files
+      - uses: actions/download-artifact@v4.1.7
+        with:
+          name: deploy-files
 
-    - name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-region: us-east-2
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-region: us-east-2
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
-    - name: Deploy
-      run: |
-        aws s3 cp "${{ github.workspace }}/deploy-files.zip" s3://booking-webapi-deployments/artifact/booking-webapi/deploy-files.zip
-        aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{ github.run_id }} --description ${{ github.run_id }} --source-bundle S3Bucket="booking-webapi-deployments",S3Key="artifact/booking-webapi/deploy-files.zip"
-        aws elasticbeanstalk update-environment --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME --version-label ${{ github.run_id }}
-        aws elasticbeanstalk wait environment-updated --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME
+      - name: Deploy to Elastic Beanstalk
+        run: |
+          aws s3 cp "${{ github.workspace }}/deploy-files.zip" s3://booking-webapi-deployments/artifact/booking-webapi/deploy-files.zip
+          aws elasticbeanstalk create-application-version --application-name $ELASTIC_BEANSTALK_NAME --version-label ${{ github.run_id }} --description ${{ github.run_id }} --source-bundle S3Bucket="booking-webapi-deployments",S3Key="artifact/booking-webapi/deploy-files.zip"
+          aws elasticbeanstalk update-environment --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME --version-label ${{ github.run_id }}
+          aws elasticbeanstalk wait environment-updated --application-name $ELASTIC_BEANSTALK_NAME --environment-name $ELASTIC_BEANSTALK_ENV_NAME
