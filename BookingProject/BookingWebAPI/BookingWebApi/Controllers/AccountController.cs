@@ -3,6 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using BookingWebApi.Application.Common.Extensions;
 using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
+using BookingWebApi.Application.User.Query;
+using BookingWebApi.Helpers;
+using Kafka;
+using BookingWebApi.Application.User.Services;
 
 namespace BookingWebApi.Controllers
 {
@@ -11,10 +15,12 @@ namespace BookingWebApi.Controllers
     public class AccountController : ControllerBase
     {
         private readonly IAuthenticationService _authService;
+        private readonly IAppUserService _appUserService;
 
-        public AccountController(IAuthenticationService authService)
+        public AccountController(IAuthenticationService authService, IAppUserService appUserService)
         {
             _authService = authService;
+            _appUserService = appUserService;
         }
 
         [HttpPost("Register")]
@@ -29,6 +35,14 @@ namespace BookingWebApi.Controllers
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
             var result = await _authService.Login(loginDto);
+
+            return result.ToResponse();
+        }
+
+        [HttpPut("Update")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserUpdateQuery query, CancellationToken cancellation)
+        {
+            var result = await _appUserService.UpdateUser(UserHelpers.GetUserId(HttpContext), query, cancellation);
 
             return result.ToResponse();
         }
