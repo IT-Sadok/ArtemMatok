@@ -1,14 +1,11 @@
-﻿using BookingWebApi.Application.Common.Interfaces;
-using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.User.DTOs;
-using BookingWebApi.Application.User.Interfaces;
+﻿using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
+using Contracts.DTOs;
+using Kafka;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Response;
+using System.Text.Json;
+
 
 
 namespace BookingWebApi.Application.User.Services
@@ -20,7 +17,7 @@ namespace BookingWebApi.Application.User.Services
     public class AppUserService(
         IAppUserRepository _appUserRepository,
         ILogger<AppUserService> _logger,
-        IKafkaProducer _kafka
+        IBaseKafkaProducer<string,string> _kafka
     ) : IAppUserService
     {
         public async Task<Result<UserChangeDto>> UpdateUser(string userId, UserUpdateQuery query, CancellationToken cancellationToken)
@@ -31,8 +28,11 @@ namespace BookingWebApi.Application.User.Services
             {
                 return Result<UserChangeDto>.Failure(result.ErrorMessage);
             }
-            _logger.LogInformation("Sending ");
-            await _kafka.ProduceAsync<UserChangeDto>("audit-changes", result.Value, cancellationToken);
+
+            var resSerialize = JsonSerializer.Serialize(result.Value);
+
+            _logger.LogInformation("Sending...");
+            await _kafka.ProduceAsync(userId,resSerialize, cancellationToken);
 
 
             return Result<UserChangeDto>.Success(result.Value);

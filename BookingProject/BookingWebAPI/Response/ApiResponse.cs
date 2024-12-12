@@ -1,11 +1,10 @@
-﻿using BookingWebApi.Application.Common.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.Common.Response
+namespace Response
 {
     public class ApiResponse<T>
     {

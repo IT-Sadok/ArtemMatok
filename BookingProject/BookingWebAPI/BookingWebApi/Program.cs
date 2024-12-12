@@ -2,18 +2,20 @@ using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.Common.Interfaces;
 using BookingWebApi.Application.User;
 using BookingWebApi.Application.User.Decorators;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
+using BookingWebApi.Application.User.Validator;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Infrastructure.Kafka;
 using BookingWebApi.Middleware;
+using Contracts.DTOs;
 using FluentValidation;
+using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -124,9 +126,8 @@ builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<
 builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecorator<AppUser>>();
 
 //Kafka
-builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("Kafka"));
-builder.Services.AddSingleton<IKafkaProducer, KafkaProducer>();
-
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+builder.Services.AddSingleton<IBaseKafkaProducer<string,string>, UserChangeKafkaProducer>();
 
 
 var app = builder.Build();

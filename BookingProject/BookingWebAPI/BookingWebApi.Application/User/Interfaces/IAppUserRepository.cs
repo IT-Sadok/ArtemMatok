@@ -1,7 +1,8 @@
-﻿using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.User.DTOs;
+﻿using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Query;
 using BookingWebApi.Domain.Entities;
+using Contracts.DTOs;
+using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;

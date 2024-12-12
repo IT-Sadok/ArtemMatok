@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BookingWebApi.Domain\BookingWebApi.Domain.csproj" />
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
+    <ProjectReference Include="..\Kafka\Kafka.csproj" />
+    <ProjectReference Include="..\Response\Response.csproj" />
   </ItemGroup>
 
 </Project>

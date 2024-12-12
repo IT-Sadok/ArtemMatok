@@ -1,6 +1,9 @@
 ﻿using AuditWebApi.Application.DTOs;
+using AuditWebApi.Domain.Constants;
 using AuditWebApi.Domain.Entities;
+using AutoMapper;
 using Microsoft.Extensions.Logging;
+using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,31 +15,25 @@ namespace AuditWebApi.Application
 {
     public interface IAuditService
     {
-        Task AddUserChange(string message);
+        Task AddUserChange(AuditChangeDto auditChangeDto);
+        Task<Result<AuditChangeDto>> GetUserByTime(string userId, DateTime timestamp);
     }
 
     public class AuditService(
         ILogger<AuditService> _logger,
-        IAuditRepository _auditRepository
+        IAuditRepository _auditRepository,
+        IMapper _mapper
     ) : IAuditService
     {
-        public async Task AddUserChange(string message)
+        public async Task AddUserChange(AuditChangeDto auditChangeDto)
         {
             try
             {
-                var auditChangeDto = JsonSerializer.Deserialize<AuditChangeDto>(message);
-
-                if (auditChangeDto is null)
-                {
-                    _logger.LogError("Message is null");
-                    return;
-                }
-
                 var auditRecord = new AuditRecord()
                 {
                     UserId = auditChangeDto.UserId,
                     Timestamp = auditChangeDto.Timestamp,
-                    EventType = "UserChange",
+                    EventType = EventTypes.UserChange,
                     Changes = auditChangeDto.Changes.Select(x => new UserChange
                     {
                         FieldName = x.FieldName,
@@ -51,6 +48,20 @@ namespace AuditWebApi.Application
             {
                 _logger.LogError($"Error processing event: {ex.Message}");
             }
+        }
+
+        public async Task<Result<AuditChangeDto>> GetUserByTime(string userId, DateTime timestamp)
+        {
+            var user = await _auditRepository.GetUserByTime(userId, timestamp);
+
+            if(!user.IsSuccess)
+            {
+                return Result<AuditChangeDto>.Failure(user.ErrorMessage);
+            }
+
+            var auditDto = _mapper.Map<AuditChangeDto>(user.Value);
+
+            return Result<AuditChangeDto>.Success(auditDto);
         }
     }
 }

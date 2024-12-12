@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using BookingWebApi.Application.Common.Extensions;
 using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
 using BookingWebApi.Helpers;
-using Kafka;
+
 using BookingWebApi.Application.User.Services;
+using Response;
 
 namespace BookingWebApi.Controllers
 {

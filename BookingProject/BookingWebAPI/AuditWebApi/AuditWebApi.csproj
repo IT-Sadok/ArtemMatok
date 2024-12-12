@@ -11,10 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\AuditWebApi.Infrastructure\AuditWebApi.Infrastructure.csproj" />
     <ProjectReference Include="..\BookingWebApi.Infrastructure\BookingWebApi.Infrastructure.csproj" />
   </ItemGroup>

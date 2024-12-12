@@ -1,11 +1,10 @@
 ﻿using AutoMapper;
 using BookingWebApi.Application.Apartament.DTOs;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.Common.Response;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
+using Response;
 using System.Text.Json;
 using ApartamentEntity = BookingWebApi.Domain.Entities.Apartament;
 

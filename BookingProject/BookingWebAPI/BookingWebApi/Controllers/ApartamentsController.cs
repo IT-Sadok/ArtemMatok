@@ -2,10 +2,10 @@
 using BookingWebApi.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using BookingWebApi.Application.Common.Extensions;
 using BookingWebApi.Application.Apartament.DTOs;
 using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
+using Response;
 
 
 namespace BookingWebApi.Controllers;

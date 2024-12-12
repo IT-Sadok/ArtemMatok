@@ -1,10 +1,11 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.Common.Models
+namespace Response
 {
     public class Result<T>
     {
@@ -25,5 +26,23 @@ namespace BookingWebApi.Application.Common.Models
 
         public static Result<T> Failure(string errorMessage) => new Result<T>(default, false, errorMessage, null);
         public static Result<T> Failure(List<string> errors) => new Result<T>(default, false, null, errors);
+    }
+
+    public static class ResultExtensions
+    {
+        public static IActionResult ToResponse<T>(this Result<T> result)
+        {
+            var response = new ApiResponse<T>(result);
+
+            if (result.IsSuccess)
+            {
+                return new OkObjectResult(response.Data);
+            }
+            else
+            {
+                return new BadRequestObjectResult(response);
+            }
+        }
+
     }
 }
