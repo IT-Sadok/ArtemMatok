@@ -23,7 +23,7 @@ namespace AuditWebApi.Infrastructure
             {
                 BootstrapServers = options.Value.BootstrapServers,
                 GroupId = options.Value.GroupId,
-                AutoOffsetReset = AutoOffsetReset.Earliest
+                AutoOffsetReset = AutoOffsetReset.Earliest,
             },
             options.Value.Topics.UserChanges,
             scopeFactory,

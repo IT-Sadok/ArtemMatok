@@ -3,6 +3,7 @@ using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
 using BookingWebApi.Domain.Entities;
 using Contracts.DTOs;
+using FluentValidation.Validators;
 using Microsoft.EntityFrameworkCore;
 using Response;
 using System;
@@ -50,22 +51,12 @@ namespace BookingWebApi.Infrastructure.Data
 
             if(!String.IsNullOrEmpty(query.Email))
             {
-                changes.Add(new UserChange
-                {
-                    FieldName = "Email",
-                    OldValue = user.Email,
-                    NewValue = query.Email
-                });
+                UpdateField(nameof(query.Email), user.UserName, query.UserName, changes);
                 user.Email = query.Email;
             }
             if (!String.IsNullOrEmpty(query.UserName))
             {
-                changes.Add(new UserChange
-                {
-                    FieldName = "UserName",
-                    OldValue = user.UserName,
-                    NewValue = query.UserName
-                });
+                UpdateField(nameof(query.UserName), user.UserName, query.UserName, changes);
                 user.UserName = query.UserName;
             }
 
@@ -82,12 +73,7 @@ namespace BookingWebApi.Infrastructure.Data
                     existingData.Add(kvp);
                 }
 
-                changes.Add(new UserChange
-                {
-                    FieldName = "Custom Data",
-                    OldValue = user.CustomUserData,
-                    NewValue = JsonSerializer.Serialize(existingData)
-                });
+                UpdateField(nameof(query.CustomUserData), user.CustomUserData, JsonSerializer.Serialize(existingData), changes);
 
                 user.CustomUserData = JsonSerializer.Serialize(existingData);
             }
@@ -108,6 +94,19 @@ namespace BookingWebApi.Infrastructure.Data
             catch (Exception ex)
             {
                 return Result<UserChangeDto>.Failure(ex.Message);
+            }
+        }
+
+        private void UpdateField<T>(string fieldName, T oldValue, T newValue, List<UserChange> changes)
+        {
+            if(!EqualityComparer<T>.Default.Equals(oldValue, newValue))
+            {
+                changes.Add(new UserChange
+                {
+                    FieldName = fieldName,
+                    OldValue = oldValue.ToString(),
+                    NewValue = newValue.ToString()
+                });
             }
         }
     }

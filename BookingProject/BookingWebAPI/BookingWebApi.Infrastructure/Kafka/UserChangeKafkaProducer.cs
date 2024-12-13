@@ -1,4 +1,5 @@
-﻿using Confluent.Kafka;
+﻿using BookingWebApi.Application.User.Interfaces;
+using Confluent.Kafka;
 using Kafka;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -10,7 +11,9 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Infrastructure.Kafka
 {
-    public class UserChangeKafkaProducer : BaseKafkaProducer<string, string>
+
+
+    public class UserChangeKafkaProducer : BaseKafkaProducer<string, string>, IUserChangeKafkaProducer
     {
         private readonly ILogger<UserChangeKafkaProducer> _logger;
 

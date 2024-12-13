@@ -13,7 +13,7 @@ namespace Kafka
         Task ProduceAsync(TKey key, TValue value, CancellationToken cancellationToken = default);
 
     }
-    public abstract class BaseKafkaProducer<TKey, TValue> : IBaseKafkaProducer<TKey, TValue>,IDisposable
+    public class BaseKafkaProducer<TKey, TValue> : IBaseKafkaProducer<TKey, TValue>,IDisposable
     {
         private readonly IProducer<TKey, TValue> _producer;
         private readonly ILogger<BaseKafkaProducer<TKey, TValue>> _logger;

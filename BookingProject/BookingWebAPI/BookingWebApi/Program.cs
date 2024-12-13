@@ -127,7 +127,8 @@ builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecora
 
 //Kafka
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
-builder.Services.AddSingleton<IBaseKafkaProducer<string,string>, UserChangeKafkaProducer>();
+builder.Services.AddSingleton<IUserChangeKafkaProducer, UserChangeKafkaProducer>();
+
 
 
 var app = builder.Build();

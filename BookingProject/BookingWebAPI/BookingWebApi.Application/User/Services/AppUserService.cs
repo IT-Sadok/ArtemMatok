@@ -17,7 +17,7 @@ namespace BookingWebApi.Application.User.Services
     public class AppUserService(
         IAppUserRepository _appUserRepository,
         ILogger<AppUserService> _logger,
-        IBaseKafkaProducer<string,string> _kafka
+       IUserChangeKafkaProducer _kafka
     ) : IAppUserService
     {
         public async Task<Result<UserChangeDto>> UpdateUser(string userId, UserUpdateQuery query, CancellationToken cancellationToken)
