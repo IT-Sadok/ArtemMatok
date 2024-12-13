@@ -1,7 +1,6 @@
 ﻿using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
-using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.Common.Response;
 using BookingWebApi.Domain.Entities;
+using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;

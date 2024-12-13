@@ -11,6 +11,7 @@ namespace BookingWebApi.Domain.Entities
     {
         public string? ExternalId { get; set; }
         public string? SourceCompanyId { get; set; }
-        public List<Apartament> Apartaments { get; set; } = new List<Apartament>(); 
+        public List<Apartament> Apartaments { get; set; } = new List<Apartament>();
+        public string? CustomUserData { get; set; }
     }
 }

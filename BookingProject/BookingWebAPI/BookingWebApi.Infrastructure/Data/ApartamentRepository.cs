@@ -1,7 +1,5 @@
 ﻿using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
-using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.Common.Response;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.SqlScripts;
@@ -9,6 +7,7 @@ using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Response;
 using System.Resources;
 using System.Text.Json;
 

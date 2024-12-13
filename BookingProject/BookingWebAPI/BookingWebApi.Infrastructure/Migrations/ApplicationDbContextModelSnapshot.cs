@@ -40,6 +40,9 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.Property<int>("Bedrooms")
                         .HasColumnType("integer");
 
+                    b.Property<string>("CustomData")
+                        .HasColumnType("text");
+
                     b.Property<string>("ExternalId")
                         .HasColumnType("text");
 
@@ -76,6 +79,9 @@ namespace BookingWebApi.Infrastructure.Migrations
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CustomUserData")
                         .HasColumnType("text");
 
                     b.Property<string>("Email")
@@ -167,19 +173,19 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "b3f120f7-6200-4cb0-84dc-d286259f7ea7",
+                            Id = "e2ef3649-2e56-4118-b4da-82a39bf09f1b",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "e65c14d9-2629-44ab-85b3-4c94e5f71c5d",
+                            Id = "14d44814-ec61-43b5-bc0c-e8577ecfbb8d",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "6431b27d-6c73-466e-9e6b-f6981f9e2b0c",
+                            Id = "b2ff719f-2a82-479a-af9f-d86ed77c9918",
                             Name = "Host",
                             NormalizedName = "HOST"
                         });

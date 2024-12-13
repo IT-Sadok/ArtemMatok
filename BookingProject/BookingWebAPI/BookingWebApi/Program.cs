@@ -6,20 +6,26 @@ using BookingWebApi.Application.User;
 using BookingWebApi.Application.User.Decorators;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
+using BookingWebApi.Application.User.Validator;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
+using BookingWebApi.Infrastructure.Kafka;
 using BookingWebApi.Middleware;
+using Contracts.DTOs;
 using FluentValidation;
+using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System.Configuration;
 using System.Security.Claims;
+using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -108,15 +114,22 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
 builder.Services.AddScoped<IApartamentService, ApartamentService>();
 builder.Services.AddScoped<IApartamentStatisticService, ApartamentStatisticService>();
+builder.Services.AddScoped<IAppUserService, AppUserService>();  
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IApartamentRepository,ApartamentRepository>();
-
+builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 
 //Decorators
 builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();
 builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecorator<AppUser>>();
+
+//Kafka
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+builder.Services.AddSingleton<IUserChangeKafkaProducer, UserChangeKafkaProducer>();
+
+
 
 var app = builder.Build();
 

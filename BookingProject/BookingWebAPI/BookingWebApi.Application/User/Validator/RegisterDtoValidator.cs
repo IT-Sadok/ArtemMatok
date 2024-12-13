@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BookingWebApi.Application.User
+namespace BookingWebApi.Application.User.Validator
 {
     public class RegisterDtoValidator : AbstractValidator<RegisterDto>
     {
