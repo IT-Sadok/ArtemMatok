@@ -8,9 +8,9 @@ using BookingWebApi.Domain.Entities;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.Common.Models;
 using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
+using Response;
 
 namespace Migrator.Services
 {

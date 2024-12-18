@@ -10,44 +10,11 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddReverseProxy()
-    .LoadFromMemory(
-    [
-        new RouteConfig
-        {
-            RouteId = "route_to_monolith",
-            ClusterId = "monolith_cluster",
-            Match = new RouteMatch { Path = "/api/apartments/{**catch-all}" }
-        },
-        new RouteConfig
-        {
-            RouteId = "route_to_audit",
-            ClusterId = "audit_cluster",
-            Match = new RouteMatch { Path = "/api/Audits/{**catch-all}" }
-        }
-    ],
-    [
-        new ClusterConfig
-        {
-            ClusterId = "monolith_cluster",
-            LoadBalancingPolicy = "RoundRobin",
-            Destinations = new Dictionary<string, DestinationConfig>
-            {
-                { "monolith_api", new DestinationConfig { Address = "http://localhost:5001" } }
-            }
-        },
-        new ClusterConfig
-        {
-            ClusterId = "audit_cluster",
-            LoadBalancingPolicy = "RoundRobin",
-            Destinations = new Dictionary<string, DestinationConfig>
-            {
-                { "audit_api", new DestinationConfig { Address = "http://localhost:5002" } },
-                { "audit_api2", new DestinationConfig { Address = "http://localhost:5003" } }
-            }
-        }
-    ]);
 
+builder.Services.AddReverseProxy()
+    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+var reverseProxySection = builder.Configuration.GetSection("ReverseProxy");
+Console.WriteLine("ReverseProxy Configuration: " + reverseProxySection);
 
 builder.Services.AddOptions();
 builder.Services.AddMemoryCache();
