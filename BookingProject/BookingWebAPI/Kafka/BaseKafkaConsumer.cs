@@ -27,7 +27,7 @@ public abstract class BaseKafkaConsumer<TKey, TValue> : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //await Task.Yield();
+        await Task.Yield();
         _consumer.Subscribe(_topic);
         _logger.LogInformation($"Subscribed to topic: {_topic}");
 

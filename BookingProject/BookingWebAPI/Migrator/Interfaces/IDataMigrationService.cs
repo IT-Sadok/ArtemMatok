@@ -1,4 +1,5 @@
-﻿using BookingWebApi.Application.Common.Models;
+﻿
+using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
