@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Response", "Response\Respon
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Getaway", "Getaway\Getaway.csproj", "{EE67079C-0883-4177-BFCA-744C038BDF94}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "Redis\Redis.csproj", "{59B82A9B-66C2-4D63-9A83-5E6654E304E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -124,6 +130,7 @@ Global
 		{DBC8F808-8AA2-4424-AE1F-6082114F8EDA} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{6C60A422-A862-4BE3-9B8B-6C9E0535FB95} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{07AADFEF-FA98-4020-8A5E-21EA8DBCC59B} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+		{59B82A9B-66C2-4D63-9A83-5E6654E304E8} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99BAA0D2-510D-48FF-952F-AB56F3C6DCBF}

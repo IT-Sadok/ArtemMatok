@@ -1,4 +1,5 @@
 ﻿using AuditWebApi.Domain.Entities;
+using Contracts.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,5 +12,12 @@ namespace AuditWebApi.Application.DTOs
          string UserId,
          DateTime Timestamp,
          List<UserChange> Changes
+    );
+
+    public record AuditUserInfoChangeDto(
+        string UserId,
+        DateTime Timestamp,
+        List<UserChange> Changes,
+        UserInfo UserInfo
     );
 }

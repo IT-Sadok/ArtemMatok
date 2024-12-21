@@ -42,7 +42,15 @@ namespace BookingWebApi.Controllers
         [HttpPut("Update")]
         public async Task<IActionResult> UpdateUser([FromBody] UserUpdateQuery query, CancellationToken cancellation)
         {
-            var result = await _appUserService.UpdateUser(UserHelpers.GetUserId(HttpContext), query, cancellation);
+            var result = await _appUserService.UpdateUserAsync(UserHelpers.GetUserId(HttpContext), query, cancellation);
+
+            return result.ToResponse();
+        }
+
+        [HttpGet("UserInfo/{userId}")]
+        public async Task<IActionResult> GetUserInfoByUserId(string userId)
+        {
+            var result = await _appUserService.GetUserInfoAsync(userId);
 
             return result.ToResponse();
         }

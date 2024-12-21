@@ -23,6 +23,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Redis;
 using System.Configuration;
 using System.Security.Claims;
 using static System.Net.Mime.MediaTypeNames;
@@ -129,7 +130,12 @@ builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecora
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton<IUserChangeKafkaProducer, UserChangeKafkaProducer>();
 
-
+//Redis
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
+builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
 var app = builder.Build();
 

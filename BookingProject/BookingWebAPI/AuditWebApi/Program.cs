@@ -1,3 +1,4 @@
+using AuditWebApi;
 using AuditWebApi.Application;
 using AuditWebApi.Infrastructure;
 using Kafka;
@@ -13,6 +14,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+
 builder.Services.AddAutoMapper(typeof(AuditMapper));
 
 //Kafka
@@ -26,9 +29,12 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 //Services
 builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<HttpClient>();
 
 //Repositories
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+
+
 
 var app = builder.Build();
 
