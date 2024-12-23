@@ -25,12 +25,19 @@ namespace AuditWebApi.Application
 
         public async Task<Result<UserInfo>> GetUserInfoAsync(string userId)
         {
-            var url = string.Format(GetUserInfoEndpoint, userId);
+            try
+            {
+                var url = string.Format(GetUserInfoEndpoint, userId);
 
-            var userInfo = await _httpClient.GetFromJsonAsync<UserInfo>(url);
-            if (userInfo is null) return Result<UserInfo>.Failure("User wasn`t found");
+                var userInfo = await _httpClient.GetFromJsonAsync<UserInfo>(url);
+                if (userInfo is null) return Result<UserInfo>.Failure("User wasn`t found");
 
-            return Result<UserInfo>.Success(userInfo);
+                return Result<UserInfo>.Success(userInfo);
+            }
+            catch (Exception ex)
+            {
+                return Result<UserInfo>.Failure(ex.Message);
+            }
         }
     }
 }
