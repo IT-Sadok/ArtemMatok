@@ -8,6 +8,6 @@ namespace AuditWebApi.Application
 {
     public class ApiSettings
     {
-        public string AccountUserInfo { get; set; }
+        public string MonolithUrl { get; set; }
     }
 }

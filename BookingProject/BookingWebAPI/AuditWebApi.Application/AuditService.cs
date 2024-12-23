@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Response;
 using System.Net.Http.Json;
-
+using UserChangeDto = AuditWebApi.Domain.Entities.UserChange;
 
 namespace AuditWebApi.Application
 {
@@ -16,19 +16,11 @@ namespace AuditWebApi.Application
         Task<Result<AuditUserInfoChangeDto>> GetUserByTime(string userId, DateTime timestamp);
     }
 
-    public class AuditService : IAuditService
+    public class AuditService(ILogger<AuditService> logger, IAuditRepository auditRepository, IMonolithClient monolithClient) : IAuditService
     {
-        private readonly ILogger<AuditService> _logger;
-        private readonly IAuditRepository _auditRepository;
-        private readonly HttpClient _httpClient;
-        private readonly string _accountUserInfoUrl;
-        public AuditService(IOptions<ApiSettings> apiSettings,ILogger<AuditService> logger, IAuditRepository auditRepository, HttpClient httpClient)
-        {
-            _logger = logger;
-            _auditRepository = auditRepository;
-            _httpClient = httpClient;
-            _accountUserInfoUrl = apiSettings.Value.AccountUserInfo;
-        }
+        private readonly ILogger<AuditService> _logger = logger;
+        private readonly IAuditRepository _auditRepository = auditRepository;
+        private readonly IMonolithClient _monolithClient = monolithClient;
 
         public async Task AddUserChange(AuditChangeDto auditChangeDto)
         {
@@ -39,7 +31,7 @@ namespace AuditWebApi.Application
                     UserId = auditChangeDto.UserId,
                     Timestamp = auditChangeDto.Timestamp,
                     EventType = EventTypes.UserChange,
-                    Changes = auditChangeDto.Changes.Select(x => new UserChange
+                    Changes = auditChangeDto.Changes.Select(x => new UserChangeDto
                     {
                         FieldName = x.FieldName,
                         OldValue = x.OldValue,
@@ -66,17 +58,17 @@ namespace AuditWebApi.Application
 
             try
             {
-                var userInfo = await _httpClient.GetFromJsonAsync<UserInfo>($"{_accountUserInfoUrl}{userId}");
-                if (userInfo is null)
+                var userInfo = await _monolithClient.GetUserInfoAsync(userId);
+                if (!userInfo.IsSuccess)
                 {
-                    return Result<AuditUserInfoChangeDto>.Failure("User info wasn’t found");
+                    return Result<AuditUserInfoChangeDto>.Failure(userInfo.ErrorMessage);
                 }
 
                 var auditDto = new AuditUserInfoChangeDto(
                     userId,
                     user.Value.Timestamp,
                     user.Value.Changes,
-                    userInfo
+                    userInfo.Value
                 );
 
                 return Result<AuditUserInfoChangeDto>.Success(auditDto);

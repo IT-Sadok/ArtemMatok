@@ -1,15 +1,15 @@
-﻿using Contracts.DTOs;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace AuditWebApi.Domain.Entities
 {
-
+    public class UserChange
+    {
+        public string FieldName { get; set; }
+        public string OldValue { get; set; }
+        public string NewValue { get; set; }
+    }
     public class AuditRecord
     {
         [BsonId]

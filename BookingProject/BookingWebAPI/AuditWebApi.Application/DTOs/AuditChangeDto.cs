@@ -1,23 +1,18 @@
-﻿using AuditWebApi.Domain.Entities;
-using Contracts.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Contracts.DTOs;
+using UserChangeDto = AuditWebApi.Domain.Entities.UserChange;
 
 namespace AuditWebApi.Application.DTOs
 {
     public record AuditChangeDto(
          string UserId,
          DateTime Timestamp,
-         List<UserChange> Changes
+         List<UserChangeDto> Changes
     );
 
     public record AuditUserInfoChangeDto(
         string UserId,
         DateTime Timestamp,
-        List<UserChange> Changes,
+        List<UserChangeDto> Changes,
         UserInfo UserInfo
     );
 }

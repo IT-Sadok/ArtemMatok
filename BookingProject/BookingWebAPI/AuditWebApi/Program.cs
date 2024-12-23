@@ -2,6 +2,7 @@ using AuditWebApi;
 using AuditWebApi.Application;
 using AuditWebApi.Infrastructure;
 using Kafka;
+using Microsoft.Extensions.Options;
 using Mongo;
 
 
@@ -29,11 +30,18 @@ builder.Services.AddSingleton<MongoDbContext>();
 
 //Services
 builder.Services.AddScoped<IAuditService, AuditService>();
-builder.Services.AddScoped<HttpClient>();
+builder.Services.AddScoped<IMonolithClient,MonolithClient>();
 
 //Repositories
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
 
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddHttpClient("MonolithClient", (provider, client) =>
+{
+    var apiSettings = provider.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(apiSettings.MonolithUrl);
+});
 
 
 var app = builder.Build();

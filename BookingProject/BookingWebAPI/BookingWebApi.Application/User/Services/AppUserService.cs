@@ -25,14 +25,16 @@ namespace BookingWebApi.Application.User.Services
     {
         public async Task<Result<UserInfo>> GetUserInfoAsync(string userId)
         {
-            var cacheUserInfo = await _cache.GetAsync<UserInfo>(userId);
+            var cacheKey = $"User_{userId}";
+            var cacheUserInfo = await _cache.GetAsync<UserInfo>(cacheKey);
 
             if (cacheUserInfo != null) return Result<UserInfo>.Success(cacheUserInfo);
 
             var userInfo = await _appUserRepository.GetUserInfoById(userId);
             if (userInfo is null) return Result<UserInfo>.Failure(userInfo.ErrorMessage);
 
-            await _cache.SetAsync(userId, new UserInfo(userInfo.Value.UserName, userInfo.Value.Email), TimeSpan.FromHours(1));
+
+            await _cache.SetAsync(cacheKey, new UserInfo(userInfo.Value.UserName, userInfo.Value.Email), TimeSpan.FromHours(1));
 
             return Result<UserInfo>.Success(userInfo.Value);
         }
