@@ -1,6 +1,7 @@
 ﻿using AuditWebApi.Application.DTOs;
 using AuditWebApi.Domain.Constants;
 using AuditWebApi.Domain.Entities;
+using Contracts.Clients;
 using Contracts.DTOs;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

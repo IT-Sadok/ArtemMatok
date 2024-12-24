@@ -1,13 +1,17 @@
 ﻿using Contracts.DTOs;
+using Polly;
+using Polly.Registry;
+using Polly.Retry;
 using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuditWebApi.Application
+namespace Contracts.Clients
 {
     public interface IMonolithClient
     {
@@ -17,10 +21,11 @@ namespace AuditWebApi.Application
     {
         private readonly HttpClient _httpClient;
         private const string GetUserInfoEndpoint = "api/Account/UserInfo/{0}";
-
-        public MonolithClient(IHttpClientFactory httpClientFactory)
+        private readonly ResiliencePipelineProvider<string> _pipelineProvider;
+        public MonolithClient(IHttpClientFactory httpClientFactory, ResiliencePipelineProvider<string> pipelineProvider)
         {
             _httpClient = httpClientFactory.CreateClient("MonolithClient");
+            _pipelineProvider = pipelineProvider;
         }
 
         public async Task<Result<UserInfo>> GetUserInfoAsync(string userId)
@@ -29,9 +34,9 @@ namespace AuditWebApi.Application
             {
                 var url = string.Format(GetUserInfoEndpoint, userId);
 
-                var userInfo = await _httpClient.GetFromJsonAsync<UserInfo>(url);
+                var pipeline = _pipelineProvider.GetPipeline("default");
+                var userInfo = await pipeline.ExecuteAsync(async x => await _httpClient.GetFromJsonAsync<UserInfo>(url));
                 if (userInfo is null) return Result<UserInfo>.Failure("User wasn`t found");
-
                 return Result<UserInfo>.Success(userInfo);
             }
             catch (Exception ex)
