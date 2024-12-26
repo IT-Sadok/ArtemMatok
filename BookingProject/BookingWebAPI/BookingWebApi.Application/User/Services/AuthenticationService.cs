@@ -101,14 +101,12 @@ namespace BookingWebApi.Application.User.Services
                 return Result<NewUserDto>.Failure("Role assignment failed. No role found for the user.");
             }
 
-            // Публікація події в Kafka
             try
             {
                 await _kafkaProducer.ProduceUserRegisteredEventAsync(appUser.Id, appUser.Email);
             }
             catch (Exception ex)
             {
-                // Логування помилок Kafka
                 _logger.LogError($"Error publishing UserRegistered event: {ex.Message}");
             }
 
