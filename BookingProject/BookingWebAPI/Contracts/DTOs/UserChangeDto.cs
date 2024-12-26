@@ -12,6 +12,7 @@ namespace Contracts.DTOs
         public string OldValue { get; set; }
         public string NewValue { get; set; }
     }
+
     public record UserChangeDto(
          string UserId,
          DateTime Timestamp,

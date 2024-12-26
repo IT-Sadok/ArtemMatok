@@ -15,6 +15,7 @@ namespace BookingWebApi.Application.User.Interfaces
     {
         Task<bool> UserExists(string userId);
         Task<bool> UserExistsByIdAndCompany(string externalId, string sourceCompanyId);
-        Task<Result<UserChangeDto>> Update(string userId, UserUpdateQuery query);
+        Task<Result<UserInfoChangesDto>> Update(string userId, UserUpdateQuery query);
+        Task<Result<UserInfo>> GetUserInfoById(string userId);
     }
 }

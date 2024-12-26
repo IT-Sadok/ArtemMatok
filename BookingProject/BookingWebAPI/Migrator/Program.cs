@@ -74,6 +74,5 @@ namespace Migrator
                     services.AddScoped<IAppUserRepository, AppUserRepository>();
                     services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
                 });
-
     }
 }

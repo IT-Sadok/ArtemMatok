@@ -38,13 +38,13 @@ namespace BookingWebApi.Infrastructure.Data
             return true;
         }
 
-        public async Task<Result<UserChangeDto>> Update(string userId, UserUpdateQuery query)
+        public async Task<Result<UserInfoChangesDto>> Update(string userId, UserUpdateQuery query)
         {
             var user = await _context.Users.FindAsync(userId);
 
             if(user is null)
             {
-                return Result<UserChangeDto>.Failure("User wasn`t found");
+                return Result<UserInfoChangesDto>.Failure("User wasn`t found");
             }
 
             var changes = new List<UserChange>();
@@ -83,17 +83,24 @@ namespace BookingWebApi.Infrastructure.Data
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
 
-                var changeEvent = new UserChangeDto(
-                    user.Id,
-                    DateTime.UtcNow,
-                    changes
+
+                var userInfoChanges = new UserInfoChangesDto(
+                    new UserChangeDto(
+                        user.Id,
+                        DateTime.UtcNow,
+                        changes
+                    ),
+                    new UserInfo(
+                        user.UserName,
+                        user.Email
+                    )
                 );
 
-                return Result<UserChangeDto>.Success(changeEvent);
+                return Result<UserInfoChangesDto>.Success(userInfoChanges);
             }
             catch (Exception ex)
             {
-                return Result<UserChangeDto>.Failure(ex.Message);
+                return Result<UserInfoChangesDto>.Failure(ex.Message);
             }
         }
 
@@ -108,6 +115,21 @@ namespace BookingWebApi.Infrastructure.Data
                     NewValue = newValue.ToString()
                 });
             }
+        }
+
+        public async Task<Result<UserInfo>> GetUserInfoById(string userId)
+        {
+            var result = await _context.Users
+                .Where(x => x.Id == userId)
+                .Select(x => new UserInfo(x.UserName, x.Email))
+                .FirstOrDefaultAsync();
+                
+            if(result is null)
+            {
+                return Result<UserInfo>.Failure("User wasn`t found");
+            }
+
+            return Result<UserInfo>.Success(result);    
         }
     }
 }
