@@ -2,16 +2,33 @@
 using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Response;
 
 namespace BookingWebApi.Application.User.Services
 {
-    public class AuthenticationService(
-        IUserManagerDecorator<AppUser> _userManager,
-        ITokenService _tokenService,
-        ISignInManagerDecorator<AppUser> _signInManager
-    ) : IAuthenticationService
+    public class AuthenticationService: IAuthenticationService
     {
+        private readonly IUserManagerDecorator<AppUser> _userManager;
+        private readonly ITokenService _tokenService;
+        private readonly ISignInManagerDecorator<AppUser> _signInManager;
+        private readonly IUserRegisteredKafkaProducer _kafkaProducer;
+        private readonly ILogger<AuthenticationService> _logger;
+
+        public AuthenticationService(
+            IUserManagerDecorator<AppUser> userManager,
+            ITokenService tokenService,
+            ISignInManagerDecorator<AppUser> signInManager,
+            IUserRegisteredKafkaProducer kafkaProducer,
+            ILogger<AuthenticationService> logger)
+        {
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+            _tokenService = tokenService ?? throw new ArgumentNullException(nameof(tokenService));
+            _signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
+            _kafkaProducer = kafkaProducer ?? throw new ArgumentNullException(nameof(kafkaProducer));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
         public async Task<Result<NewUserDto>> Login(LoginDto loginDto)
         {
 
@@ -82,6 +99,17 @@ namespace BookingWebApi.Application.User.Services
             if (string.IsNullOrEmpty(userRole))
             {
                 return Result<NewUserDto>.Failure("Role assignment failed. No role found for the user.");
+            }
+
+            // Публікація події в Kafka
+            try
+            {
+                await _kafkaProducer.ProduceUserRegisteredEventAsync(appUser.Id, appUser.Email);
+            }
+            catch (Exception ex)
+            {
+                // Логування помилок Kafka
+                _logger.LogError($"Error publishing UserRegistered event: {ex.Message}");
             }
 
             var newUser = new NewUserDto(

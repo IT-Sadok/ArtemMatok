@@ -1,9 +1,9 @@
 ﻿using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
-using BookingWebApi.Application.Common.Models;
 using FluentAssertions;
 using Moq;
+using Response;
 using System;
 using System.Collections.Generic;
 using System.Linq;

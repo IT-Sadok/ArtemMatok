@@ -4,13 +4,12 @@ using BookingWebApi.Application.Apartament.DTOs;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Application.Common.Decorators;
-using BookingWebApi.Application.Common.Models;
-using BookingWebApi.Application.Common.Response;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
 using FluentAssertions;
 using Moq;
+using Response;
 
 namespace BookingWebApi.Tests.Services
 {
