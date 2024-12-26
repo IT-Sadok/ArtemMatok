@@ -1,30 +1,28 @@
 ﻿using AuditWebApi.Application.DTOs;
 using AuditWebApi.Domain.Constants;
 using AuditWebApi.Domain.Entities;
-using AutoMapper;
+using Contracts.Clients;
+using Contracts.DTOs;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Response;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
+using System.Net.Http.Json;
+using UserChangeDto = AuditWebApi.Domain.Entities.UserChange;
 
 namespace AuditWebApi.Application
 {
     public interface IAuditService
     {
         Task AddUserChange(AuditChangeDto auditChangeDto);
-        Task<Result<AuditChangeDto>> GetUserByTime(string userId, DateTime timestamp);
+        Task<Result<AuditUserInfoChangeDto>> GetUserByTime(string userId, DateTime timestamp);
     }
 
-    public class AuditService(
-        ILogger<AuditService> _logger,
-        IAuditRepository _auditRepository,
-        IMapper _mapper
-    ) : IAuditService
+    public class AuditService(ILogger<AuditService> logger, IAuditRepository auditRepository, IMonolithClient monolithClient) : IAuditService
     {
+        private readonly ILogger<AuditService> _logger = logger;
+        private readonly IAuditRepository _auditRepository = auditRepository;
+        private readonly IMonolithClient _monolithClient = monolithClient;
+
         public async Task AddUserChange(AuditChangeDto auditChangeDto)
         {
             try
@@ -34,7 +32,7 @@ namespace AuditWebApi.Application
                     UserId = auditChangeDto.UserId,
                     Timestamp = auditChangeDto.Timestamp,
                     EventType = EventTypes.UserChange,
-                    Changes = auditChangeDto.Changes.Select(x => new UserChange
+                    Changes = auditChangeDto.Changes.Select(x => new UserChangeDto
                     {
                         FieldName = x.FieldName,
                         OldValue = x.OldValue,
@@ -50,18 +48,38 @@ namespace AuditWebApi.Application
             }
         }
 
-        public async Task<Result<AuditChangeDto>> GetUserByTime(string userId, DateTime timestamp)
+        public async Task<Result<AuditUserInfoChangeDto>> GetUserByTime(string userId, DateTime timestamp)
         {
             var user = await _auditRepository.GetUserByTime(userId, timestamp);
 
             if(!user.IsSuccess)
             {
-                return Result<AuditChangeDto>.Failure(user.ErrorMessage);
+                return Result<AuditUserInfoChangeDto>.Failure(user.ErrorMessage);
             }
 
-            var auditDto = _mapper.Map<AuditChangeDto>(user.Value);
+            try
+            {
+                var userInfo = await _monolithClient.GetUserInfoAsync(userId);
+                if (!userInfo.IsSuccess)
+                {
+                    return Result<AuditUserInfoChangeDto>.Failure(userInfo.ErrorMessage);
+                }
 
-            return Result<AuditChangeDto>.Success(auditDto);
+                var auditDto = new AuditUserInfoChangeDto(
+                    userId,
+                    user.Value.Timestamp,
+                    user.Value.Changes,
+                    userInfo.Value
+                );
+
+                return Result<AuditUserInfoChangeDto>.Success(auditDto);
+            }
+            catch (HttpRequestException ex)
+            {
+
+                Console.WriteLine($"Request failed: {ex.Message}");
+                return Result<AuditUserInfoChangeDto>.Failure("Failed to fetch user info.");
+            }
         }
     }
 }
