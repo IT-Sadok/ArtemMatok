@@ -31,5 +31,40 @@ services:
     networks:
       - kafka
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.5
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - 9200:9200
+    networks:
+      - kafka
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:7.17.5
+    container_name: logstash
+    volumes:
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    ports:
+      - 5044:5044
+    depends_on:
+      - elasticsearch
+    networks:
+      - kafka
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.5
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+    networks:
+      - kafka
+
 networks:
   kafka:

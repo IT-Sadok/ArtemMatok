@@ -61,6 +61,14 @@ builder.Services.AddResiliencePipeline("default", x =>
 });
 
 
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+Log.Logger = logger;
+builder.Host.UseSerilog();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

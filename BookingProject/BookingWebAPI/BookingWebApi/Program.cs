@@ -24,6 +24,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Redis;
+using Serilog;
 using System.Configuration;
 using System.Security.Claims;
 using static System.Net.Mime.MediaTypeNames;
@@ -136,6 +137,14 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
+
+
+var logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
+
+Log.Logger = logger;
+builder.Host.UseSerilog();
 
 var app = builder.Build();
 
