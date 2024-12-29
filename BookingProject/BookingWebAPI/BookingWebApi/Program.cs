@@ -23,6 +23,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OpenTelemetry;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
+using Prometheus;
 using Redis;
 using Serilog;
 using System.Configuration;
@@ -142,9 +147,23 @@ builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 var logger = new LoggerConfiguration()
     .ReadFrom.Configuration(builder.Configuration)
     .CreateLogger();
-
 Log.Logger = logger;
 builder.Host.UseSerilog();
+
+
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddPrometheusExporter();
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+        metrics.AddProcessInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddView("http.server.duration", new ExplicitBucketHistogramConfiguration
+        {
+            Boundaries = new[] { 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0 }
+        });
+    });
 
 var app = builder.Build();
 
@@ -163,6 +182,9 @@ app.UseCors(x => x
     .SetIsOriginAllowed(origin => true)
 );
 
+app.UseMetricServer();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthentication();
 app.UseAuthorization();

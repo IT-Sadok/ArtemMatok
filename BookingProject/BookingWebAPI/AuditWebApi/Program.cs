@@ -7,6 +7,8 @@ using Microsoft.Extensions.Options;
 using Mongo;
 using Polly.Retry;
 using Polly;
+using Serilog;
+using OpenTelemetry.Metrics;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +71,20 @@ Log.Logger = logger;
 builder.Host.UseSerilog();
 
 
+builder.Services.AddOpenTelemetry()
+    .WithMetrics(metrics =>
+    {
+        metrics.AddPrometheusExporter();
+        metrics.AddAspNetCoreInstrumentation();
+        metrics.AddRuntimeInstrumentation();
+        metrics.AddProcessInstrumentation();
+        metrics.AddHttpClientInstrumentation();
+        metrics.AddView("http.server.duration", new ExplicitBucketHistogramConfiguration
+        {
+            Boundaries = new[] { 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0 }
+        });
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -79,6 +95,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 

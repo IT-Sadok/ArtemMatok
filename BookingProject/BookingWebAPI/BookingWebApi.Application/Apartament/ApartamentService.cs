@@ -4,6 +4,7 @@ using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
+using Microsoft.Extensions.Logging;
 using Response;
 using System.Text.Json;
 using ApartamentEntity = BookingWebApi.Domain.Entities.Apartament;
@@ -21,7 +22,8 @@ namespace BookingWebApi.Application.Apartament
            IApartamentRepository _apartamentRepository,
            IAppUserRepository _appUserRepository,
            IMapper _mapper,
-           IUserManagerDecorator<AppUser> _userManager
+           IUserManagerDecorator<AppUser> _userManager,
+           ILogger<ApartamentService> _logger
        ) : IApartamentService
     {
         public async Task<Result<ApartamentPostDto>> CreateApartament(ApartamentPostDto apartamentDto, string userId)
@@ -50,6 +52,9 @@ namespace BookingWebApi.Application.Apartament
             {
                 return Result<ApartamentPostDto>.Failure(result.ErrorMessage);
             }
+
+            ApartamentCustomMetrics.SuccessfulApartamentCreations.Inc();
+            _logger.LogInformation("Incrementing successful_apartament_creations_total");
 
             return Result<ApartamentPostDto>.Success(apartamentDto);
         }
