@@ -8,31 +8,21 @@ using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
 using BookingWebApi.Application.User.Validator;
 using BookingWebApi.Domain.Entities;
-using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Infrastructure.Kafka;
 using BookingWebApi.Middleware;
-using Contracts.DTOs;
 using FluentValidation;
 using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using OpenTelemetry;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Trace;
 using Prometheus;
 using Redis;
-using Serilog;
-using System.Configuration;
+using SharedInfrastructure;
 using System.Security.Claims;
-using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -143,27 +133,8 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
-
-var logger = new LoggerConfiguration()
-    .ReadFrom.Configuration(builder.Configuration)
-    .CreateLogger();
-Log.Logger = logger;
-builder.Host.UseSerilog();
-
-
-builder.Services.AddOpenTelemetry()
-    .WithMetrics(metrics =>
-    {
-        metrics.AddPrometheusExporter();
-        metrics.AddAspNetCoreInstrumentation();
-        metrics.AddRuntimeInstrumentation();
-        metrics.AddProcessInstrumentation();
-        metrics.AddHttpClientInstrumentation();
-        metrics.AddView("http.server.duration", new ExplicitBucketHistogramConfiguration
-        {
-            Boundaries = new[] { 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0 }
-        });
-    });
+builder.Services.AddCustomLogging(builder.Configuration);
+builder.Services.AddCustomTelemetry();
 
 var app = builder.Build();
 
