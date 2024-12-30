@@ -14,6 +14,7 @@
   <ItemGroup>
     <ProjectReference Include="..\AuditWebApi.Infrastructure\AuditWebApi.Infrastructure.csproj" />
     <ProjectReference Include="..\BookingWebApi.Infrastructure\BookingWebApi.Infrastructure.csproj" />
+    <ProjectReference Include="..\SharedInfrastructure\SharedInfrastructure.csproj" />
   </ItemGroup>
 
 </Project>

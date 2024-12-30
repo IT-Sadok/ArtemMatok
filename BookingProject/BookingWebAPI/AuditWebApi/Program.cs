@@ -1,4 +1,3 @@
-using AuditWebApi;
 using AuditWebApi.Application;
 using AuditWebApi.Infrastructure;
 using Contracts.Clients;
@@ -7,6 +6,7 @@ using Microsoft.Extensions.Options;
 using Mongo;
 using Polly.Retry;
 using Polly;
+using SharedInfrastructure;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -61,6 +61,9 @@ builder.Services.AddResiliencePipeline("default", x =>
 });
 
 
+builder.Services.AddCustomLogging(builder.Configuration);
+builder.Services.AddCustomTelemetry();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -71,6 +74,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 

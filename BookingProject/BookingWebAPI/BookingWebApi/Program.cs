@@ -8,25 +8,21 @@ using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
 using BookingWebApi.Application.User.Validator;
 using BookingWebApi.Domain.Entities;
-using BookingWebApi.Infrastructure.Configuration;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Infrastructure.Kafka;
 using BookingWebApi.Middleware;
-using Contracts.DTOs;
 using FluentValidation;
 using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Prometheus;
 using Redis;
-using System.Configuration;
+using SharedInfrastructure;
 using System.Security.Claims;
-using static System.Net.Mime.MediaTypeNames;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -140,6 +136,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
 
+builder.Services.AddCustomLogging(builder.Configuration);
+builder.Services.AddCustomTelemetry();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -157,6 +157,9 @@ app.UseCors(x => x
     .SetIsOriginAllowed(origin => true)
 );
 
+app.UseMetricServer();
+
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthentication();
 app.UseAuthorization();
