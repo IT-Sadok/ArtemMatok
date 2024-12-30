@@ -126,6 +126,8 @@ builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecora
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton<IUserChangeKafkaProducer, UserChangeKafkaProducer>();
 
+builder.Services.AddSingleton<IUserRegisteredKafkaProducer, UserRegisteredKafkaProducer>();
+
 //Redis
 builder.Services.AddStackExchangeRedisCache(options =>
 {
@@ -133,8 +135,10 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
+
 builder.Services.AddCustomLogging(builder.Configuration);
 builder.Services.AddCustomTelemetry();
+
 
 var app = builder.Build();
 

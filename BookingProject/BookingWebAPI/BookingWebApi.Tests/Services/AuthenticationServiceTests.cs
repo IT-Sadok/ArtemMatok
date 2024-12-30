@@ -3,10 +3,12 @@ using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Services;
 using BookingWebApi.Domain.Entities;
+using Castle.Core.Logging;
 using FluentAssertions;
 using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Logging;
 using Moq;
 using System;
 using System.Collections.Generic;
@@ -24,6 +26,8 @@ namespace BookingWebApi.Tests.Services
         private readonly Mock<IValidator<RegisterDto>> _validatorRegisterDto;
         private readonly Mock<IValidator<LoginDto>> _validatorLoginDto;
         private readonly AuthenticationService _authenticationService;
+        private readonly Mock<IUserRegisteredKafkaProducer> _userRegisteredKafkaProducer;
+        private readonly Mock<ILogger<AuthenticationService>> _loggerAuthentication;
 
         public AuthenticationServiceTests()
         {
@@ -35,7 +39,9 @@ namespace BookingWebApi.Tests.Services
             _authenticationService = new AuthenticationService(
                 _userManager.Object, 
                 _tokenService.Object, 
-                _signInManager.Object
+                _signInManager.Object,
+                _userRegisteredKafkaProducer.Object,
+                _loggerAuthentication.Object
             );
         }
 

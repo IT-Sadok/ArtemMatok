@@ -3,17 +3,17 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.10.34916.146
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingWebApi", "BookingWebApi\BookingWebApi.csproj", "{52101443-7A69-44C0-8360-52780B44EBC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingWebApi", "BookingWebApi\BookingWebApi.csproj", "{52101443-7A69-44C0-8360-52780B44EBC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingWebApi.Application", "BookingWebApi.Application\BookingWebApi.Application.csproj", "{7056FD9C-E0F2-4666-AA58-D9511EBEED80}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingWebApi.Application", "BookingWebApi.Application\BookingWebApi.Application.csproj", "{7056FD9C-E0F2-4666-AA58-D9511EBEED80}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingWebApi.Domain", "BookingWebApi.Domain\BookingWebApi.Domain.csproj", "{D2BD8788-0A18-46E5-803F-45ACC7719EC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingWebApi.Domain", "BookingWebApi.Domain\BookingWebApi.Domain.csproj", "{D2BD8788-0A18-46E5-803F-45ACC7719EC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingWebApi.Infrastructure", "BookingWebApi.Infrastructure\BookingWebApi.Infrastructure.csproj", "{1B7ED6AD-57CF-4000-B9A5-38FFACF0B942}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingWebApi.Infrastructure", "BookingWebApi.Infrastructure\BookingWebApi.Infrastructure.csproj", "{1B7ED6AD-57CF-4000-B9A5-38FFACF0B942}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BookingWebApi.Tests", "BookingWebApi.Tests\BookingWebApi.Tests.csproj", "{896EEE97-69FD-4D2C-AA2F-860131AE35FC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BookingWebApi.Tests", "BookingWebApi.Tests\BookingWebApi.Tests.csproj", "{896EEE97-69FD-4D2C-AA2F-860131AE35FC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Migrator", "Migrator\Migrator.csproj", "{D250BAFE-5739-45B6-95ED-EBAE8746A2F1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Migrator", "Migrator\Migrator.csproj", "{D250BAFE-5739-45B6-95ED-EBAE8746A2F1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Monolith", "Monolith", "{9251C404-DE63-40CE-B8FF-BF3DD8CBFC33}"
 EndProject
@@ -21,25 +21,37 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Audit", "Audit", "{E0E2ED5F
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{8B9186E5-F8FA-42D0-A60B-0481AE9628DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditWebApi", "AuditWebApi\AuditWebApi.csproj", "{EFD46B08-C8F7-41F6-9065-F67DADA850A0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditWebApi", "AuditWebApi\AuditWebApi.csproj", "{EFD46B08-C8F7-41F6-9065-F67DADA850A0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditWebApi.Application", "AuditWebApi.Application\AuditWebApi.Application.csproj", "{6BA0BB91-7951-4727-90CD-889384731C6F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditWebApi.Application", "AuditWebApi.Application\AuditWebApi.Application.csproj", "{6BA0BB91-7951-4727-90CD-889384731C6F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditWebApi.Domain", "AuditWebApi.Domain\AuditWebApi.Domain.csproj", "{121925ED-BB5A-438F-BB76-1DB65775FAF9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditWebApi.Domain", "AuditWebApi.Domain\AuditWebApi.Domain.csproj", "{121925ED-BB5A-438F-BB76-1DB65775FAF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuditWebApi.Infrastructure", "AuditWebApi.Infrastructure\AuditWebApi.Infrastructure.csproj", "{55E79438-FE5F-4386-A793-9447B676B5F3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuditWebApi.Infrastructure", "AuditWebApi.Infrastructure\AuditWebApi.Infrastructure.csproj", "{55E79438-FE5F-4386-A793-9447B676B5F3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mongo", "Mongo\Mongo.csproj", "{084D6EC3-3EBA-4D08-9E34-3D3D97E7F73E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mongo", "Mongo\Mongo.csproj", "{084D6EC3-3EBA-4D08-9E34-3D3D97E7F73E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kafka", "Kafka\Kafka.csproj", "{DBC8F808-8AA2-4424-AE1F-6082114F8EDA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Kafka", "Kafka\Kafka.csproj", "{DBC8F808-8AA2-4424-AE1F-6082114F8EDA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{6C60A422-A862-4BE3-9B8B-6C9E0535FB95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Contracts", "Contracts\Contracts.csproj", "{6C60A422-A862-4BE3-9B8B-6C9E0535FB95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Response", "Response\Response.csproj", "{07AADFEF-FA98-4020-8A5E-21EA8DBCC59B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Response", "Response\Response.csproj", "{07AADFEF-FA98-4020-8A5E-21EA8DBCC59B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Getaway", "Getaway\Getaway.csproj", "{EE67079C-0883-4177-BFCA-744C038BDF94}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Getaway", "Getaway\Getaway.csproj", "{EE67079C-0883-4177-BFCA-744C038BDF94}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Redis", "Redis\Redis.csproj", "{59B82A9B-66C2-4D63-9A83-5E6654E304E8}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Payment", "Payment", "{12945333-41D7-4082-9FAC-C7EC125A7C72}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.Api", "Payment.Api\Payment.Api.csproj", "{ACE6B49E-052A-46BB-8C63-6EF09552AE07}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.Domain", "Payment.Domain\Payment.Domain.csproj", "{8C98BDA7-82D8-4963-AEAD-034204BCF849}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.Infrastructure", "Payment.Infrastructure\Payment.Infrastructure.csproj", "{57C0ACDC-1C9E-49E4-886A-FA56D514322D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payment.Application", "Payment.Application\Payment.Application.csproj", "{8537FAA4-2600-47A3-8AB6-0339CA42A2B8}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Redis", "Redis\Redis.csproj", "{59B82A9B-66C2-4D63-9A83-5E6654E304E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment.Tests", "Payment.Tests\Payment.Tests.csproj", "{30575D41-0081-477E-A5AF-A51A04B230ED}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedInfrastructure", "SharedInfrastructure\SharedInfrastructure.csproj", "{0D917AEA-7D1E-4517-A266-43622863575E}"
 EndProject
@@ -109,14 +121,32 @@ Global
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE67079C-0883-4177-BFCA-744C038BDF94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACE6B49E-052A-46BB-8C63-6EF09552AE07}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACE6B49E-052A-46BB-8C63-6EF09552AE07}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACE6B49E-052A-46BB-8C63-6EF09552AE07}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACE6B49E-052A-46BB-8C63-6EF09552AE07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C98BDA7-82D8-4963-AEAD-034204BCF849}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C98BDA7-82D8-4963-AEAD-034204BCF849}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C98BDA7-82D8-4963-AEAD-034204BCF849}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C98BDA7-82D8-4963-AEAD-034204BCF849}.Release|Any CPU.Build.0 = Release|Any CPU
+		{57C0ACDC-1C9E-49E4-886A-FA56D514322D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57C0ACDC-1C9E-49E4-886A-FA56D514322D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57C0ACDC-1C9E-49E4-886A-FA56D514322D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57C0ACDC-1C9E-49E4-886A-FA56D514322D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8537FAA4-2600-47A3-8AB6-0339CA42A2B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8537FAA4-2600-47A3-8AB6-0339CA42A2B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8537FAA4-2600-47A3-8AB6-0339CA42A2B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8537FAA4-2600-47A3-8AB6-0339CA42A2B8}.Release|Any CPU.Build.0 = Release|Any CPU
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8}.Release|Any CPU.Build.0 = Release|Any CPU
+
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Release|Any CPU.Build.0 = Release|Any CPU
+
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -136,8 +166,14 @@ Global
 		{DBC8F808-8AA2-4424-AE1F-6082114F8EDA} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{6C60A422-A862-4BE3-9B8B-6C9E0535FB95} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{07AADFEF-FA98-4020-8A5E-21EA8DBCC59B} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+		{ACE6B49E-052A-46BB-8C63-6EF09552AE07} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
+		{8C98BDA7-82D8-4963-AEAD-034204BCF849} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
+		{57C0ACDC-1C9E-49E4-886A-FA56D514322D} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
+		{8537FAA4-2600-47A3-8AB6-0339CA42A2B8} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+
 		{0D917AEA-7D1E-4517-A266-43622863575E} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99BAA0D2-510D-48FF-952F-AB56F3C6DCBF}

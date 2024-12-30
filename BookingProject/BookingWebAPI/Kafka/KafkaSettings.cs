@@ -9,6 +9,7 @@ namespace Kafka
     public class Topics
     {
         public string UserChanges { get; set; }
+        public string UserRegistered { get; set; }
     }
     public class KafkaSettings
     {
