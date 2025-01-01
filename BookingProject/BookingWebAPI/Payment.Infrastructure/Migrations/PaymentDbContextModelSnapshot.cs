@@ -36,16 +36,12 @@ namespace Payment.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserBalanceId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<int>("UserBalanceId1")
+                    b.Property<int>("UserBalanceId")
                         .HasColumnType("integer");
 
                     b.HasKey("CurrencyId");
 
-                    b.HasIndex("UserBalanceId1");
+                    b.HasIndex("UserBalanceId");
 
                     b.ToTable("Currency");
                 });
@@ -71,7 +67,7 @@ namespace Payment.Infrastructure.Migrations
                 {
                     b.HasOne("Payment.Domain.Models.UserBalance", "UserBalance")
                         .WithMany("Currencies")
-                        .HasForeignKey("UserBalanceId1")
+                        .HasForeignKey("UserBalanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

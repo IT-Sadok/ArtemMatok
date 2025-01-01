@@ -1,12 +1,17 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using Kafka;
 using Microsoft.EntityFrameworkCore;
+using Payment.Application.DTOs;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
 using Payment.Application.Services.PaymentService;
+using Payment.Application.Validators;
 using Payment.Infrastructure.DataContext;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Kafka;
 using Payment.Infrastructure.Repositories.PaymentRepository;
+using SharedInfrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +22,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddValidatorsFromAssemblyContaining<BalanceRequestDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 //Db
 builder.Services.AddDbContext<PaymentDbContext>(options =>
 {
@@ -46,6 +53,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 

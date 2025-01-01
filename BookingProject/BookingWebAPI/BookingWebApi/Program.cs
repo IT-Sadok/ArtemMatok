@@ -11,7 +11,6 @@ using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Infrastructure.Kafka;
-using BookingWebApi.Middleware;
 using FluentValidation;
 using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
