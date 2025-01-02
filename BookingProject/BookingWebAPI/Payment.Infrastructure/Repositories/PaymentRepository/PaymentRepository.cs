@@ -40,12 +40,12 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
             return true;
         }
 
-        public async Task<Result<bool>> CompensateMoney(string userId, decimal price, string currencyName)
+        public async Task<Result<bool>> CompensateBalance(string userId, decimal price, string currencyName)
         {
             return await UpdateCurrencyAmount(userId, price, currencyName);
         }
 
-        public async Task<Result<bool>> ReserveMoney(string userId, decimal price, string currencyName)
+        public async Task<Result<bool>> ReserveBalance(string userId, decimal price, string currencyName)
         {
             var checkBalance = await CheckBalance(userId, price, currencyName);
             if (!checkBalance.IsSuccess) return Result<bool>.Failure(checkBalance.ErrorMessage);
@@ -64,7 +64,6 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
 
             return Result<bool>.Success(true);
         }
-
 
         private async Task<Result<bool>> CheckBalance(string userId, decimal price, string currencyName)
         {

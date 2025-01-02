@@ -12,7 +12,7 @@ namespace Payment.Application.Services.PaymentService
 {
     public class PaymentService(IPaymentRepository _paymentRepository) : IPaymentService
     {
-        public async Task<Result<bool>> CompensateMoney(BalanceRequestDto balanceDto)
+        public async Task<Result<bool>> CompensateBalance(BalanceRequestDto balanceDto)
         {
             return await _paymentRepository.CompensateBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
         }
@@ -28,7 +28,7 @@ namespace Payment.Application.Services.PaymentService
             return false;
         }
 
-        public async Task<Result<bool>> ReserveMoney(BalanceRequestDto balanceDto)
+        public async Task<Result<bool>> ReserveBalance(BalanceRequestDto balanceDto)
         {
             return await _paymentRepository.ReserveBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
         }
