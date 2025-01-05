@@ -1,5 +1,5 @@
-﻿using AuditWebApi.Application;
-using AuditWebApi.Application.DTOs;
+﻿using AuditWebApi.Application.UserAudit;
+using AuditWebApi.Application.UserAudit.DTOs;
 using Confluent.Kafka;
 using DnsClient.Internal;
 using Kafka;

@@ -1,8 +1,9 @@
+using Contracts;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Kafka;
 using Microsoft.EntityFrameworkCore;
-using Payment.Application.DTOs;
+using Microsoft.Extensions.Options;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
 using Payment.Application.Services.PaymentService;
@@ -39,7 +40,6 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 //Kafka 
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton<IHostedService, UserRegisteredKafkaConsumer>();
-
 
 var app = builder.Build();
 

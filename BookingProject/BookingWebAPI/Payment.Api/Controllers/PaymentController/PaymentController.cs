@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Contracts.DTOs.Payment;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Payment.Application.DTOs;
 using Payment.Application.Interfaces.PaymentInterface;
 using Response;
 

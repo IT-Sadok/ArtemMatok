@@ -55,6 +55,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Payment.Tests", "Payment.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedInfrastructure", "SharedInfrastructure\SharedInfrastructure.csproj", "{0D917AEA-7D1E-4517-A266-43622863575E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saga", "Saga\Saga.csproj", "{C305E42B-782F-4B97-8336-90B9DBAAA1A9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -149,6 +151,10 @@ Global
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0D917AEA-7D1E-4517-A266-43622863575E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +181,7 @@ Global
 		{59B82A9B-66C2-4D63-9A83-5E6654E304E8} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{30575D41-0081-477E-A5AF-A51A04B230ED} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
 		{0D917AEA-7D1E-4517-A266-43622863575E} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+		{C305E42B-782F-4B97-8336-90B9DBAAA1A9} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99BAA0D2-510D-48FF-952F-AB56F3C6DCBF}

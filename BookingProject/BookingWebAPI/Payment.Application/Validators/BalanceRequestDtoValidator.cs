@@ -1,5 +1,5 @@
-﻿using FluentValidation;
-using Payment.Application.DTOs;
+﻿using Contracts.DTOs.Payment;
+using FluentValidation;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Contracts.DTOs
+namespace Contracts.DTOs.Audit
 {
     public record UserInfo(
       string UserName,

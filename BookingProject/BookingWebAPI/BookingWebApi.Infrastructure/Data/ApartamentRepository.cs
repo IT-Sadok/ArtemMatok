@@ -166,6 +166,22 @@ namespace BookingWebApi.Infrastructure.Data
             if (apartament == null) return false;
             return true;
         }
+
+        public async Task<Result<(decimal TotalPrice, string CurrencyName)>> CalculateTotalPriceWithCurrency(int apartamentId, DateTime startDate, DateTime endDate)
+        {
+            var apartament = await _context.Apartaments.FindAsync(apartamentId);
+
+            if(apartament is null)
+            {
+                return Result<(decimal TotalPrice, string CurrencyName)>.Failure("Apartament wasn`t found");
+            }
+
+            var totalDays = (endDate - startDate).Days;
+
+            var totalPrice = totalDays * apartament.PricePerDay;
+
+            return Result<(decimal TotalPrice, string CurrencyName)>.Success((totalPrice, apartament.CurrencyName));
+        }
     }
 }
 

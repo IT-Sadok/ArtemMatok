@@ -1,7 +1,7 @@
-﻿using Contracts.DTOs;
+﻿using Contracts.DTOs.Audit;
 using UserChangeDto = AuditWebApi.Domain.Entities.UserChange;
 
-namespace AuditWebApi.Application.DTOs
+namespace AuditWebApi.Application.UserAudit.DTOs
 {
     public record AuditChangeDto(
          string UserId,

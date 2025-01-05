@@ -23,6 +23,7 @@
     <ProjectReference Include="..\Kafka\Kafka.csproj" />
     <ProjectReference Include="..\Redis\Redis.csproj" />
     <ProjectReference Include="..\Response\Response.csproj" />
+    <ProjectReference Include="..\Saga\Saga.csproj" />
   </ItemGroup>
 
 </Project>

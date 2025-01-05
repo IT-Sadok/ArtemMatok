@@ -2,6 +2,7 @@
 using BookingWebApi.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Response;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,10 @@ using System.Threading.Tasks;
 
 namespace BookingWebApi.Infrastructure.Data
 {
-    public class BookingRepository(ApplicationDbContext _context): IBookingRepository
+    public class BookingRepository(
+        ApplicationDbContext _context,
+        ILogger<BookingRepository> _logger
+    ): IBookingRepository
     {
         private static readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
 
@@ -51,6 +55,10 @@ namespace BookingWebApi.Infrastructure.Data
                 await _context.SaveChangesAsync();
 
                 return Result<Booking>.Success(booking);
+            }
+            catch (Exception ex)
+            {
+                return Result<Booking>.Failure(ex.Message);
             }
             finally
             {

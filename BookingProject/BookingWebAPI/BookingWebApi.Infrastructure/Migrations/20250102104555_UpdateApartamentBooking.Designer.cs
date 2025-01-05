@@ -3,6 +3,7 @@ using System;
 using BookingWebApi.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingWebApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250102104555_UpdateApartamentBooking")]
+    partial class UpdateApartamentBooking
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -163,6 +166,9 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.Property<int>("ApartamentId")
                         .HasColumnType("integer");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<string>("CurrencyName")
                         .IsRequired()
                         .HasColumnType("text");
@@ -221,19 +227,19 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "72621007-cc68-49f8-87c7-528be7df7ca8",
+                            Id = "1af888ac-d159-4bb9-8b36-52aeee4241e9",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "65896f02-07d4-415d-9ad1-d0d379d4e44a",
+                            Id = "8b818d8b-3df4-4a4a-95f2-2a0dd94a6366",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "c10d70f1-7c72-4f36-bb0d-411fbe5e8006",
+                            Id = "cd17a05e-c75c-4d55-b267-eb30f888d360",
                             Name = "Host",
                             NormalizedName = "HOST"
                         });

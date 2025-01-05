@@ -27,6 +27,14 @@ namespace BookingWebApi.Application.Apartament
 
             RuleFor(x => x.Bedrooms)
                 .GreaterThanOrEqualTo(1).WithMessage("There must be at least 1 bedroom.");
+
+            RuleFor(x => x.PricePerDay)
+                .NotEmpty().WithMessage("Price is required")
+                .GreaterThan(1).WithMessage("Price should be greater than 1");
+
+            RuleFor(x => x.CurrencyName)
+                .NotEmpty().WithMessage("Price is required")
+                .MinimumLength(2).WithMessage("Min symbol is 2");
         }
     }
 }

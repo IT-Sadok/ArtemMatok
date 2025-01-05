@@ -1,4 +1,4 @@
-﻿using Response;
+﻿using AutoMapper;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,8 +8,11 @@ using BookingEntity = BookingWebApi.Domain.Entities.Booking;
 
 namespace BookingWebApi.Application.Booking
 {
-    public interface IBookingRepository
+    public class BookingMapper : Profile
     {
-        Task<Result<BookingEntity>> CreateBookingAsync(BookingEntity booking);
+        public BookingMapper()
+        {
+            CreateMap<BookingDto, BookingEntity>();
+        }
     }
 }

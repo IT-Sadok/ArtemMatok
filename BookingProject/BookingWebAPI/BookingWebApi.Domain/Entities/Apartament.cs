@@ -19,6 +19,8 @@ namespace BookingWebApi.Domain.Entities
         public string HostId { get; set; }  
         public AppUser Host { get; set; }
         public string? CustomData { get; set; }
+        public decimal PricePerDay { get; set; }
+        public string CurrencyName { get; set; }
         public List<Booking> Bookings { get; set; } = new List<Booking>();
     }
 }

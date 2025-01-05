@@ -1,4 +1,4 @@
-﻿using Payment.Application.DTOs;
+﻿using Contracts.DTOs.Payment;
 using Response;
 using System;
 using System.Collections.Generic;

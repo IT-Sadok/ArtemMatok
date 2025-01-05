@@ -48,6 +48,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 12,
                 12,
+                120,
+                "USD",
                 3
             );
             string userId = "testId";
@@ -88,6 +90,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 24,
                 12,
+                120,
+                "USD",
                 3
             );
             var userId = "";
@@ -107,6 +111,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 23,
                 12,
+                120,
+                "USD",
                 3
             );
             string userId = "testId";

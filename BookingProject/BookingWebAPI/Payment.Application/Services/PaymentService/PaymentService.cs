@@ -1,4 +1,4 @@
-﻿using Payment.Application.DTOs;
+﻿using Contracts.DTOs.Payment;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Response;

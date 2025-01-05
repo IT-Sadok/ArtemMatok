@@ -7,6 +7,12 @@ using Mongo;
 using Polly.Retry;
 using Polly;
 using SharedInfrastructure;
+using AuditWebApi.Infrastructure.Repositories;
+using AuditWebApi.Application.UserAudit;
+using AuditWebApi.Application.BookingAudit;
+using BookingWebApi.Application.User.Validator;
+using FluentValidation;
+using Contracts;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,6 +28,8 @@ builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSet
 
 builder.Services.AddAutoMapper(typeof(AuditMapper));
 
+builder.Services.AddValidatorsFromAssemblyContaining<AuditBookingCreateDtoValidator>();
+
 //Kafka
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddHostedService<AuditConsumer>();
@@ -34,9 +42,11 @@ builder.Services.AddSingleton<MongoDbContext>();
 //Services
 builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<IMonolithClient,MonolithClient>();
+builder.Services.AddScoped<IAuditBookingService, AuditBookingService>();
 
 //Repositories
 builder.Services.AddScoped<IAuditRepository, AuditRepository>();
+builder.Services.AddScoped<IAuditBookingRepository, AuditBookingRepository>();
 
 
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
@@ -78,6 +88,8 @@ app.UseHttpsRedirection();
 app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
+
+app.UseMiddleware<ValidationMiddleware>();
 
 app.MapControllers();
 

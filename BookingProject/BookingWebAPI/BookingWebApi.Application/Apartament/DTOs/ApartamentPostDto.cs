@@ -11,6 +11,8 @@ public record ApartamentPostDto(
     double Area,
     decimal Latitude,
     decimal Longtitude,
+    decimal PricePerDay,
+    string CurrencyName, 
     int Bedrooms
 );
 

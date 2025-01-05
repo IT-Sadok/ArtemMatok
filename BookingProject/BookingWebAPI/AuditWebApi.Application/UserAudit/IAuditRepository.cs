@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuditWebApi.Application
+namespace AuditWebApi.Application.UserAudit
 {
     public interface IAuditRepository
     {

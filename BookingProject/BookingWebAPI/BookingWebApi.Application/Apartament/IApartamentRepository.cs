@@ -22,5 +22,6 @@ namespace BookingWebApi.Application.Apartament
         Task<Result<List<TotalAreaCountBySourceDto>>> GetTotalAreaCountBySourceCompany();
         Task<Result<AreaQuantilesDto>> GetAreaQuantiles();
         Task<Result<bool>> UpsertCustomData<T>(int apartamentId, T customData);
+        Task<Result<(decimal TotalPrice, string CurrencyName)>> CalculateTotalPriceWithCurrency(int apartamentId, DateTime startDate, DateTime endDate);
     }
 }
