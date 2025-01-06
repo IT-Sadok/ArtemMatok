@@ -20,8 +20,6 @@ namespace Contracts.Clients
     {
         private readonly HttpClient _httpClient;
         private readonly ResiliencePipelineProvider<string> _pipelineProvider;
-        private const string ReserveBalanceEndpoint = "api/Payment/ReserveBalance";
-        private const string CompensateBalanceEndpoint = "api/Payment/CompensateBalance";
 
         public PaymentClient(IHttpClientFactory httpClientFactory, ResiliencePipelineProvider<string> pipelineProvider)
         {
@@ -31,6 +29,8 @@ namespace Contracts.Clients
 
         public async Task<Result<bool>> ReserveBalance(BalanceRequestDto balanceDto)
         {
+            const string ReserveBalanceEndpoint = "api/Payment/ReserveBalance";
+
             try
             {
                 var pipeline = _pipelineProvider.GetPipeline("default");
@@ -53,6 +53,8 @@ namespace Contracts.Clients
 
         public async Task<Result<bool>> CompensateBalance(BalanceRequestDto balanceDto)
         {
+            const string CompensateBalanceEndpoint = "api/Payment/CompensateBalance";
+
             try
             {
                 var pipeline = _pipelineProvider.GetPipeline("default");

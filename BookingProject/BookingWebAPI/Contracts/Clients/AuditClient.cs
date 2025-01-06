@@ -15,18 +15,25 @@ namespace Contracts.Clients
         Task<Result<bool>> CreateAuditBooking(AuditBookingCreateDto bookingDto);
         Task<Result<bool>> RemoveAuditBooking(RemoveAuditBookingDto bookingDto);
     }
+    public static class QueryStringExtensions
+    {
+        public static string ToQueryParamsString(this RemoveAuditBookingDto bookingDto)
+        {
+            return $"?UserId={bookingDto.UserId}&ApartamentId={bookingDto.ApartamentId}&StartDate={bookingDto.StartDate}";
+        }
+    }
     public class AuditClient : IAuditClient
     {
         private readonly HttpClient _httpClient;
         private readonly ResiliencePipelineProvider<string> _pipelineProvider;
-        private const string CreateAuditBookingEndpoint = "api/bookingAudits";
-        private const string DeleteAuditBookingEndpoint = "api/bookingAudits";
 
         public AuditClient(IHttpClientFactory httpClientFactory, ResiliencePipelineProvider<string> pipelineProvider)
         {
             _httpClient = httpClientFactory.CreateClient("AuditClient");
             _pipelineProvider = pipelineProvider;
         }
+
+        private const string CreateAuditBookingEndpoint = "api/bookingAudits";
         public async Task<Result<bool>> CreateAuditBooking(AuditBookingCreateDto bookingDto)
         {
             try
@@ -48,14 +55,15 @@ namespace Contracts.Clients
             }
         }
 
+        private const string DeleteAuditBookingEndpoint = "api/bookingAudits";
         public async Task<Result<bool>> RemoveAuditBooking(RemoveAuditBookingDto bookingDto)
         {
             try
             {
                 var pipeline = _pipelineProvider.GetPipeline("default");
 
-                var query = $"?UserId={bookingDto.UserId}&ApartamentId={bookingDto.ApartamentId}&StartDate={Uri.EscapeDataString(bookingDto.StartDate.ToString("o"))}";
-                var result = await pipeline.ExecuteAsync(async x => await _httpClient.DeleteAsync(DeleteAuditBookingEndpoint + query));
+                var result = await pipeline.ExecuteAsync(async x => 
+                    await _httpClient.DeleteAsync(DeleteAuditBookingEndpoint + bookingDto.ToQueryParamsString()));
 
                 if (!result.IsSuccessStatusCode)
                 {

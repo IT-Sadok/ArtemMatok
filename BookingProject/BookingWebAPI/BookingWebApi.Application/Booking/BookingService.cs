@@ -31,17 +31,10 @@ namespace BookingWebApi.Application.Booking
     {
         public async Task<Result<BookingDto>> CreateBooking(string userId, BookingDto bookingDto)
         {
-            var booking = _mapper.Map<BookingEntity>(bookingDto);
-            booking.UserId = userId;
-
-            var res = (await _apartamentRepository.CalculateTotalPriceWithCurrency(
-                    bookingDto.ApartamentId, bookingDto.StartDate, bookingDto.EndDate));
+            var res = await _apartamentRepository.CalculateTotalPriceWithCurrency(
+                    bookingDto.ApartamentId, bookingDto.StartDate, bookingDto.EndDate);
 
             if (!res.IsSuccess) return Result<BookingDto>.Failure(res.ErrorMessage);
-
-            booking.TotalAmount = res.Value.TotalPrice;
-            booking.CurrencyName = res.Value.CurrencyName;
-            booking.Status = "Creating";
 
             var balanceRequestDto = new BalanceRequestDto(userId, res.Value.TotalPrice, res.Value.CurrencyName);
 
@@ -59,7 +52,13 @@ namespace BookingWebApi.Application.Booking
                 .AddStep(
                     async () =>
                     {
-                        var auditBookingDto = new AuditBookingCreateDto(userId, bookingDto.ApartamentId, bookingDto.StartDate, res.Value.TotalPrice, res.Value.CurrencyName);
+                        var auditBookingDto = new AuditBookingCreateDto(
+                            userId, 
+                            bookingDto.ApartamentId, 
+                            bookingDto.StartDate, 
+                            res.Value.TotalPrice, 
+                            res.Value.CurrencyName
+                        );
 
                         var auditBooking = await _auditClient.CreateAuditBooking(auditBookingDto);
                         return auditBooking.IsSuccess
@@ -74,6 +73,10 @@ namespace BookingWebApi.Application.Booking
                 .AddStep(
                     async () =>
                     {
+                        var booking = _mapper.Map<BookingEntity>(bookingDto);
+                        booking.UserId = userId;
+                        booking.TotalAmount = res.Value.TotalPrice;
+                        booking.CurrencyName = res.Value.CurrencyName;
                         booking.Status = "Successful";
                         var createBooking = await _bookingRepository.CreateBookingAsync(booking);
                         return createBooking.IsSuccess

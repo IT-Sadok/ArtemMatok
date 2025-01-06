@@ -1,4 +1,5 @@
 ﻿using BookingWebApi.Application.Apartament;
+using BookingWebApi.Application.Apartament.DTOs;
 using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Configuration;
@@ -167,20 +168,20 @@ namespace BookingWebApi.Infrastructure.Data
             return true;
         }
 
-        public async Task<Result<(decimal TotalPrice, string CurrencyName)>> CalculateTotalPriceWithCurrency(int apartamentId, DateTime startDate, DateTime endDate)
+        public async Task<Result<TotalPriceWithCurrencyDto>> CalculateTotalPriceWithCurrency(int apartamentId, DateTime startDate, DateTime endDate)
         {
             var apartament = await _context.Apartaments.FindAsync(apartamentId);
 
             if(apartament is null)
             {
-                return Result<(decimal TotalPrice, string CurrencyName)>.Failure("Apartament wasn`t found");
+                return Result<TotalPriceWithCurrencyDto>.Failure("Apartament wasn`t found");
             }
 
             var totalDays = (endDate - startDate).Days;
 
             var totalPrice = totalDays * apartament.PricePerDay;
 
-            return Result<(decimal TotalPrice, string CurrencyName)>.Success((totalPrice, apartament.CurrencyName));
+            return Result<TotalPriceWithCurrencyDto>.Success(new TotalPriceWithCurrencyDto(totalPrice, apartament.CurrencyName));
         }
     }
 }
