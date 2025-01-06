@@ -12,7 +12,7 @@ namespace Contracts.Clients
 {
     public interface IPaymentClient
     {
-        Task<Result<bool>> ReserveBalance(BalanceRequestDto balanceDto);
+        Task<Result<bool>> WithdrawBalance(BalanceRequestDto balanceDto);
         Task<Result<bool>> CompensateBalance(BalanceRequestDto balanceDto);
 
     }
@@ -27,9 +27,9 @@ namespace Contracts.Clients
             _pipelineProvider = pipelineProvider;
         }
 
-        public async Task<Result<bool>> ReserveBalance(BalanceRequestDto balanceDto)
+        public async Task<Result<bool>> WithdrawBalance(BalanceRequestDto balanceDto)
         {
-            const string ReserveBalanceEndpoint = "api/Payment/ReserveBalance";
+            const string ReserveBalanceEndpoint = "api/Payment/WithdrawBalance";
 
             try
             {

@@ -11,7 +11,7 @@ namespace Payment.Application.Interfaces.PaymentInterface
     public interface IPaymentService
     {
         Task<bool> CreateBalanceAsync(string userId);
-        Task<Result<bool>> ReserveBalance(BalanceRequestDto balanceDto);
+        Task<Result<bool>> WithdrawBalance(BalanceRequestDto balanceDto);
         Task<Result<bool>> CompensateBalance(BalanceRequestDto balanceDto);
 
     }

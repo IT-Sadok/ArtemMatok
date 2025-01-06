@@ -23,10 +23,10 @@ namespace Payment.Api.Controllers.Balance
             return Ok(result);
         }
 
-        [HttpPatch("ReserveBalance")]
-        public async Task<IActionResult> ReserveBalance(BalanceRequestDto balanceDto)
+        [HttpPatch("WithdrawBalance")]
+        public async Task<IActionResult> WithdrawBalance(BalanceRequestDto balanceDto)
         {
-            var result = await _paymentService.ReserveBalance(balanceDto);
+            var result = await _paymentService.WithdrawBalance(balanceDto);
 
             return result.ToResponse();
         }

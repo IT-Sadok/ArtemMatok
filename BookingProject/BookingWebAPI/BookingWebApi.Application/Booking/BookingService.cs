@@ -42,7 +42,7 @@ namespace BookingWebApi.Application.Booking
                 .AddStep(
                     async () =>
                     {
-                        var reserveBalance = await _paymentClient.ReserveBalance(balanceRequestDto);
+                        var reserveBalance = await _paymentClient.WithdrawBalance(balanceRequestDto);
                         return reserveBalance.IsSuccess
                             ? Result<object>.Success(null)
                             : Result<object>.Failure(reserveBalance.ErrorMessage);
