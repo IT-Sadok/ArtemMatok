@@ -1,8 +1,15 @@
 ﻿using FluentValidation;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
-namespace BookingWebApi.Middleware
+namespace SharedInfrastructure
 {
     public class ValidationMiddleware
     {
@@ -58,7 +65,7 @@ namespace BookingWebApi.Middleware
                             return;
                         }
 
-                        if (argument is IEnumerable<object> collection) // Перевіряємо, чи це список
+                        if (argument is IEnumerable<object> collection) 
                         {
                             foreach (var item in collection)
                             {

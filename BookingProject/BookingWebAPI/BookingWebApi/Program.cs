@@ -1,5 +1,6 @@
 using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
+using BookingWebApi.Application.Booking;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User;
@@ -11,14 +12,18 @@ using BookingWebApi.Domain.Entities;
 using BookingWebApi.Infrastructure.Data;
 using BookingWebApi.Infrastructure.Decorators;
 using BookingWebApi.Infrastructure.Kafka;
-using BookingWebApi.Middleware;
+using Contracts;
+using Contracts.Clients;
 using FluentValidation;
 using Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Polly;
+using Polly.Retry;
 using Prometheus;
 using Redis;
 using SharedInfrastructure;
@@ -111,12 +116,14 @@ builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();    
 builder.Services.AddScoped<IApartamentService, ApartamentService>();
 builder.Services.AddScoped<IApartamentStatisticService, ApartamentStatisticService>();
-builder.Services.AddScoped<IAppUserService, AppUserService>();  
+builder.Services.AddScoped<IAppUserService, AppUserService>();
+builder.Services.AddScoped<IBookingService, BookingService>();
 
 //Repositories
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IApartamentRepository,ApartamentRepository>();
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
+builder.Services.AddScoped<IBookingRepository, BookingRepository>();
 
 //Decorators
 builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();
@@ -139,6 +146,32 @@ builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 builder.Services.AddCustomLogging(builder.Configuration);
 builder.Services.AddCustomTelemetry();
 
+builder.Services.AddResiliencePipeline("default", x =>
+{
+    x.AddRetry(new RetryStrategyOptions
+    {
+        ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+        Delay = TimeSpan.FromSeconds(2),
+        MaxRetryAttempts = 2,
+        BackoffType = DelayBackoffType.Exponential,
+        UseJitter = true,
+    })
+    .AddTimeout(TimeSpan.FromSeconds(30));
+});
+
+builder.Services.AddScoped<IPaymentClient, PaymentClient>();
+builder.Services.AddScoped<IAuditClient, AuditClient>();
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddHttpClient("PaymentClient", (provider, client) =>
+{
+    var apiSettings = provider.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(apiSettings.PaymentUrl);
+});
+builder.Services.AddHttpClient("AuditClient", (provider, client) =>
+{
+    var apiSettings = provider.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(apiSettings.AuditUrl);
+});
 
 var app = builder.Build();
 

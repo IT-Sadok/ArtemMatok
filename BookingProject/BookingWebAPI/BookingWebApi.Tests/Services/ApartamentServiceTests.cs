@@ -6,7 +6,9 @@ using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Domain.Constants;
 using BookingWebApi.Domain.Entities;
+using Castle.Core.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using Moq;
 using Response;
 
@@ -19,6 +21,7 @@ namespace BookingWebApi.Tests.Services
         private readonly Mock<IMapper> _mapper;
         private readonly Mock<IUserManagerDecorator<AppUser>> _userManager;
         private readonly ApartamentService _apartamentService;
+        private readonly ILogger<ApartamentService> _logger;
 
         public ApartamentServiceTests()
         {
@@ -26,12 +29,14 @@ namespace BookingWebApi.Tests.Services
             _appUserRepository = new Mock<IAppUserRepository>();
             _userManager = new Mock<IUserManagerDecorator<AppUser>>();
 
+
             _mapper = new Mock<IMapper>();
             _apartamentService = new ApartamentService(
                 _apartamentRepository.Object,
                 _appUserRepository.Object,
                 _mapper.Object,
-                _userManager.Object
+                _userManager.Object,
+                _logger
             );
         }
 
@@ -43,6 +48,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 12,
                 12,
+                120,
+                "USD",
                 3
             );
             string userId = "testId";
@@ -83,6 +90,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 24,
                 12,
+                120,
+                "USD",
                 3
             );
             var userId = "";
@@ -102,6 +111,8 @@ namespace BookingWebApi.Tests.Services
                 10,
                 23,
                 12,
+                120,
+                "USD",
                 3
             );
             string userId = "testId";

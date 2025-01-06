@@ -1,6 +1,7 @@
-﻿using AuditWebApi.Application.DTOs;
+﻿using AuditWebApi.Application.UserAudit.DTOs;
 using AuditWebApi.Domain.Entities;
 using AutoMapper;
+using Contracts.DTOs.Audit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,6 +15,7 @@ namespace AuditWebApi.Application
         public AuditMapper()
         {
             CreateMap<AuditRecord, AuditChangeDto>();
+            CreateMap<AuditBookingCreateDto, AuditBooking>();
         }
     }
 }

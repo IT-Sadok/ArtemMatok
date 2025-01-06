@@ -1,4 +1,4 @@
-﻿using Contracts.DTOs;
+﻿using Contracts.DTOs.Audit;
 using Polly;
 using Polly.Registry;
 using Polly.Retry;

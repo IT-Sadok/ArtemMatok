@@ -1,6 +1,6 @@
 ﻿using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
-using Contracts.DTOs;
+using Contracts.DTOs.Audit;
 using Kafka;
 using Microsoft.Extensions.Logging;
 using Redis;

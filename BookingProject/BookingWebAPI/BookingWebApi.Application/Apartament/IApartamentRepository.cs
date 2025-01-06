@@ -1,4 +1,5 @@
-﻿using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
+﻿using BookingWebApi.Application.Apartament.DTOs;
+using BookingWebApi.Application.Apartament.Statistics.StatisticDTOs;
 using BookingWebApi.Domain.Entities;
 using Response;
 using System;
@@ -22,5 +23,6 @@ namespace BookingWebApi.Application.Apartament
         Task<Result<List<TotalAreaCountBySourceDto>>> GetTotalAreaCountBySourceCompany();
         Task<Result<AreaQuantilesDto>> GetAreaQuantiles();
         Task<Result<bool>> UpsertCustomData<T>(int apartamentId, T customData);
+        Task<Result<TotalPriceWithCurrencyDto>> CalculateTotalPriceWithCurrency(int apartamentId, DateTime startDate, DateTime endDate);
     }
 }

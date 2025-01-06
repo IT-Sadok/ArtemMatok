@@ -1,4 +1,4 @@
-﻿using AuditWebApi.Application;
+﻿using AuditWebApi.Application.UserAudit;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Response;
