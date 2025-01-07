@@ -18,20 +18,28 @@ namespace Payment.Application.Services.PaymentService
     {
         public async Task<Result<bool>> CompensateBalance(BalanceRequestDto balanceDto)
         {
-            var lockKey = $"balance:{balanceDto.UserId}";
-            var lockValue = await _lockService.AcquireLockAsync(lockKey, TimeSpan.FromSeconds(10));
-            if (string.IsNullOrEmpty(lockValue))
-            {
-                return Result<bool>.Failure("Unable to acquire lock. Try again later.");
-            }
+            var lockKey = CreateLockKey(balanceDto.UserId);
+            var lockValue = string.Empty;
 
             try
             {
+                lockValue = await _lockService.AcquireLockAsync(lockKey, TimeSpan.FromSeconds(10));
+                if (string.IsNullOrEmpty(lockValue))
+                {
+                    return Result<bool>.Failure("Unable to acquire lock. Try again later.");
+                }
                 return await _paymentRepository.CompensateBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
+            }
+            catch(Exception ex)
+            {
+                return Result<bool>.Failure($"An error occurred: {ex.Message}");
             }
             finally
             {
-                await _lockService.ReleaseLockAsync(lockKey, lockValue);
+                if (!string.IsNullOrEmpty(lockValue))
+                {
+                    await _lockService.ReleaseLockAsync(lockKey, lockValue);
+                }
             } 
         }
 
@@ -48,21 +56,34 @@ namespace Payment.Application.Services.PaymentService
 
         public async Task<Result<bool>> WithdrawBalance(BalanceRequestDto balanceDto)
         {
-            var lockKey = $"balance:{balanceDto.UserId}";
-            var lockValue = await _lockService.AcquireLockAsync(lockKey, TimeSpan.FromSeconds(10));
-            if (string.IsNullOrEmpty(lockValue))
-            {
-                return Result<bool>.Failure("Unable to acquire lock. Try again later.");
-            }
-
+            var lockKey = CreateLockKey(balanceDto.UserId);
+            var lockValue = string.Empty;
             try
             {
-                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
+                lockValue = await _lockService.AcquireLockAsync(lockKey, TimeSpan.FromSeconds(10));
+                if (string.IsNullOrEmpty(lockValue))
+                {
+                    return Result<bool>.Failure("Unable to acquire lock. Try again later.");
+                }
+
+                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.Currency);
+            }
+            catch (Exception ex)
+            {
+                return Result<bool>.Failure($"An error occurred: {ex.Message}");
             }
             finally
             {
-                await _lockService.ReleaseLockAsync(lockKey, lockValue);
+                if (!string.IsNullOrEmpty(lockValue))
+                {
+                    await _lockService.ReleaseLockAsync(lockKey, lockValue);
+                }
             }
+        }
+
+        private string CreateLockKey(string userId)
+        {
+            return $"balance:{userId}";
         }
     }
 }

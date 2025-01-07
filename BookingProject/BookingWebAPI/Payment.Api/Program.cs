@@ -13,7 +13,10 @@ using Payment.Infrastructure.DataContext;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Kafka;
 using Payment.Infrastructure.Repositories.PaymentRepository;
+using Polly;
+using Polly.Retry;
 using SharedInfrastructure;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +52,26 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddDistributedLocking();
 
+
+builder.Services.AddSingleton<AsyncRetryPolicy>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<Program>>();
+
+    return Policy
+        .Handle<TimeoutException>()
+        .Or<RedisException>()
+        .WaitAndRetryAsync(
+            retryCount: 5,
+            sleepDurationProvider: retryAttempt =>
+            {
+                var jitter = TimeSpan.FromMilliseconds(Random.Shared.Next(50, 200));
+                return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + jitter; 
+            },
+            onRetry: (exception, timeSpan, retryCount, context) =>
+            {
+                logger.LogWarning($"Try #{retryCount}. Error: {exception.Message}. Next try after {timeSpan.TotalSeconds} seconds.");
+            });
+});
 
 var app = builder.Build();
 

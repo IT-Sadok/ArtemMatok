@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Redis;
 using System;
 using System.Collections.Generic;
@@ -12,7 +13,7 @@ namespace DistributedLocking
     {
         public static IServiceCollection AddDistributedLocking(this IServiceCollection services)
         {
-            services.AddScoped<IRedisCacheService, RedisCacheService>();
+            services.TryAddScoped<IRedisCacheService, RedisCacheService>();
 
             services.AddScoped<IDistributedLockService, DistributedLockService>();
 
