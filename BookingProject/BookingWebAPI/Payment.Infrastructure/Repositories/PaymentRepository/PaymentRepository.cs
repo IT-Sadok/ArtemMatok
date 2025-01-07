@@ -45,7 +45,7 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
             return await UpdateCurrencyAmount(userId, price, currencyName);
         }
 
-        public async Task<Result<bool>> ReserveBalance(string userId, decimal price, string currencyName)
+        public async Task<Result<bool>> WithdrawBalance(string userId, decimal price, string currencyName)
         {
             var checkBalance = await CheckBalance(userId, price, currencyName);
             if (!checkBalance.IsSuccess) return Result<bool>.Failure(checkBalance.ErrorMessage);

@@ -1,4 +1,5 @@
 using Contracts;
+using DistributedLocking;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Kafka;
@@ -40,6 +41,14 @@ builder.Services.AddScoped<IPaymentService, PaymentService>();
 //Kafka 
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton<IHostedService, UserRegisteredKafkaConsumer>();
+
+//DistributedLock with redis
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
+builder.Services.AddDistributedLocking();
+
 
 var app = builder.Build();
 
