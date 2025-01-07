@@ -57,6 +57,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedInfrastructure", "Sha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Saga", "Saga\Saga.csproj", "{C305E42B-782F-4B97-8336-90B9DBAAA1A9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DistributedLocking", "DistributedLocking\DistributedLocking.csproj", "{A4F7259D-68D3-471D-A7CA-F75808D99794}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -155,6 +157,10 @@ Global
 		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C305E42B-782F-4B97-8336-90B9DBAAA1A9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A4F7259D-68D3-471D-A7CA-F75808D99794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A4F7259D-68D3-471D-A7CA-F75808D99794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A4F7259D-68D3-471D-A7CA-F75808D99794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A4F7259D-68D3-471D-A7CA-F75808D99794}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -182,6 +188,7 @@ Global
 		{30575D41-0081-477E-A5AF-A51A04B230ED} = {12945333-41D7-4082-9FAC-C7EC125A7C72}
 		{0D917AEA-7D1E-4517-A266-43622863575E} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 		{C305E42B-782F-4B97-8336-90B9DBAAA1A9} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
+		{A4F7259D-68D3-471D-A7CA-F75808D99794} = {8B9186E5-F8FA-42D0-A60B-0481AE9628DE}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {99BAA0D2-510D-48FF-952F-AB56F3C6DCBF}
