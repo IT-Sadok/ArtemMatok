@@ -15,7 +15,6 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
         {
             var balance = new UserBalance
             {
-                UserBalanceId = Guid.NewGuid().ToString(), 
                 UserId = userId,
                 Currencies = new List<Currency>()
             };
@@ -26,13 +25,11 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
                 {
                     Amount = 0,
                     CurrencyName = "USD",
-                    UserBalanceId = balance.UserBalanceId
                 },
                 new Currency
                 {
                     Amount = 0,
                     CurrencyName = "EUR",
-                    UserBalanceId = balance.UserBalanceId
                 }
             };
 

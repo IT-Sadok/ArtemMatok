@@ -10,7 +10,7 @@ namespace Payment.Domain.Models
     public class UserBalance
     {
         [Key]
-        public string UserBalanceId { get; set; }
+        public int UserBalanceId { get; set; }
         public string UserId { get; set; }
         public List<Currency>? Currencies {get;set;}
     }
