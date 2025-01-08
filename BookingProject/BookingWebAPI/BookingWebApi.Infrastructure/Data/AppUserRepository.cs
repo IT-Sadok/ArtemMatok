@@ -1,9 +1,11 @@
-﻿using BookingWebApi.Application.User.DTOs;
+﻿using BookingWebApi.Application.Common.Decorators;
+using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
 using BookingWebApi.Domain.Entities;
 using Contracts.DTOs.Audit;
 using FluentValidation.Validators;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Response;
 using System;
@@ -16,7 +18,8 @@ using System.Threading.Tasks;
 namespace BookingWebApi.Infrastructure.Data
 {
     public class AppUserRepository(
-        ApplicationDbContext _context
+        ApplicationDbContext _context,
+        IUserManagerDecorator<AppUser> _userManager
     ) : IAppUserRepository
     {
         public async Task<bool> UserExistsByIdAndCompany(string externalId, string sourceCompanyId)
@@ -130,6 +133,16 @@ namespace BookingWebApi.Infrastructure.Data
             }
 
             return Result<UserInfo>.Success(result);    
+        }
+
+        public async Task<string> GetRoleById(string userId)
+        {
+            var user = await _context.Users
+                .FirstOrDefaultAsync(x => x.Id == userId);
+
+            var roles = await _userManager.GetUserRoles(user);
+
+            return roles.FirstOrDefault();
         }
     }
 }

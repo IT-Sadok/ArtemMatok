@@ -18,20 +18,25 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
             var balance = new UserBalance
             {
                 UserId = userId,
-                Currencies = new List<Currency>
-                {   
-                    new Currency
-                    {
-                        Amount = 0,
-                        CurrencyName = "USD"
-                    },
-                    new Currency
-                    {
-                        Amount = 0,
-                        CurrencyName = "EUR"
-                    }
+
+                Currencies = new List<Currency>()
+            };
+
+            var currencies = new List<Currency>
+            {
+                new Currency
+                {
+                    Amount = 0,
+                    CurrencyName = "USD",
+                },
+                new Currency
+                {
+                    Amount = 0,
+                    CurrencyName = "EUR",
                 }
             };
+
+            balance.Currencies = currencies;
 
 
             await _context.UserBalances.AddAsync(balance);

@@ -7,12 +7,20 @@ using Mongo;
 using Polly.Retry;
 using Polly;
 using SharedInfrastructure;
+
+using Redis;
+using Microsoft.EntityFrameworkCore;
+using Prometheus;
+using Redis;
+using SharedInfrastructure;
+using System.Security.Claims;
 using AuditWebApi.Infrastructure.Repositories;
 using AuditWebApi.Application.UserAudit;
 using AuditWebApi.Application.BookingAudit;
 using BookingWebApi.Application.User.Validator;
 using FluentValidation;
 using Contracts;
+
 
 
 var builder = WebApplication.CreateBuilder(args);

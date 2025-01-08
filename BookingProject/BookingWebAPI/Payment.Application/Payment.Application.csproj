@@ -7,13 +7,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+
+    <Compile Remove="Services\UserService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentValidation" Version="11.10.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+
     <PackageReference Include="FluentValidation" Version="11.11.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\DistributedLocking\DistributedLocking.csproj" />
-    <ProjectReference Include="..\Payment.Infrastructure\Payment.Infrastructure.csproj" />
+       <ProjectReference Include="..\Payment.Infrastructure\Payment.Infrastructure.csproj" />
+
+ 
   </ItemGroup>
 
 </Project>
