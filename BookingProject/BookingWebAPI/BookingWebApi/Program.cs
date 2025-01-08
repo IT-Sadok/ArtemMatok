@@ -135,7 +135,6 @@ builder.Services.AddStackExchangeRedisCache(options =>
 });
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
-
 builder.Services.AddCustomLogging(builder.Configuration);
 builder.Services.AddCustomTelemetry();
 

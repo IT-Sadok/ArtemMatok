@@ -15,23 +15,28 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
         {
             var balance = new UserBalance
             {
+                UserBalanceId = Guid.NewGuid().ToString(), 
                 UserId = userId,
-                Currencies = new List<Currency>
-                {
-                    new Currency
-                    {
-                        Amount = 0,
-                        CurrencyName = "USD",
-                        UserBalanceId = userId
-                    }, 
-                    new Currency
-                    {
-                        Amount = 0,
-                        CurrencyName = "EUR",
-                        UserBalanceId = userId
-                    }
-                },
+                Currencies = new List<Currency>()
             };
+
+            var currencies = new List<Currency>
+            {
+                new Currency
+                {
+                    Amount = 0,
+                    CurrencyName = "USD",
+                    UserBalanceId = balance.UserBalanceId
+                },
+                new Currency
+                {
+                    Amount = 0,
+                    CurrencyName = "EUR",
+                    UserBalanceId = balance.UserBalanceId
+                }
+            };
+
+            balance.Currencies = currencies;
 
             await _context.UserBalances.AddAsync(balance);
             await _context.SaveChangesAsync();

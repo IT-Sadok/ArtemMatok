@@ -11,8 +11,8 @@ using Payment.Infrastructure.DataContext;
 namespace Payment.Infrastructure.Migrations
 {
     [DbContext(typeof(PaymentDbContext))]
-    [Migration("20241229000419_UpdateCurrency")]
-    partial class UpdateCurrency
+    [Migration("20250103140720_initialCreate")]
+    partial class initialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -43,23 +43,17 @@ namespace Payment.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<int>("UserBalanceId1")
-                        .HasColumnType("integer");
-
                     b.HasKey("CurrencyId");
 
-                    b.HasIndex("UserBalanceId1");
+                    b.HasIndex("UserBalanceId");
 
-                    b.ToTable("Currency");
+                    b.ToTable("Currencies");
                 });
 
             modelBuilder.Entity("Payment.Domain.Models.UserBalance", b =>
                 {
-                    b.Property<int>("UserBalanceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserBalanceId"));
+                    b.Property<string>("UserBalanceId")
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -74,7 +68,7 @@ namespace Payment.Infrastructure.Migrations
                 {
                     b.HasOne("Payment.Domain.Models.UserBalance", "UserBalance")
                         .WithMany("Currencies")
-                        .HasForeignKey("UserBalanceId1")
+                        .HasForeignKey("UserBalanceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

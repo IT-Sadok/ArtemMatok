@@ -14,7 +14,8 @@ namespace BookingWebApi.Application.User.Services
     public interface IAppUserService
     {
         Task<Result<UserChangeDto>> UpdateUserAsync(string userId, UserUpdateQuery query, CancellationToken cancellationToken);
-        Task<Result<UserInfo>> GetUserInfoAsync(string userId);  
+        Task<Result<UserInfo>> GetUserInfoAsync(string userId);
+        Task<string> GetUserRoleByIdAsync(string userId);
     }
     public class AppUserService(
         IAppUserRepository _appUserRepository,
@@ -37,6 +38,23 @@ namespace BookingWebApi.Application.User.Services
             await _cache.SetAsync(cacheKey, new UserInfo(userInfo.Value.UserName, userInfo.Value.Email), TimeSpan.FromHours(1));
 
             return Result<UserInfo>.Success(userInfo.Value);
+        }
+
+        public async Task<string> GetUserRoleByIdAsync(string userId)
+        {
+            if(userId == null)
+            {
+                return "UserId is null";
+            }
+
+            var role = await _appUserRepository.GetRoleById(userId);
+
+            if(role == null)
+            {
+                return "Role is null";
+            }
+
+            return role;
         }
 
         public async Task<Result<UserChangeDto>> UpdateUserAsync(string userId, UserUpdateQuery query, CancellationToken cancellationToken)

@@ -54,6 +54,14 @@ namespace BookingWebApi.Controllers
 
             return result.ToResponse();
         }
+
+        [HttpGet("UserRole/{userId}")]
+        public async Task<IActionResult> GetUserRoleById(string userId)
+        {
+            var result = await _appUserService.GetUserRoleByIdAsync(userId);
+
+            return Ok(result);
+        }
     }
 }
     
