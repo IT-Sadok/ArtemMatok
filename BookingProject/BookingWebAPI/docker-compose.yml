@@ -38,7 +38,7 @@ services:
       - discovery.type=single-node
       - xpack.security.enabled=false
     ports:
-      - 9200:9200
+      - 9100:9100
     networks:
       - kafka
 

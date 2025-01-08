@@ -3,7 +3,7 @@ using BookingWebApi.Application.User.DTOs;
 using BookingWebApi.Application.User.Interfaces;
 using BookingWebApi.Application.User.Query;
 using BookingWebApi.Domain.Entities;
-using Contracts.DTOs;
+using Contracts.DTOs.Audit;
 using FluentValidation.Validators;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

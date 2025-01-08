@@ -14,9 +14,11 @@ namespace Payment.Domain.Models
         public int CurrencyId { get; set; }
         public string CurrencyName { get; set; }
         public decimal Amount { get; set; }
+
         public string UserBalanceId { get; set; }
 
         [JsonIgnore]
+
         public UserBalance UserBalance { get; set; }
     }
 }

@@ -1,4 +1,4 @@
-﻿using AuditWebApi.Application.DTOs;
+﻿using AuditWebApi.Application.UserAudit.DTOs;
 using AuditWebApi.Domain.Constants;
 using AuditWebApi.Domain.Entities;
 using Contracts.Clients;
@@ -9,7 +9,7 @@ using Response;
 using System.Net.Http.Json;
 using UserChangeDto = AuditWebApi.Domain.Entities.UserChange;
 
-namespace AuditWebApi.Application
+namespace AuditWebApi.Application.UserAudit
 {
     public interface IAuditService
     {
@@ -40,7 +40,7 @@ namespace AuditWebApi.Application
                     }).ToList()
                 };
 
-                await _auditRepository.AddAsync(auditRecord);   
+                await _auditRepository.AddAsync(auditRecord);
             }
             catch (Exception ex)
             {
@@ -52,7 +52,7 @@ namespace AuditWebApi.Application
         {
             var user = await _auditRepository.GetUserByTime(userId, timestamp);
 
-            if(!user.IsSuccess)
+            if (!user.IsSuccess)
             {
                 return Result<AuditUserInfoChangeDto>.Failure(user.ErrorMessage);
             }

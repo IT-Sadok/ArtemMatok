@@ -1,4 +1,4 @@
-﻿using AuditWebApi.Application;
+﻿using AuditWebApi.Application.UserAudit;
 using AuditWebApi.Domain.Entities;
 using DnsClient.Internal;
 using Microsoft.Extensions.Logging;
@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AuditWebApi.Infrastructure
+namespace AuditWebApi.Infrastructure.Repositories
 {
     public class AuditRepository : IAuditRepository
     {
@@ -26,7 +26,7 @@ namespace AuditWebApi.Infrastructure
         {
             try
             {
-                await _collection.InsertOneAsync(record);   
+                await _collection.InsertOneAsync(record);
             }
             catch (Exception ex)
             {

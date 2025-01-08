@@ -36,9 +36,9 @@ namespace Payment.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("UserBalanceId")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("UserBalanceId")
+                        .HasColumnType("integer");
+
 
                     b.HasKey("CurrencyId");
 

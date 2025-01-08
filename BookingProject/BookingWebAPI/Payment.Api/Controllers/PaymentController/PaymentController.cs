@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Contracts.DTOs.Payment;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Payment.Application.Interfaces.PaymentInterface;
+using Response;
 
 namespace Payment.Api.Controllers.Balance
 {
@@ -21,5 +23,20 @@ namespace Payment.Api.Controllers.Balance
             return Ok(result);
         }
 
+        [HttpPatch("WithdrawBalance")]
+        public async Task<IActionResult> WithdrawBalance(BalanceRequestDto balanceDto)
+        {
+            var result = await _paymentService.WithdrawBalance(balanceDto);
+
+            return result.ToResponse();
+        }
+
+        [HttpPatch("CompensateBalance")]
+        public async Task<IActionResult> CompensateBalance(BalanceRequestDto balanceDto)
+        {
+            var result = await _paymentService.CompensateBalance(balanceDto);
+
+            return result.ToResponse();
+        }
     }
 }

@@ -1,9 +1,14 @@
+
 using Contracts.Clients;
+using Contracts;
+using DistributedLocking;
+
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Kafka;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+
 using Payment.Application;
 using Payment.Application.EntityDto;
 using Payment.Application.Interfaces;
@@ -11,6 +16,7 @@ using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
 using Payment.Application.Services;
 using Payment.Application.Services.PaymentService;
+using Payment.Application.Validators;
 using Payment.Infrastructure.DataContext;
 using Payment.Infrastructure.Interfaces;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
@@ -19,7 +25,11 @@ using Payment.Infrastructure.Repositories;
 using Payment.Infrastructure.Repositories.PaymentRepository;
 using Polly;
 using Polly.Retry;
+
 using Redis;
+using SharedInfrastructure;
+using StackExchange.Redis;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +40,8 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddValidatorsFromAssemblyContaining<BalanceRequestDtoValidator>();
+builder.Services.AddFluentValidationAutoValidation();
 //Db
 builder.Services.AddDbContext<PaymentDbContext>(options =>
 {
@@ -51,6 +63,7 @@ builder.Services.AddScoped<IMonolithClient, MonolithClient>();
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
 builder.Services.AddSingleton<IHostedService, UserRegisteredKafkaConsumer>();
 
+
 builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
 builder.Services.AddHttpClient("MonolithClient", (provider, client) =>
 {
@@ -59,10 +72,14 @@ builder.Services.AddHttpClient("MonolithClient", (provider, client) =>
 });
 
 //Redis
+//DistributedLock with redis
+
 builder.Services.AddStackExchangeRedisCache(options =>
 {
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
+
+
 builder.Services.AddSingleton<IRedisCacheService, RedisCacheService>();
 
 //builder.Services.AddSingleton<Polly.Registry.ResiliencePipelineProvider<string>>();
@@ -84,6 +101,30 @@ builder.Services.AddResiliencePipeline("default", x =>
 builder.Services.AddValidatorsFromAssemblyContaining<ChangeBalanceRequest>();
 builder.Services.AddFluentValidationAutoValidation();
 
+builder.Services.AddDistributedLocking();
+
+
+builder.Services.AddSingleton<AsyncRetryPolicy>(provider =>
+{
+    var logger = provider.GetRequiredService<ILogger<Program>>();
+
+    return Policy
+        .Handle<TimeoutException>()
+        .Or<RedisException>()
+        .WaitAndRetryAsync(
+            retryCount: 5,
+            sleepDurationProvider: retryAttempt =>
+            {
+                var jitter = TimeSpan.FromMilliseconds(Random.Shared.Next(50, 200));
+                return TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + jitter; 
+            },
+            onRetry: (exception, timeSpan, retryCount, context) =>
+            {
+                logger.LogWarning($"Try #{retryCount}. Error: {exception.Message}. Next try after {timeSpan.TotalSeconds} seconds.");
+            });
+});
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -96,6 +137,7 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
+
 
 app.MapControllers();
 
