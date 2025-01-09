@@ -72,5 +72,6 @@ namespace Contracts.Clients
                 return Result<bool>.Failure(ex.Message);
             }
         }
+
     }
 }

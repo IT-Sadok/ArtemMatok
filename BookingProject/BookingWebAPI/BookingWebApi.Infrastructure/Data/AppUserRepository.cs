@@ -25,7 +25,6 @@ namespace BookingWebApi.Infrastructure.Data
                 .Where(x => x.ExternalId == externalId && x.SourceCompanyId == sourceCompanyId)
                 .FirstOrDefaultAsync();
            
-
             if (user == null) return false;
             return true;
         }
@@ -130,6 +129,19 @@ namespace BookingWebApi.Infrastructure.Data
             }
 
             return Result<UserInfo>.Success(result);    
+        }
+
+        public async Task<Result<bool>> UpdateComplimentaryPoints(string userId, decimal points)
+        {
+            var user = await _context.Users.FindAsync(userId);
+            if (user is null) return Result<bool>.Failure("User wasn`t found");
+
+            user.ComplimentaryPoints += points;
+
+            _context.Entry(user).Property(x => x.ComplimentaryPoints).IsModified = true;
+            await _context.SaveChangesAsync();
+
+            return Result<bool>.Success(true);
         }
     }
 }

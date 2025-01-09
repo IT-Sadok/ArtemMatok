@@ -14,7 +14,8 @@ namespace BookingWebApi.Application.User.Services
     public interface IAppUserService
     {
         Task<Result<UserChangeDto>> UpdateUserAsync(string userId, UserUpdateQuery query, CancellationToken cancellationToken);
-        Task<Result<UserInfo>> GetUserInfoAsync(string userId);  
+        Task<Result<UserInfo>> GetUserInfoAsync(string userId);
+        Task<Result<bool>> UpdateComplimentaryPoints(string userId, decimal points);
     }
     public class AppUserService(
         IAppUserRepository _appUserRepository,
@@ -37,6 +38,11 @@ namespace BookingWebApi.Application.User.Services
             await _cache.SetAsync(cacheKey, new UserInfo(userInfo.Value.UserName, userInfo.Value.Email), TimeSpan.FromHours(1));
 
             return Result<UserInfo>.Success(userInfo.Value);
+        }
+
+        public async Task<Result<bool>> UpdateComplimentaryPoints(string userId, decimal points)
+        {
+            return await _appUserRepository.UpdateComplimentaryPoints(userId, points);
         }
 
         public async Task<Result<UserChangeDto>> UpdateUserAsync(string userId, UserUpdateQuery query, CancellationToken cancellationToken)

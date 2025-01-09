@@ -10,5 +10,7 @@ namespace Payment.Infrastructure.DataContext
         }
 
         public DbSet<UserBalance> UserBalances { get; set; }
+        public DbSet<OutboxEvent> OutboxEvents { get; set; }
+
     }
 }

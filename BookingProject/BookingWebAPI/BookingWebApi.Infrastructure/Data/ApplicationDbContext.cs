@@ -20,6 +20,7 @@ namespace BookingWebApi.Infrastructure.Data
 
         public DbSet<Apartament> Apartaments { get; set; }
         public DbSet<Booking> Bookings { get; set; }
+        public DbSet<ProcessedEvent> ProcessedEvents { get; set; }  
 
 
         protected override void OnModelCreating(ModelBuilder builder)

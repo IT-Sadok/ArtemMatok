@@ -7,11 +7,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
+using Payment.Application.Services;
 using Payment.Application.Services.PaymentService;
 using Payment.Application.Validators;
 using Payment.Infrastructure.DataContext;
+using Payment.Infrastructure.Interfaces.OutboxInterface;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Kafka;
+using Payment.Infrastructure.Repositories.OutboxRepository;
 using Payment.Infrastructure.Repositories.PaymentRepository;
 using Polly;
 using Polly.Retry;
@@ -37,13 +40,18 @@ builder.Services.AddDbContext<PaymentDbContext>(options =>
 
 //Repositories
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IOutboxRepository, OutboxRepository>();
 
 //Services
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 //Kafka 
+var test = builder.Configuration.GetSection("KafkaProducer");
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
+builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaProducer"));
 builder.Services.AddSingleton<IHostedService, UserRegisteredKafkaConsumer>();
+builder.Services.AddSingleton<IPaymentKafkaProducer, PaymentKafkaProducer>();
+builder.Services.AddHostedService<OutboxPublisherService>();
 
 //DistributedLock with redis
 builder.Services.AddStackExchangeRedisCache(options =>
@@ -53,7 +61,7 @@ builder.Services.AddStackExchangeRedisCache(options =>
 builder.Services.AddDistributedLocking();
 
 
-builder.Services.AddSingleton<AsyncRetryPolicy>(provider =>
+builder.Services.AddSingleton(provider =>
 {
     var logger = provider.GetRequiredService<ILogger<Program>>();
 
