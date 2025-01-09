@@ -52,6 +52,12 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
 
             return await UpdateCurrencyAmount(userId, -price, currencyName);
         }
+
+        public async Task<Result<bool>> ReplenishmentBalance(string userId, decimal price, string currencyName)
+        {
+            return await UpdateCurrencyAmount(userId, price, currencyName);
+        }
+
         private async Task<Result<bool>> UpdateCurrencyAmount(string userId, decimal amount, string currencyName)
         {
             var currency = await GetCurrency(userId, currencyName);
@@ -98,7 +104,6 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
 
             return Result<Currency>.Success(currency);
         }
-
     }
 }
 

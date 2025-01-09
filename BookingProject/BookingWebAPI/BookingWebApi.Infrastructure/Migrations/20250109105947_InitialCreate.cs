@@ -33,6 +33,10 @@ namespace BookingWebApi.Infrastructure.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
+                    ExternalId = table.Column<string>(type: "text", nullable: true),
+                    SourceCompanyId = table.Column<string>(type: "text", nullable: true),
+                    CustomUserData = table.Column<string>(type: "text", nullable: true),
+                    ComplimentaryPoints = table.Column<decimal>(type: "numeric", nullable: false),
                     UserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
@@ -54,6 +58,18 @@ namespace BookingWebApi.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ProcessedEvents",
+                columns: table => new
+                {
+                    ProcessedEventId = table.Column<string>(type: "text", nullable: false),
+                    ProccesedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ProcessedEvents", x => x.ProcessedEventId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -70,6 +86,35 @@ namespace BookingWebApi.Infrastructure.Migrations
                         name: "FK_AspNetRoleClaims_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Apartaments",
+                columns: table => new
+                {
+                    ApartamentId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    Address = table.Column<string>(type: "text", nullable: false),
+                    Area = table.Column<double>(type: "double precision", nullable: false),
+                    Latitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Longitude = table.Column<decimal>(type: "numeric", nullable: false),
+                    Bedrooms = table.Column<int>(type: "integer", nullable: false),
+                    ExternalId = table.Column<string>(type: "text", nullable: true),
+                    SourceCompanyId = table.Column<string>(type: "text", nullable: true),
+                    HostId = table.Column<string>(type: "text", nullable: false),
+                    CustomData = table.Column<string>(type: "text", nullable: true),
+                    PricePerDay = table.Column<decimal>(type: "numeric", nullable: false),
+                    CurrencyName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Apartaments", x => x.ApartamentId);
+                    table.ForeignKey(
+                        name: "FK_Apartaments_AspNetUsers_HostId",
+                        column: x => x.HostId,
+                        principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -159,14 +204,55 @@ namespace BookingWebApi.Infrastructure.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Bookings",
+                columns: table => new
+                {
+                    BookingId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ApartamentId = table.Column<int>(type: "integer", nullable: false),
+                    UserId = table.Column<string>(type: "text", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    EndDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    Status = table.Column<string>(type: "text", nullable: false),
+                    TotalAmount = table.Column<decimal>(type: "numeric", nullable: false),
+                    CurrencyName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bookings", x => x.BookingId);
+                    table.ForeignKey(
+                        name: "FK_Bookings_Apartaments_ApartamentId",
+                        column: x => x.ApartamentId,
+                        principalTable: "Apartaments",
+                        principalColumn: "ApartamentId");
+                    table.ForeignKey(
+                        name: "FK_Bookings_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                });
+
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "0e9a2761-9fa9-4e16-8451-c952299a2111", null, "User", "USER" },
-                    { "589a8fe3-3cc3-43ee-aeb1-0b438bc04132", null, "Admin", "ADMIN" }
+                    { "00af1fff-6c0c-4fa8-a85a-904d0cf820bd", null, "User", "USER" },
+                    { "03c6eef2-d4d9-4544-8b0a-7b75b5038597", null, "Admin", "ADMIN" },
+                    { "1c71fdac-67e9-45be-8807-3d0c498524c2", null, "Host", "HOST" }
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Apartaments_ExternalId_SourceCompanyId",
+                table: "Apartaments",
+                columns: new[] { "ExternalId", "SourceCompanyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Apartaments_HostId",
+                table: "Apartaments",
+                column: "HostId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
@@ -200,10 +286,26 @@ namespace BookingWebApi.Infrastructure.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ExternalId_SourceCompanyId",
+                table: "AspNetUsers",
+                columns: new[] { "ExternalId", "SourceCompanyId" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_ApartamentId",
+                table: "Bookings",
+                column: "ApartamentId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Bookings_UserId",
+                table: "Bookings",
+                column: "UserId");
         }
 
         /// <inheritdoc />
@@ -225,7 +327,16 @@ namespace BookingWebApi.Infrastructure.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Bookings");
+
+            migrationBuilder.DropTable(
+                name: "ProcessedEvents");
+
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
+
+            migrationBuilder.DropTable(
+                name: "Apartaments");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

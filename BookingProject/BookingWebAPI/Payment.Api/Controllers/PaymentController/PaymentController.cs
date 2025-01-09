@@ -38,5 +38,13 @@ namespace Payment.Api.Controllers.Balance
 
             return result.ToResponse();
         }
+
+        [HttpPatch("ReplenishmentBalance")]
+        public async Task<IActionResult> ReplenishmentBalance(BalanceRequestDto balanceDto)
+        {
+            var result = await _paymentService.ReplenishmentBalance(balanceDto);
+
+            return result.ToResponse();
+        }
     }
 }

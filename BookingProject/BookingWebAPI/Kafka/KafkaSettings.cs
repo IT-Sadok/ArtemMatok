@@ -10,6 +10,7 @@ namespace Kafka
     {
         public string UserChanges { get; set; }
         public string UserRegistered { get; set; }
+        public string ReplenishmentBalance { get; set; }
     }
     public class KafkaSettings
     {

@@ -1,6 +1,7 @@
 using BookingWebApi.Application.Apartament;
 using BookingWebApi.Application.Apartament.Statistics;
 using BookingWebApi.Application.Booking;
+using BookingWebApi.Application.Common;
 using BookingWebApi.Application.Common.Configuration;
 using BookingWebApi.Application.Common.Decorators;
 using BookingWebApi.Application.User;
@@ -124,6 +125,7 @@ builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IApartamentRepository,ApartamentRepository>();
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+builder.Services.AddScoped<IProcessedEventRepository, ProcessedEventRepository>();
 
 //Decorators
 builder.Services.AddScoped<IUserManagerDecorator<AppUser>, UserManagerDecorator<AppUser>>();
@@ -131,9 +133,10 @@ builder.Services.AddScoped<ISignInManagerDecorator<AppUser>, SignInManagerDecora
 
 //Kafka
 builder.Services.Configure<KafkaSettings>(builder.Configuration.GetSection("KafkaSettings"));
+builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaConsumer"));
 builder.Services.AddSingleton<IUserChangeKafkaProducer, UserChangeKafkaProducer>();
-
 builder.Services.AddSingleton<IUserRegisteredKafkaProducer, UserRegisteredKafkaProducer>();
+builder.Services.AddHostedService<PaymentReplenishmentBalanceConsumer>();
 
 //Redis
 builder.Services.AddStackExchangeRedisCache(options =>

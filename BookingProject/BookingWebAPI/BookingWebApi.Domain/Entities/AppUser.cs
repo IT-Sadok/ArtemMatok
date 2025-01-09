@@ -14,5 +14,6 @@ namespace BookingWebApi.Domain.Entities
         public List<Apartament> Apartaments { get; set; } = new List<Apartament>();
         public string? CustomUserData { get; set; }
         public List<Booking> Bookings { get; set; } = new List<Booking>();
+        public decimal ComplimentaryPoints { get; set; }
     }
 }

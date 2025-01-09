@@ -3,6 +3,7 @@ using FluentAssertions;
 using Moq;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Services.PaymentService;
+using Payment.Infrastructure.Interfaces.OutboxInterface;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Xunit;
 
@@ -13,11 +14,13 @@ namespace Payment.Tests.Services
         private readonly Mock<IPaymentRepository> _paymentRepositoryMock;
         private readonly IPaymentService _paymentService;
         private readonly Mock<IDistributedLockService> _distributedLockServiceMock;
+        private readonly Mock<IOutboxRepository> _outboxrepository;
+
 
         public PaymentServiceTests()
         {
             _paymentRepositoryMock = new Mock<IPaymentRepository>();
-            _paymentService = new PaymentService(_paymentRepositoryMock.Object, _distributedLockServiceMock.Object);
+            _paymentService = new PaymentService(_paymentRepositoryMock.Object, _distributedLockServiceMock.Object, _outboxrepository.Object);
         }
 
         [Fact]

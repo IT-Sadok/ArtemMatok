@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BookingWebApi.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250104095317_UpdateBookingRemoveCreatedAt")]
-    partial class UpdateBookingRemoveCreatedAt
+    [Migration("20250109105947_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -86,6 +86,9 @@ namespace BookingWebApi.Infrastructure.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("integer");
+
+                    b.Property<decimal>("ComplimentaryPoints")
+                        .HasColumnType("numeric");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -196,6 +199,19 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.ToTable("Bookings");
                 });
 
+            modelBuilder.Entity("BookingWebApi.Domain.Entities.ProcessedEvent", b =>
+                {
+                    b.Property<string>("ProcessedEventId")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("ProccesedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ProcessedEventId");
+
+                    b.ToTable("ProcessedEvents");
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
@@ -224,19 +240,19 @@ namespace BookingWebApi.Infrastructure.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "72621007-cc68-49f8-87c7-528be7df7ca8",
+                            Id = "03c6eef2-d4d9-4544-8b0a-7b75b5038597",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "65896f02-07d4-415d-9ad1-d0d379d4e44a",
+                            Id = "00af1fff-6c0c-4fa8-a85a-904d0cf820bd",
                             Name = "User",
                             NormalizedName = "USER"
                         },
                         new
                         {
-                            Id = "c10d70f1-7c72-4f36-bb0d-411fbe5e8006",
+                            Id = "1c71fdac-67e9-45be-8807-3d0c498524c2",
                             Name = "Host",
                             NormalizedName = "HOST"
                         });
