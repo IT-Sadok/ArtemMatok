@@ -20,8 +20,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Contracts\Contracts.csproj" />
     <ProjectReference Include="..\Kafka\Kafka.csproj" />
     <ProjectReference Include="..\Payment.Domain\Payment.Domain.csproj" />
+    <ProjectReference Include="..\Redis\Redis.csproj" />
     <ProjectReference Include="..\Response\Response.csproj" />
   </ItemGroup>
 

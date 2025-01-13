@@ -66,7 +66,7 @@ namespace Payment.Application.Services.PaymentService
                     return Result<bool>.Failure("Unable to acquire lock. Try again later.");
                 }
 
-                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.Currency);
+                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
             }
             catch (Exception ex)
             {

@@ -13,6 +13,7 @@ namespace Payment.Infrastructure.Interfaces.PaymentInterface
         Task<bool> CreateBalanceAsync(string userId);
         Task<Result<bool>> WithdrawBalance(string userId, decimal price, string currencyName);
         Task<Result<bool>> CompensateBalance(string userId, decimal price, string currencyName);
+        Task<Result<bool>> ChangeBalanceAsync(string userId, decimal amount, string currencyName);
 
     }
 }
