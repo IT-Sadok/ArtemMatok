@@ -40,7 +40,7 @@ namespace Payment.Infrastructure.Repositories
 
             var user = userInfo.Value;
 
-            var balance = await _context.UserBalances
+            var balance = await _context.UserBalances.Include(x => x.Currencies)
                 .FirstOrDefaultAsync(x => x.UserId == userId);
 
             if(balance == null)
