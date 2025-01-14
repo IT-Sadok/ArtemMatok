@@ -4,8 +4,10 @@ using DistributedLocking;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Kafka;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
@@ -21,6 +23,7 @@ using Polly;
 using Polly.Retry;
 using SharedInfrastructure;
 using StackExchange.Redis;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,6 +60,30 @@ builder.Services.AddSwaggerGen(option =>
             new string[]{}
         }
     });
+});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+    options.DefaultChallengeScheme =
+    options.DefaultForbidScheme =
+    options.DefaultScheme =
+    options.DefaultSignInScheme =
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey
+        (
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+        ),
+        RoleClaimType = ClaimTypes.Role
+    };
 });
 
 builder.Services.AddValidatorsFromAssemblyContaining<BalanceRequestDtoValidator>();
