@@ -2,6 +2,7 @@
 using Payment.Domain.Models;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Repositories;
+using Payment.Infrastructure.Validators;
 using Response;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,13 @@ namespace Payment.Application.Services
     {
         public async Task<Result<bool>> ChangeBalanceAsync(ChangeBalanceRequestDto request)
         {
+            var isCurrencyValid = CurrencyValidator.IsValidCurrency(request.CurrencyName);
+
+            if(!isCurrencyValid)
+            {
+                return Result<bool>.Failure("CurrenctName is not valid");
+            }
+
             var result = await _paymentRepository.ChangeBalanceAsync(request.UserId, request.Amount, request.CurrencyName);
 
             if(!result.IsSuccess)

@@ -2,6 +2,7 @@
 using Payment.Domain.Models;
 using Payment.Infrastructure.DataContext;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
+using Payment.Infrastructure.Validators;
 using Response;
 using System;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
 {
     public class PaymentRepository(PaymentDbContext _context) : IPaymentRepository
     {
-        public async Task<bool> CreateBalanceAsync(string userId)
+        public async Task<Result<bool>> CreateBalanceAsync(string userId)
         {
             var balance = new UserBalance
             {
@@ -33,11 +34,21 @@ namespace Payment.Infrastructure.Repositories.PaymentRepository
                 }
             };
 
+            foreach(var item in balance.Currencies)
+            {
+                var isValid = CurrencyValidator.IsValidCurrency(item.CurrencyName);
+
+                if(!isValid)
+                {
+                    return Result<bool>.Failure("Currency is not valid");
+                }
+            }
+
 
             await _context.UserBalances.AddAsync(balance);
             await _context.SaveChangesAsync();
 
-            return true;
+            return Result<bool>.Success(true);
         }
 
         public async Task<Result<bool>> CompensateBalance(string userId, decimal price, string currencyName)

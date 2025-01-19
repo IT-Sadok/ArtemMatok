@@ -15,7 +15,7 @@ namespace Payment.Api.Controllers.Balance
         {
             var result = await _paymentService.CreateBalanceAsync(userId);
             
-            if(result == false)
+            if(!result.IsSuccess)
             {
                 return BadRequest("Something went wrong");
             }
