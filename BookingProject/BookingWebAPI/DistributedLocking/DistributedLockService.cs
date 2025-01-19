@@ -1,4 +1,5 @@
-﻿using Redis;
+﻿using Polly.Retry;
+using Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,15 +15,15 @@ namespace DistributedLocking
     }
     public class DistributedLockService(
         IRedisCacheService _redisCacheService,
-        AsyncRetryPolicy _retryPolicy;
+        AsyncRetryPolicy _retryPolicy
     ): IDistributedLockService
     {
         public async Task<string> AcquireLockAsync(string key, TimeSpan expiration)
         {
             var lockKey = CreateLockKey(key);
             var lockValue = Guid.NewGuid().ToString();
-            
-            return await 
+
+            return lockValue;
         }
 
         public async Task<bool> ReleaseLockAsync(string key , string lockValue)

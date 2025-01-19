@@ -2,6 +2,7 @@
 using DistributedLocking;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
+using Payment.Infrastructure.Validators;
 using Response;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,14 @@ namespace Payment.Application.Services.PaymentService
                 {
                     return Result<bool>.Failure("Unable to acquire lock. Try again later.");
                 }
+
+                var isCurrenctValid = CurrencyValidator.IsValidCurrency(balanceDto.CurrencyName);
+
+                if(!isCurrenctValid)
+                {
+                    return Result<bool>.Failure("CurrencyName is not valid");
+                }
+
                 return await _paymentRepository.CompensateBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
             }
             catch(Exception ex)
@@ -43,15 +52,16 @@ namespace Payment.Application.Services.PaymentService
             } 
         }
 
-        public async Task<bool> CreateBalanceAsync(string userId)
+        public async Task<Result<bool>> CreateBalanceAsync(string userId)
         {
             if(!string.IsNullOrEmpty(userId))
             {
-                await _paymentRepository.CreateBalanceAsync(userId);
-                return true;
+                var result = await _paymentRepository.CreateBalanceAsync(userId);
+
+                return result;
             }
 
-            return false;
+            return Result<bool>.Failure("User Id can`t be empty or null");
         }
 
         public async Task<Result<bool>> WithdrawBalance(BalanceRequestDto balanceDto)
@@ -66,7 +76,14 @@ namespace Payment.Application.Services.PaymentService
                     return Result<bool>.Failure("Unable to acquire lock. Try again later.");
                 }
 
-                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.Currency);
+                var isCurrencyValid = CurrencyValidator.IsValidCurrency(balanceDto.CurrencyName);
+
+                if(!isCurrencyValid)
+                {
+                    return Result<bool>.Failure("CurrencyName is not valid");
+                }
+
+                return await _paymentRepository.WithdrawBalance(balanceDto.UserId, balanceDto.Price, balanceDto.CurrencyName);
             }
             catch (Exception ex)
             {

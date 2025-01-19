@@ -31,8 +31,8 @@ namespace BookingWebApi.Application.User.Validator
 
             RuleFor(x => x.Role)
                 .NotEmpty().WithMessage("Role is required.")
-                .Must(role => role == "Host" || role == "User")
-                .WithMessage("Role must be either 'Host' or 'User'.");
+                .Must(role => role == "Host" || role == "User" || role == "Admin")
+                .WithMessage("Role must be either 'Host' or 'User' or 'Admin'.");
         }
     }
 }

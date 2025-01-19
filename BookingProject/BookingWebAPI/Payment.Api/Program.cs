@@ -1,22 +1,29 @@
 using Contracts;
+using Contracts.Clients;
 using DistributedLocking;
 using FluentValidation;
 using FluentValidation.AspNetCore;
 using Kafka;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Payment.Application.Interfaces.PaymentInterface;
 using Payment.Application.Kafka;
+using Payment.Application.Services;
 using Payment.Application.Services.PaymentService;
 using Payment.Application.Validators;
 using Payment.Infrastructure.DataContext;
 using Payment.Infrastructure.Interfaces.PaymentInterface;
 using Payment.Infrastructure.Kafka;
+using Payment.Infrastructure.Repositories;
 using Payment.Infrastructure.Repositories.PaymentRepository;
 using Polly;
 using Polly.Retry;
 using SharedInfrastructure;
 using StackExchange.Redis;
+using System.Security.Claims;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +33,58 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddSwaggerGen(option =>
+{
+    option.SwaggerDoc("v1", new OpenApiInfo { Title = "Demo API", Version = "v1" });
+    option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        In = ParameterLocation.Header,
+        Description = "Please enter a valid token",
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        BearerFormat = "JWT",
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type=ReferenceType.SecurityScheme,
+                    Id="Bearer"
+                }
+            },
+            new string[]{}
+        }
+    });
+});
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme =
+    options.DefaultChallengeScheme =
+    options.DefaultForbidScheme =
+    options.DefaultScheme =
+    options.DefaultSignInScheme =
+    options.DefaultSignOutScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidIssuer = builder.Configuration["JWT:Issuer"],
+        ValidateAudience = true,
+        ValidAudience = builder.Configuration["JWT:Audience"],
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey
+        (
+            System.Text.Encoding.UTF8.GetBytes(builder.Configuration["JWT:SigningKey"])
+        ),
+        RoleClaimType = ClaimTypes.Role
+    };
+});
 
 builder.Services.AddValidatorsFromAssemblyContaining<BalanceRequestDtoValidator>();
 builder.Services.AddFluentValidationAutoValidation();
@@ -37,9 +96,12 @@ builder.Services.AddDbContext<PaymentDbContext>(options =>
 
 //Repositories
 builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IBalanceRepository, BalanceRepository>();
 
 //Services
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IBalanceService, BalanceService>();
+builder.Services.AddScoped<IMonolithClient, MonolithClient>();
 
 //Kafka 
 builder.Services.Configure<ConsumerSettings>(builder.Configuration.GetSection("KafkaSettings"));
@@ -51,6 +113,28 @@ builder.Services.AddStackExchangeRedisCache(options =>
     options.Configuration = builder.Configuration.GetConnectionString("Redis");
 });
 builder.Services.AddDistributedLocking();
+
+
+builder.Services.Configure<ApiSettings>(builder.Configuration.GetSection("ApiSettings"));
+builder.Services.AddHttpClient("MonolithClient", (provider, client) =>
+{
+    var apiSettings = provider.GetRequiredService<IOptions<ApiSettings>>().Value;
+    client.BaseAddress = new Uri(apiSettings.MonolithUrl);
+});
+
+
+builder.Services.AddResiliencePipeline("default", x =>
+{
+    x.AddRetry(new RetryStrategyOptions
+    {
+        ShouldHandle = new PredicateBuilder().Handle<Exception>(),
+        Delay = TimeSpan.FromSeconds(2),
+        MaxRetryAttempts = 2,
+        BackoffType = DelayBackoffType.Exponential,
+        UseJitter = true,
+    })
+    .AddTimeout(TimeSpan.FromSeconds(30));
+});
 
 
 builder.Services.AddSingleton<AsyncRetryPolicy>(provider =>
@@ -72,6 +156,8 @@ builder.Services.AddSingleton<AsyncRetryPolicy>(provider =>
                 logger.LogWarning($"Try #{retryCount}. Error: {exception.Message}. Next try after {timeSpan.TotalSeconds} seconds.");
             });
 });
+
+builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
 
